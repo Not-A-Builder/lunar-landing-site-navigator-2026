@@ -418,3 +418,17 @@ Decision:
 - **Markers:** pins and region outlines use a bright saturated green, `#24e866` (`--pin`, `--pin-region`; first `#2bff72`, then a touch darker on request), in both themes. Hover off-white, selected amber, features grey, as before.
 - **Globe colours:** tone mapping is off for the globe's materials (`toneMapped={false}`). React Three Fiber's default filmic tone mapping washed out the marker colours and slightly altered the WAC mosaic; both now show as they are.
 - **CTA shimmer:** a solid band (16% of the button width, skewed −24°) with sharp edges instead of a feathered gradient; `--shimmer` is 16% white on the dark button (light theme) and 70% white on the light button (dark theme).
+
+## D-052 · 2026-11-14 · All curated lists on by default
+Status: confirmed (owner request, 2026-11-14; replaces the D-047 default)
+Decision: the site-selection filter starts with all nine lists on, including "Named south-pole features" (65 results instead of 43). The filter icon's dot therefore doesn't show on first load, and the menu's toggle starts as "Deselect all".
+
+## D-053 · 2026-11-14 · Named features as green diamonds; map legend
+Status: confirmed (owner request, 2026-11-14; replaces the grey feature dots)
+Decision:
+- **Named features** (the 22 IAU-named craters and massifs in "Named south-pole features") are drawn as small diamonds with the same green fill and dark stroke as site pins. Only the shape differs, on all three map views; hover (off-white) and selected (amber) keep the diamond shape. The grey `--pin-feature` token is gone.
+- **Legend** (`MapLegend`) above the scale bar, bottom right, on every map view: landing site or mission (green dot), named feature (green diamond), candidate region (green outline), selected (amber), custom point (ring). Swatches use the marker tokens, so they always match the map.
+
+## D-054 · 2026-11-14 · All markers are circles; no legend
+Status: confirmed (owner request, 2026-11-14; reverts D-053)
+Decision: named features use the same green circle as sites (same size, fill and dark stroke), so every marker on every map view is a circle; hover is off-white and selected is amber. The map legend is removed entirely (`MapLegend` deleted). A site's name and type remain available from its tooltip and the list.

@@ -39,7 +39,6 @@
   --pin-ring: #0b0a09;
   --pin-hot: #ece8e1;
   --pin-selected: #e9ae35;
-  --pin-feature: #a8a197;
 }
 
 :root[data-theme="dark"] {

@@ -20,7 +20,6 @@ const MoonGlobe = dynamic(() => import("@/components/map/MoonGlobe"), {
 });
 
 const ALL_GROUPS = Object.keys(GROUP_LABELS) as SiteGroup[];
-const DEFAULT_GROUPS = ALL_GROUPS.filter((g) => g !== "feature");
 type GlobeView = "flat" | "3d";
 
 const coordText = (lat: number, lon: number) => `${fmtLat(lat)}, ${fmtLon(lon)}`;
@@ -37,7 +36,7 @@ const inputCls = "h-10 w-full rounded-sm border bg-panel text-sm outline-none tr
 export function SiteSelection() {
   const router = useRouter();
   const [query, setQuery] = useState("");
-  const [groups, setGroups] = useState<Set<SiteGroup>>(new Set(DEFAULT_GROUPS));
+  const [groups, setGroups] = useState<Set<SiteGroup>>(() => new Set(ALL_GROUPS)) // every list on by default (D-052);
   const [siteId, setSiteId] = useState<string | null>(null);
   const [coords, setCoords] = useState("");
   const [coordsTouched, setCoordsTouched] = useState(false);

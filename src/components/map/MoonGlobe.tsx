@@ -137,7 +137,6 @@ export default function MoonGlobe({
       ring: cssVar("--pin-ring"),
       hot: cssVar("--pin-hot"),
       selected: cssVar("--pin-selected"),
-      feature: cssVar("--pin-feature"),
     };
   }, [theme]);
 
@@ -247,7 +246,7 @@ class GlobeBoundary extends Component<{ children: React.ReactNode }, { failed: b
   }
 }
 
-type Colors = { region: string; fg: string; pin: string; ring: string; hot: string; selected: string; feature: string };
+type Colors = { region: string; fg: string; pin: string; ring: string; hot: string; selected: string };
 
 function Scene({
   texture,
@@ -445,9 +444,9 @@ function Marker({
 }) {
   const pos = useMemo(() => latLonToVec(site.lat, site.lon, 1.0015), [site.lat, site.lon]);
   const group = useRef<THREE.Group>(null);
-  const r = hot || selected ? 8 : site.kind === "feature" ? 4 : 6;
+  const r = hot || selected ? 8 : 6;
   useBillboard(pos, r, group);
-  const color = hot ? colors.hot : selected ? colors.selected : site.kind === "feature" ? colors.feature : colors.pin;
+  const color = hot ? colors.hot : selected ? colors.selected : colors.pin;
   const outline = useMemo(
     () =>
       site.polygon && site.polygon.length > 2

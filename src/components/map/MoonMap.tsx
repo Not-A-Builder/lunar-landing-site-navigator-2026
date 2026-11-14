@@ -13,10 +13,10 @@ import { MapControls, setReadout } from "./MapControls";
 import { MapTip, placeMapTip } from "./MapTip";
 import { moonDistanceM, ScaleBar } from "./ScaleBar";
 
-type Palette = { region: string; fg: string; label: string; halo: string; pin: string; pinRing: string; pinHot: string; pinSelected: string; pinFeature: string };
+type Palette = { region: string; fg: string; label: string; halo: string; pin: string; pinRing: string; pinHot: string; pinSelected: string };
 const readPalette = (): Palette => ({
   region: cssVar("--pin-region"), fg: cssVar("--fg"), label: cssVar("--map-label"), halo: cssVar("--map-halo"),
-  pin: cssVar("--pin"), pinRing: cssVar("--pin-ring"), pinHot: cssVar("--pin-hot"), pinSelected: cssVar("--pin-selected"), pinFeature: cssVar("--pin-feature"),
+  pin: cssVar("--pin"), pinRing: cssVar("--pin-ring"), pinHot: cssVar("--pin-hot"), pinSelected: cssVar("--pin-selected"),
 });
 /** "#rrggbb" + alpha → rgba() for OpenLayers fills. */
 const alpha = (hex: string, a: number) => {
@@ -150,9 +150,9 @@ export function MoonMap({ mode, sites, hoveredId, selectedIds = [], onHover, onS
               fill: new style.Fill({ color: alpha(p.region, hot || sel ? 0.2 : 0.08) }),
             });
           }
-          const color = hot ? p.pinHot : sel ? p.pinSelected : kind === "feature" ? p.pinFeature : p.pin;
+          const color = hot ? p.pinHot : sel ? p.pinSelected : p.pin;
           return new style.Style({
-            image: pin(color, hot || sel ? 8 : kind === "feature" ? 4 : 6, p.pinRing),
+            image: pin(color, hot || sel ? 8 : 6, p.pinRing),
             zIndex: hot ? 10 : sel ? 5 : 1,
           });
         },
