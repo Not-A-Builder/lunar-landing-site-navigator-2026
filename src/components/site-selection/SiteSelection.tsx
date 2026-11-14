@@ -44,6 +44,9 @@ function formFromScenario(sc: Scenario): { siteId: string | null; coords: string
   return { siteId: null, coords: coordText(la, lo), picked };
 }
 
+/** How long the cursor must rest on a map pin before the site list scrolls to its card (D-079). */
+const MAP_HOVER_SCROLL_MS = 600;
+
 const subTitle = "flex items-center text-base font-semibold";
 const inputCls = "h-10 w-full rounded-sm border bg-panel text-sm outline-none transition-colors placeholder:text-faint/60 hover:border-muted focus:border-fg";
 
@@ -129,12 +132,24 @@ export function SiteSelection() {
     return () => ro.disconnect();
   }, [filtered]);
 
-  // A pin hovered or picked on the map scrolls its card into view.
-  useEffect(() => {
-    const id = listHover ? null : hovered ?? siteId;
-    if (!id) return;
+  // A pin picked on the map scrolls its card into view right away; a pin hovered on the map only
+  // after the cursor rests on it for MAP_HOVER_SCROLL_MS, so sweeping across pins doesn't jerk the list (D-079).
+  const scrollToCard = (id: string) =>
     listRef.current?.querySelector(`[data-site="${id}"]`)?.scrollIntoView({ block: "nearest", behavior: "smooth" });
-  }, [hovered, listHover, siteId]);
+  useEffect(() => {
+    if (siteId) scrollToCard(siteId);
+  }, [siteId]);
+  useEffect(() => {
+    if (listHover) return;
+    if (!hovered) {
+      if (siteId) scrollToCard(siteId);
+      return;
+    }
+    const t = setTimeout(() => scrollToCard(hovered), MAP_HOVER_SCROLL_MS);
+    return () => clearTimeout(t);
+    // siteId is handled by the effect above; re-running here on a pick would only restart the timer.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hovered, listHover]);
 
   // Esc clears the selection (a curated site or a custom point), unless a menu, picker or dialog is
   // open: then Esc only closes that.

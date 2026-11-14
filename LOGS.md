@@ -544,3 +544,15 @@ Decision:
 ## D-077 · 2026-11-14 · More space above the map-click hint
 Status: confirmed (owner request, 2026-11-14)
 Decision: in the enthusiast view, the gap between the site list and "Or click anywhere on the map to drop a point." grows from 8 px to 14 px (`mt-3.5`).
+
+## D-078 · 2026-11-14 · Pointer cursor on every enabled control
+Status: confirmed (owner request, 2026-11-14)
+Decision: one base-layer rule in `globals.css` gives every enabled button, `role="button"` element, `<summary>`, `<select>`, checkbox/radio/range input (and its label) and date/time field a pointer cursor on hover. Disabled controls show "not allowed", matching the existing CTA buttons. Text-entry fields (text, search, number) keep the I-beam so it is clear you can type. Per-element `cursor-*` classes still override it.
+
+## D-079 · 2026-11-14 · Site list waits 600 ms before following a hovered map pin
+Status: confirmed (owner request, 2026-11-14)
+Decision: on the site selection page, hovering a pin on the map no longer scrolls the site list straight away. The list scrolls to that site's card only once the cursor has rested on the pin for 600 ms (`MAP_HOVER_SCROLL_MS`); moving off sooner cancels it. Clicking a pin still scrolls to its card at once, and leaving a pin still brings the selected site's card back into view. The pin and card highlight still follow the cursor instantly.
+
+## D-080 · 2026-11-14 · No info button on the 2D maps; imagery credit shown as a label
+Status: confirmed (owner request, 2026-11-14)
+Decision: the OpenLayers "i" (attribution) button in the bottom-right corner of the polar and whole-Moon maps is removed (`controls: []`). So the NASA Moon Trek imagery is still credited, its credit ("LRO LOLA hillshade · NASA Moon Trek" / "LRO WAC global mosaic · NASA Moon Trek", from `moon.ts`) now sits as a small plain label to the left of the scale bar, the same as on the 3D globe. The scale bar moves into the corner the button used to occupy.

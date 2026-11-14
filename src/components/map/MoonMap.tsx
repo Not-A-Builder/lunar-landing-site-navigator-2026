@@ -89,11 +89,11 @@ export function MoonMap({ mode, sites, hoveredId, selectedIds = [], onHover, onS
       const [
         { default: Map }, { default: View }, { default: TileLayer }, { default: XYZ }, { default: TileGrid },
         { default: VectorLayerC }, { default: VectorSourceC }, { default: Feature }, { default: Point }, { default: Polygon }, { default: LineString },
-        proj4Mod, olProj4, olProj, style, { defaults: defaultControls },
+        proj4Mod, olProj4, olProj, style,
       ] = await Promise.all([
         import("ol/Map"), import("ol/View"), import("ol/layer/Tile"), import("ol/source/XYZ"), import("ol/tilegrid/TileGrid"),
         import("ol/layer/Vector"), import("ol/source/Vector"), import("ol/Feature"), import("ol/geom/Point"), import("ol/geom/Polygon"), import("ol/geom/LineString"),
-        import("proj4"), import("ol/proj/proj4"), import("ol/proj"), import("ol/style"), import("ol/control/defaults"),
+        import("proj4"), import("ol/proj/proj4"), import("ol/proj"), import("ol/style"),
       ]);
       if (disposed || !el.current) return;
       featureModRef.current = { Feature, Point, Polygon };
@@ -194,8 +194,9 @@ export function MoonMap({ mode, sites, hoveredId, selectedIds = [], onHover, onS
       const mx = mode === "polar" ? 0 : (x1 - x0) * GLOBAL_MARGIN, my = mode === "polar" ? 0 : (y1 - y0) * GLOBAL_MARGIN;
       const map = new Map({
         target: el.current,
-        // Zoom buttons are our own (MapControls), next to the coordinate readout.
-        controls: defaultControls({ zoom: false, rotate: false }),
+        // No OpenLayers controls: zoom buttons are our own (MapControls) and the imagery credit is a
+        // plain label beside the scale bar, like the 3D globe (D-080).
+        controls: [],
         layers: [...tileLayers, guides, layer],
         view: new View({
           projection,
@@ -332,7 +333,10 @@ export function MoonMap({ mode, sites, hoveredId, selectedIds = [], onHover, onS
       {rulers && <Rulers ticks={rulers} />}
       <div className="absolute" style={{ inset }}>
         <div ref={el} className="h-full w-full" aria-label={polar ? "Map of the lunar south pole" : "Map of the whole Moon"} />
-        <ScaleBar metersPerPixel={mpp} className="absolute bottom-2 right-11 z-10" />
+        <div className="pointer-events-none absolute bottom-2 right-2 z-10 flex items-end gap-2">
+          <div className="rounded-sm bg-panel/85 px-1.5 py-0.5 text-xs text-muted">{(polar ? POLAR_MAP : GLOBAL_MAP).attribution}</div>
+          <ScaleBar metersPerPixel={mpp} />
+        </div>
         <MapTip ref={tipRef} onClose={onClearCustom} />
         <MapControls readoutRef={readoutRef} onZoomIn={() => zoomBy(1)} onZoomOut={() => zoomBy(-1)} />
         {children}

@@ -127,6 +127,31 @@ body {
   line-height: 1.5;
 }
 
+/*
+ * Pointer cursor on every enabled clickable control (D-078). Tailwind 4's preflight leaves buttons on
+ * the default arrow, so this restores it app-wide. Text-entry inputs (text, search, number) keep the
+ * I-beam. Disabled controls get "not allowed". In the base layer, so a cursor-* utility still wins.
+ */
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  summary,
+  select:not(:disabled),
+  input:is([type="checkbox"], [type="radio"], [type="range"], [type="color"], [type="file"],
+    [type="button"], [type="submit"], [type="reset"]):not(:disabled),
+  input:is([type="date"], [type="datetime-local"], [type="time"], [type="month"], [type="week"]):not(:disabled),
+  input:is([type="date"], [type="datetime-local"], [type="time"], [type="month"], [type="week"]):not(:disabled)::-webkit-calendar-picker-indicator,
+  label:has(> input:is([type="checkbox"], [type="radio"]):not(:disabled)) {
+    cursor: pointer;
+  }
+  button:disabled,
+  select:disabled,
+  input:disabled,
+  [role="button"][aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+}
+
 .font-mono,
 .num {
   font-family: var(--font-plex-mono), ui-monospace, monospace;
@@ -232,21 +257,11 @@ details[open] > summary .caret {
 
 /* OpenLayers controls follow the theme */
 .ol-zoom button,
-.ol-rotate button,
-.ol-attribution button {
+.ol-rotate button {
   background: var(--panel) !important;
   color: var(--fg) !important;
   border-radius: 2px !important;
 }
-.ol-zoom,
-.ol-attribution {
+.ol-zoom {
   border-radius: 2px !important;
-}
-.ol-attribution {
-  background: color-mix(in srgb, var(--panel) 85%, transparent) !important;
-  color: var(--muted);
-  font-size: 14px;
-}
-.ol-attribution a {
-  color: var(--muted);
 }
