@@ -1,5 +1,5 @@
 /**
- * Edge rulers for the south-polar map: where circles of latitude cross the left/right edges and
+ * Edge rulers for the 2D maps (south-polar and flat whole-Moon): where circles of latitude cross the left/right edges and
  * meridians cross the top/bottom edges of the view. Pure maths on a pixel → (lon, lat) function, so
  * it works for any projection and is unit-testable.
  */

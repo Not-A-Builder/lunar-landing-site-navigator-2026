@@ -436,3 +436,79 @@ Decision: named features use the same green circle as sites (same size, fill and
 ## D-055 · 2026-11-14 · Date & time comes first in the left column
 Status: confirmed (owner request, 2026-11-14; reorders D-044)
 Decision: the left column now reads Date & time (landing date and UTC time pickers), then Site selection (list or coordinates), then "Explore Site Details". The date and time pickers open downward again, over the site section. The site list still takes the remaining height.
+
+## D-056 · 2026-11-14 · Coordinates first within Site selection
+Status: confirmed (owner request, 2026-11-14; reorders D-044)
+Decision: inside Site selection the order is now "Enter Lunar Coordinates" (field and "click the map" hint), then the "OR" divider, then the curated list, renamed "Landing sites, missions, and features" (filter, search, result count, scrolling list). The list stays last and still takes the remaining height.
+
+## D-057 · 2026-11-14 · More breathing room between the left-column sections
+Status: confirmed (owner request, 2026-11-14)
+Decision: the gap on each side of the divider between Date & time and Site selection, and between Site selection and "Explore Site Details", grows from 20 px to 32 px (`pb-8` / `py-8`). The site list absorbs the difference.
+
+## D-058 · 2026-11-14 · Shorter rules around "OR"
+Status: confirmed (owner request, 2026-11-14)
+Decision: the two lines either side of the "OR" between the coordinate field and the site list are half their previous length (each a quarter of the column, 115 px at the 460 px column), centred on the word.
+
+## D-059 · 2026-11-14 · "OR" rules fade at their outer ends
+Status: confirmed (owner request, 2026-11-14; refines D-058)
+Decision: each line beside "OR" is a gradient from transparent at its outer end to the `--line` colour next to the word (left line fades leftward, right line rightward). Lengths stay equal (115 px each at the 460 px column).
+
+## D-060 · 2026-11-14 · CTA pointer cursor; "Date & time selection" heading
+Status: confirmed (owner requests, 2026-11-14)
+Decision: "Explore Site Details" shows the pointer cursor while enabled (not-allowed while disabled). The first left-column section heading reads "Date & time selection", parallel to "Site selection".
+
+## D-061 · 2026-11-14 · No section headings in the left column
+Status: confirmed (owner request, 2026-11-14; supersedes the D-060 heading)
+Decision: the small uppercase headings "Date & time selection" and "Site selection" are removed. The column now opens with "Landing date & time", then (after the divider) "Enter Lunar Coordinates", "OR", "Landing sites, missions, and features". Both `<section>`s keep an `aria-label` with their old names for screen readers.
+
+## D-062 · 2026-11-14 · Left-column labels as actions
+Status: confirmed (owner request, 2026-11-14)
+Decision: "Landing date & time" → "Select landing date & time"; "Landing sites, missions, and features" → "Select landing site, mission, or feature" (sentence case, like the other labels). The list's screen-reader name stays "Landing sites, missions, and features".
+
+## D-063 · 2026-11-14 · Filled controls; funnel icon
+Status: confirmed (owner request, 2026-11-14)
+Decision: the persona dropdown ("I am …") gets the same fill as the form fields (`bg-panel`). The filter and theme icon buttons get a subtler fill (`bg-panel/60`, full `bg-panel` on hover or while open), and their icons use the full text colour instead of the muted one, so they no longer look disabled. The filter button uses Phosphor's `Funnel` icon (was `FunnelSimple`).
+
+## D-064 · 2026-11-14 · Shorter site list with a scroll gutter; compare CTA; no typed coordinates for enthusiasts
+Status: confirmed (owner request, 2026-11-14)
+Decision:
+- **Enthusiast persona:** the "Enter Lunar Coordinates" field and the "OR" divider are hidden. Below the site list sits "Or click anywhere on the map to drop a point." (once a point is dropped it reads "Point dropped at …" with a Clear link). Map clicks still pick custom points. Educator and Mission planner keep the field.
+- **All personas:** the site list shows at most 4 rows plus 40% of the next one (measured from the rendered rows, so it adapts to wrapped names). It shrinks further when the column is too short, so the buttons stay visible. Because the list is no longer full height, the buttons now follow straight after it. When the list overflows, its scroll bar sits in its own 14 px gutter on the right edge (subtle fill and left rule) instead of floating over the rows. Rows are tighter: 8 px vertical padding, and no gaps between the name, type and coordinate lines.
+- **New secondary button** under "Explore Site Details": "Select another scenario to compare". It opens `/compare?s=<site>@<time>` with the current site (or dropped point) and time as Scenario A, ready for Scenario B. It is disabled until a site is picked, same as the primary button.
+
+## D-065 · 2026-11-14 · Next site row peeks in at ~58%
+Status: confirmed (owner request, 2026-11-14; refines D-064)
+Decision: when the site list overflows, the row below the 4 full rows now shows at 58% of its height (was 40%), slightly more than 55%. The list is about 4.6 rows tall.
+
+## D-066 · 2026-11-14 · Build a comparison on the selection page
+Status: confirmed (owner request, 2026-11-14; replaces the D-064 jump to /compare)
+Decision:
+- "Select another scenario to compare" no longer opens Compare. It parks the current site + time as a scenario in the URL (`/?s=…`, same format as `/compare?s=`) and resets the form to its empty state: no site, time = now, search cleared, every list on.
+- While at least one scenario is parked, a sticky bar sits under the app header with `MAX_COMPARE` (3) cards: parked scenarios (name, landing time UTC), the one being filled by the form below (outlined, "selecting now", with a live preview), and dashed empty slots ("Not added yet").
+- The buttons then read: primary "Start comparison now" (opens `/compare?s=` with the parked scenarios plus the current one), secondary "Select another scenario to compare" (disabled on the last slot). Both stay disabled until a site is picked.
+- Every filled or filling card has a remove (×). Removing a parked card drops it. Removing the card being filled brings the last parked scenario back into the form to edit. When only one scenario is left, the bar disappears and the page returns to the plain picker ("Explore Site Details"), with that scenario in the form.
+- Scenario parse/serialise helpers moved to `src/lib/scenarios.ts`, shared by both pages.
+
+## D-067 · 2026-11-14 · Edit saved scenarios; last slot shows only "Start comparison now"
+Status: confirmed (owner requests, 2026-11-14; extends D-066)
+Decision:
+- Every saved scenario card in the comparison bar has a pencil (edit) next to its ×. Editing first saves the form into its own slot (a new slot with no site picked is simply dropped), then loads that scenario's date, time and site into the form. That card becomes the active one ("Scenario A · editing"), and its changes are saved when the user edits another card, adds another scenario, or starts the comparison.
+- × on the card being edited (or filled) discards it and opens the last remaining scenario for editing. As before, with one scenario left the bar disappears and the page is the plain picker with that scenario in the form.
+- When no free slot remains after the form's scenario (filling the 3rd, or editing with all 3 saved), only the primary "Start comparison now" is shown. The secondary button is hidden, not disabled.
+- A link with all 3 slots filled (`/?s=A,B,C`) opens with the last one in edit mode.
+
+## D-068 · 2026-11-14 · Site list sorted A–Z by default, with a sort menu
+Status: confirmed (owner request, 2026-11-14)
+Decision: the list of sites, missions and features is sorted by name A to Z by default (case- and accent-insensitive, numbers compared naturally, so "Luna 9" comes before "Luna 16"). Before this it followed the research file's order. A sort icon button (`ArrowsDownUp`) to the right of the filter button opens a single-choice menu: Name A to Z, Name Z to A, Closest to the south pole first, Farthest from the south pole first. Distance from the pole is the angular distance 90° + latitude, so it orders by latitude, with ties broken by name. No new data. A dot on the icon marks a non-default order, like the filter. The sort applies after search and filters, and is kept when a new comparison scenario resets the form.
+
+## D-069 · 2026-11-14 · Coordinate rulers on the flat whole-Moon map too
+Status: confirmed (owner request, 2026-11-14)
+Decision: the latitude/longitude rulers that frame the south-pole map now also frame the flat (equirectangular) whole-Moon map, with ticks that follow pan and zoom. The map's margin past ±180° / ±90° gets no ticks: lon and lat are clamped to the chart there, so an edge that lies in the margin still shows the other axis's ticks. The 3D globe is unchanged (no rulers).
+
+## D-070 · 2026-11-14 · Equator and prime meridian on the flat whole-Moon map
+Status: confirmed (owner request, 2026-11-14)
+Decision: the flat whole-Moon map draws the equator (0° latitude) and the prime meridian (0° longitude) across the chart, in the same dashed guide style as the south-pole map's meridians. They line up with the 0° ticks on the rulers (D-069). The south-pole map is unchanged: it already shows the 0°–180° and 90°E–90°W meridians, and the equator is outside its coverage. The 3D globe is unchanged.
+
+## D-071 · 2026-11-14 · Long-dash outline for empty scenario slots
+Status: confirmed (owner request, 2026-11-14)
+Decision: an empty ("Not added yet") slot in the comparison bar is outlined with long dashes and long gaps (12 px dash, 8 px gap, `--faint` at 70%, drawn as an SVG rect because CSS `dashed` can't set dash length). This makes it easy to tell apart from the solid-outlined card being filled. Showing the scenario cards in the opposite theme was tried in the same change and reverted at the owner's request ("looks bad"). Cards keep the page theme.

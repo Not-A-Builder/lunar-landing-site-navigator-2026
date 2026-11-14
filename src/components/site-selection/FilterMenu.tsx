@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckSquare, FunnelSimple, Square } from "@phosphor-icons/react";
+import { CheckSquare, Funnel, Square } from "@phosphor-icons/react";
 import { useId, useLayoutEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { GROUP_LABELS, type SiteGroup } from "@/lib/sites";
@@ -71,9 +71,9 @@ export function FilterMenu({
         aria-label={`Filter lists (${selected.size} of ${groups.length} on)`}
         title="Filter lists"
         onClick={() => setOpen(!open)}
-        className={`relative inline-flex h-9 w-9 items-center justify-center rounded-sm border transition-colors ${open ? "border-fg text-fg" : "border-line text-muted hover:border-muted hover:text-fg"}`}
+        className={`relative inline-flex h-9 w-9 items-center justify-center rounded-sm border text-fg transition-colors ${open ? "border-fg bg-panel" : "border-line bg-panel/60 hover:border-muted hover:bg-panel"}`}
       >
-        <FunnelSimple size={20} />
+        <Funnel size={20} />
         {filtering && <span className="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-accent" aria-hidden />}
       </button>
       {open && createPortal(

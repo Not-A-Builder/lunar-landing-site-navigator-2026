@@ -26,7 +26,7 @@ const alpha = (hex: string, a: number) => {
 
 export type MapMode = "polar" | "global";
 
-/** Width of the coordinate rulers framing the south-polar map, px. */
+/** Width of the coordinate rulers framing the map (both the south-polar and the flat whole-Moon view), px. */
 export const RULER_PX = 24;
 /** The flat whole-Moon map may zoom out to show this much margin around the chart. */
 const GLOBAL_MARGIN = 0.04;
@@ -48,8 +48,8 @@ type Props = {
 };
 
 /**
- * Moon map on NASA Moon Trek tiles. Polar mode: south polar stereographic, framed by latitude/longitude
- * rulers, with the 0°/180° and 90°E/90°W meridians crossing at the pole. Global mode: equirectangular.
+ * Moon map on NASA Moon Trek tiles, framed by latitude/longitude rulers in both modes. Polar mode: south polar stereographic,
+ * with the 0°/180° and 90°E/90°W meridians crossing at the pole. Global mode (flat): equirectangular.
  * Both cap zoom-out at the basemap's extent and show a km / mile scale. Hover is two-way: list → pin via
  * `hoveredId`, pin → list via `onHover`.
  */
@@ -159,7 +159,7 @@ export function MoonMap({ mode, sites, hoveredId, selectedIds = [], onHover, onS
       });
       layerRef.current = layer;
 
-      // South pole guides: the 0°–180° and 90°E–90°W meridians meet at the pole (90°S).
+      // Dashed guides. South pole: the 0°–180° and 90°E–90°W meridians meet at the pole (90°S).
       const guides = new VectorLayerC({ source: new VectorSourceC({ wrapX: false }), style: (f) => {
         const p = (paletteRef.current ??= readPalette());
         if (f.get("kind") === "pole")
@@ -180,6 +180,12 @@ export function MoonMap({ mode, sites, hoveredId, selectedIds = [], onHover, onS
           new Feature({ geometry: new LineString([[0, -h], [0, h]]), kind: "meridian" }),
           new Feature({ geometry: new LineString([[-h, 0], [h, 0]]), kind: "meridian" }),
           new Feature({ geometry: new Point([0, 0]), kind: "pole" }),
+        ]);
+      } else {
+        // Flat whole-Moon guides: the equator (0° latitude) and the prime meridian (0° longitude) (D-070).
+        guides.getSource()!.addFeatures([
+          new Feature({ geometry: new LineString([toXY(0, -180), toXY(0, 180)]), kind: "meridian" }),
+          new Feature({ geometry: new LineString([toXY(-90, 0), toXY(90, 0)]), kind: "meridian" }),
         ]);
       }
 
@@ -220,11 +226,16 @@ export function MoonMap({ mode, sites, hoveredId, selectedIds = [], onHover, onS
         const [w, hgt] = size;
         const ll = (x: number, y: number) => {
           const co = map.getCoordinateFromPixel([x, y]);
-          return co ? toLonLat(co) : null;
+          if (!co) return null;
+          const p = toLonLat(co);
+          if (mode === "polar") return p;
+          // Flat whole-Moon chart: lon depends only on x and lat only on y, so clamping each to the chart
+          // keeps ticks off the margin past ±180° / ±90° while edges in that margin still get ticks (D-069).
+          return [Math.max(-180, Math.min(180, p[0])), Math.max(-90, Math.min(90, p[1]))] as [number, number];
         };
         const a = ll(w / 2 - 50, hgt / 2), b = ll(w / 2 + 50, hgt / 2);
         setMpp(a && b ? moonDistanceM(a[1], a[0], b[1], b[0]) / 100 : null);
-        if (mode === "polar") setRulers(computeRulerTicks(ll, w, hgt));
+        setRulers(computeRulerTicks(ll, w, hgt));
       };
       // Name tooltip for the hovered pin, else the selected one, else the custom point.
       const placeTip = (size: number[]) => {
@@ -315,10 +326,10 @@ export function MoonMap({ mode, sites, hoveredId, selectedIds = [], onHover, onS
     syncFeatures();
   }, [sites, customPoint]);
 
-  const inset = polar ? RULER_PX : 0;
+  const inset = RULER_PX;
   return (
     <div className="relative h-full min-h-105 w-full overflow-hidden rounded-sm border border-line bg-black">
-      {polar && rulers && <Rulers ticks={rulers} />}
+      {rulers && <Rulers ticks={rulers} />}
       <div className="absolute" style={{ inset }}>
         <div ref={el} className="h-full w-full" aria-label={polar ? "Map of the lunar south pole" : "Map of the whole Moon"} />
         <ScaleBar metersPerPixel={mpp} className="absolute bottom-2 right-11 z-10" />

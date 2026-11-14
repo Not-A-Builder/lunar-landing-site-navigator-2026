@@ -69,3 +69,27 @@ describe("scaleLengths", () => {
     expect(imperial.label).toBe("500 ft");
   });
 });
+
+describe("computeRulerTicks on the flat whole-Moon chart", () => {
+  // Equirectangular, degrees per pixel = 360 / chart width, with a margin past the chart's edges;
+  // the map component clamps lon and lat to the chart there.
+  const w = 900, h = 470, margin = 10, dpp = 360 / (w - 2 * margin);
+  const flat = (x: number, y: number) => {
+    const lon = -180 + (x - margin) * dpp, lat = 90 - (y - margin) * dpp;
+    return [Math.max(-180, Math.min(180, lon)), Math.max(-90, Math.min(90, lat))] as [number, number];
+  };
+  const t = computeRulerTicks(flat, w, h);
+
+  it("labels meridians along the top and bottom and parallels along the sides", () => {
+    expect(t.top.length).toBeGreaterThan(3);
+    expect(t.left.length).toBeGreaterThan(2);
+    expect(t.top.map((x) => x.label)).toContain("0°");
+    expect(t.left.map((x) => x.label)).toContain("0°");
+    expect(t.top.map((x) => x.label)).toEqual(t.bottom.map((x) => x.label));
+  });
+  it("never labels past the chart edge", () => {
+    const all = [...t.top, ...t.left].map((x) => x.label);
+    for (const label of all) expect(Number.parseFloat(label)).toBeLessThanOrEqual(180);
+    for (const label of t.left.map((x) => x.label)) expect(Number.parseFloat(label)).toBeLessThanOrEqual(90);
+  });
+});

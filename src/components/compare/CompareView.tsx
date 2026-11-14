@@ -20,40 +20,15 @@ import { fmtDeg, fmtHours, fmtLat, fmtLon, fmtUTC } from "@/lib/metrics/format";
 import { rollUp } from "@/lib/metrics/types";
 import { usePersona } from "@/lib/persona";
 import { customSiteId } from "@/lib/coords";
-import { getSite, hasCoordinates, isPolar, sites, type Site } from "@/lib/sites";
+import { parseScenarios, resolveScenarioSite, SCENARIO_LETTERS, serialiseScenarios, type Scenario } from "@/lib/scenarios";
+import { hasCoordinates, isPolar, sites } from "@/lib/sites";
 import { useAnalysis, type Analysis } from "@/lib/use-analysis";
 import { useNowHour } from "@/lib/use-now";
 
-/** A scenario is one site at one landing time. URL: ?s=siteId@ISO,custom:lat,lon@ISO */
-export type Scenario = { siteId: string; t: string };
-
-export function parseScenarios(s: string | null): Scenario[] {
-  if (!s) return [];
-  return s
-    .split(/,(?![-\d.]+@)/)
-    .map((part) => {
-      const at = part.lastIndexOf("@");
-      const siteId = decodeURIComponent(at >= 0 ? part.slice(0, at) : part);
-      const t = at >= 0 ? decodeURIComponent(part.slice(at + 1)) : "";
-      return { siteId, t };
-    })
-    .filter((x) => x.siteId)
-    .slice(0, MAX_COMPARE);
-}
-
-const serialise = (list: Scenario[]) => list.map((x) => `${encodeURIComponent(x.siteId)}@${encodeURIComponent(x.t)}`).join(",");
-const LETTERS = ["A", "B", "C", "D"];
+const LETTERS = SCENARIO_LETTERS;
+const serialise = serialiseScenarios;
+const resolveSite = resolveScenarioSite;
 const PICKABLE = sites.filter(hasCoordinates).filter((s) => s.group !== "feature" || s.lat! < -80);
-
-function resolveSite(id: string): { site: Site | null; lat: number; lon: number; name: string } | null {
-  if (id.startsWith("custom:")) {
-    const [la, lo] = id.slice(7).split(",").map(Number);
-    if (!Number.isFinite(la) || !Number.isFinite(lo)) return null;
-    return { site: null, lat: la, lon: lo, name: `Custom ${fmtLat(la)}, ${fmtLon(lo)}` };
-  }
-  const s = getSite(id);
-  return s && hasCoordinates(s) ? { site: s, lat: s.lat, lon: s.lon, name: s.name } : null;
-}
 
 /** Identity of a scenario's analysis: same site + time ⇒ same result, whatever slot it sits in. */
 const scenarioId = (sc: Scenario) => `${sc.siteId}|${sc.t}`;

@@ -1,18 +1,23 @@
 "use client";
 
-import { ArrowRight, CheckCircle, MagnifyingGlass, Warning, X } from "@phosphor-icons/react";
+import { ArrowRight, CheckCircle, MagnifyingGlass, Plus, Warning, X } from "@phosphor-icons/react";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { InfoTip } from "@/components/InfoTip";
 import { ScrollThumb } from "@/components/ScrollThumb";
 import { MoonMap, type MapMode } from "@/components/map/MoonMap";
 import { parseCoordString } from "@/lib/coords";
 import { fmtLat, fmtLon } from "@/lib/metrics/format";
+import { MAX_COMPARE } from "@/lib/config";
+import { usePersona } from "@/lib/persona";
+import { customScenarioId, parseScenarios, type Scenario, serialiseScenarios } from "@/lib/scenarios";
 import { useNowMinute } from "@/lib/use-now";
 import { GROUP_LABELS, getSite, hasCoordinates, isPolar, onPolarMap, sites, type Site, type SiteGroup } from "@/lib/sites";
 import { DateField, TimeField } from "./DateTimePickers";
 import { FilterMenu } from "./FilterMenu";
+import { ScenarioBar } from "./ScenarioBar";
+import { DEFAULT_SORT, SortMenu, sortSites, type SortId } from "./SortMenu";
 
 const MoonGlobe = dynamic(() => import("@/components/map/MoonGlobe"), {
   ssr: false,
@@ -25,29 +30,61 @@ type GlobeView = "flat" | "3d";
 const coordText = (lat: number, lon: number) => `${fmtLat(lat)}, ${fmtLon(lon)}`;
 const matches = (s: Site, q: string) => [s.name, s.mission, GROUP_LABELS[s.group]].some((v) => v?.toLowerCase().includes(q));
 
-const sectionTitle = "text-xs font-semibold uppercase tracking-wider text-faint";
+/** The list shows at most this many rows; the next row peeks in at a bit over half its height (D-064, D-065). */
+const VISIBLE_ROWS = 4;
+const PEEK = 0.58;
+
+/** Form fields (curated site, or coordinate text, plus landing time) that describe a scenario. */
+function formFromScenario(sc: Scenario): { siteId: string | null; coords: string; picked: number | null } {
+  const t = sc.t ? Date.parse(sc.t) : NaN;
+  const picked = Number.isFinite(t) ? t : null;
+  if (!sc.siteId.startsWith("custom:")) return { siteId: sc.siteId, coords: "", picked };
+  const [la, lo] = sc.siteId.slice(7).split(",").map(Number);
+  return { siteId: null, coords: coordText(la, lo), picked };
+}
+
 const subTitle = "flex items-center text-base font-semibold";
 const inputCls = "h-10 w-full rounded-sm border bg-panel text-sm outline-none transition-colors placeholder:text-faint/60 hover:border-muted focus:border-fg";
 
 /**
  * Page 1. Two sections and a button: pick a site (from the curated list, or by coordinates, or on the
  * map), pick a landing date and time, then "Explore site details". Picking only fills the form.
+ *
+ * "Select another scenario to compare" parks the current site + time in `?s=` and resets the form for
+ * the next one; a sticky bar above the page shows the scenarios (D-066).
  */
 export function SiteSelection() {
   const router = useRouter();
+  const params = useSearchParams();
+  // Scenarios added for comparison (D-066). The form below fills either a new slot after them
+  // (`editing` null) or re-edits one of them (`editing` = its index; its URL entry is then stale
+  // until the form is committed back).
+  const queue = useMemo(() => parseScenarios(params.get("s")), [params]);
+  // A link with every slot filled has no free slot, so it opens the last scenario for editing.
+  const [initial] = useState(() => {
+    const q = parseScenarios(params.get("s"));
+    return q.length >= MAX_COMPARE ? { index: q.length - 1, form: formFromScenario(q[q.length - 1]) } : null;
+  });
+  const [editing, setEditing] = useState<number | null>(initial?.index ?? null);
+  const activeIndex = editing ?? queue.length;
+  const comparing = queue.length + (editing === null ? 1 : 0) > 1;
+  const asideRef = useRef<HTMLElement>(null);
   const [query, setQuery] = useState("");
+  const [sort, setSort] = useState<SortId>(DEFAULT_SORT);
   const [groups, setGroups] = useState<Set<SiteGroup>>(() => new Set(ALL_GROUPS)) // every list on by default (D-052);
-  const [siteId, setSiteId] = useState<string | null>(null);
-  const [coords, setCoords] = useState("");
+  const [siteId, setSiteId] = useState<string | null>(initial?.form.siteId ?? null);
+  const [coords, setCoords] = useState(initial?.form.coords ?? "");
   const [coordsTouched, setCoordsTouched] = useState(false);
   const nowMinute = useNowMinute();
-  const [picked, setPicked] = useState<number | null>(null);
+  const [picked, setPicked] = useState<number | null>(initial?.form.picked ?? null);
   const when = picked ?? nowMinute;
   const [hovered, setHovered] = useState<string | null>(null);
   const [listHover, setListHover] = useState<string | null>(null);
   const [mode, setMode] = useState<MapMode>("polar");
   const [globeView, setGlobeView] = useState<GlobeView>("flat");
   const listRef = useRef<HTMLUListElement>(null);
+  const [listMax, setListMax] = useState<number | null>(null);
+  const enthusiast = usePersona((s) => s.persona) === "enthusiast";
 
   // Exactly one of the two inputs is active: a curated site, or typed/clicked coordinates.
   const selectedSite = siteId ? getSite(siteId) ?? null : null;
@@ -58,14 +95,29 @@ export function SiteSelection() {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return sites.filter(hasCoordinates).filter((s) => groups.has(s.group) && (!q || matches(s, q)));
-  }, [groups, query]);
+    return sortSites(sites.filter(hasCoordinates).filter((s) => groups.has(s.group) && (!q || matches(s, q))), sort);
+  }, [groups, query, sort]);
   // The selected site stays on the map even when the filters hide it from the list.
   const mapSites = useMemo(() => {
     const base = selectedSite && !filtered.includes(selectedSite) ? [...filtered, selectedSite] : filtered;
     return base.filter((s) => (mode === "polar" ? onPolarMap(s.lat) : true));
   }, [filtered, selectedSite, mode]);
   const offMapCount = filtered.filter((s) => !onPolarMap(s.lat)).length;
+
+  // Cap the list at VISIBLE_ROWS rows plus PEEK of the next (it shrinks further on short screens), measured from the rendered rows so a
+  // wrapped name still lines up. Re-measured when the rows or the column width change.
+  useLayoutEffect(() => {
+    const ul = listRef.current;
+    if (!ul) return;
+    const measure = () => {
+      const next = ul.children[VISIBLE_ROWS] as HTMLElement | undefined;
+      setListMax(next ? Math.round(next.offsetTop + next.offsetHeight * PEEK) : null);
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(ul);
+    return () => ro.disconnect();
+  }, [filtered]);
 
   // A pin hovered or picked on the map scrolls its card into view.
   useEffect(() => {
@@ -109,6 +161,85 @@ export function SiteSelection() {
     else if (customPoint) router.push(`/site/custom?${t ? `${t}&` : ""}lat=${customPoint.lat}&lon=${customPoint.lon}`);
   };
 
+  // The scenario being filled in, once a site is picked.
+  const current: Scenario | null = selectedSite || customPoint
+    ? { siteId: selectedSite ? selectedSite.id : customScenarioId(customPoint!.lat, customPoint!.lon), t: when !== null ? new Date(when).toISOString() : "" }
+    : null;
+  // Room for one more slot after the form's scenario is saved.
+  const canAddMore = (editing === null ? queue.length + 1 : queue.length) < MAX_COMPARE;
+  const setQueue = (next: Scenario[]) => router.replace(next.length ? `/?s=${serialiseScenarios(next)}` : "/", { scroll: false });
+  /** Applies a new slot list + edit target. With a single scenario left the bar goes away: it lives in the form. */
+  const apply = (next: Scenario[], nextEditing: number | null) => {
+    if (nextEditing !== null && next.length <= 1) {
+      next = [];
+      nextEditing = null;
+    }
+    setEditing(nextEditing);
+    setQueue(next);
+  };
+  /** The slot list with the form's scenario saved into its slot (unchanged if no site is picked). */
+  const committed = (): Scenario[] => {
+    if (!current) return queue;
+    if (editing === null) return [...queue, current];
+    return queue.map((sc, k) => (k === editing ? current : sc));
+  };
+
+  const resetForm = () => {
+    setSiteId(null);
+    setCoords("");
+    setCoordsTouched(false);
+    setPicked(null);
+    setQuery("");
+    setGroups(new Set(ALL_GROUPS));
+  };
+  const loadIntoForm = (sc: Scenario) => {
+    const f = formFromScenario(sc);
+    setSiteId(f.siteId);
+    setCoords(f.coords);
+    setCoordsTouched(false);
+    setPicked(f.picked);
+  };
+
+  // Parks this site + time as the next scenario and starts an empty form for the one after.
+  const addAnother = () => {
+    if (!current) {
+      setCoordsTouched(true);
+      return;
+    }
+    if (!canAddMore) return;
+    apply(committed(), null);
+    resetForm();
+    asideRef.current?.scrollTo({ top: 0 });
+    window.scrollTo({ top: 0 });
+  };
+  const startComparison = () => {
+    if (!current) {
+      setCoordsTouched(true);
+      return;
+    }
+    router.push(`/compare?s=${serialiseScenarios(committed())}`);
+  };
+  // Pencil on a saved card: save the form into its own slot, then load that scenario into the form.
+  const editQueued = (i: number) => {
+    const next = committed();
+    loadIntoForm(next[i]);
+    apply(next, i);
+  };
+  // × on a saved card drops it. × on the active card discards the form and opens the last remaining
+  // scenario for editing. With a single scenario left the page is the plain picker again.
+  const removeQueued = (i: number) => {
+    const next = queue.filter((_, k) => k !== i);
+    apply(next, editing === null ? null : editing > i ? editing - 1 : editing);
+  };
+  const removeCurrent = () => {
+    const next = editing === null ? queue : queue.filter((_, k) => k !== editing);
+    const last = next.at(-1);
+    if (!last) return;
+    loadIntoForm(last);
+    apply(next, next.length - 1);
+  };
+
+
   const hoveredSite = hovered ? getSite(hovered) : null;
   const mapProps = {
     sites: mapSites,
@@ -151,13 +282,25 @@ export function SiteSelection() {
   );
 
   return (
-    <div className="mx-auto grid max-w-[1600px] gap-6 px-4 py-5 lg:h-[calc(100vh-65px)] lg:grid-cols-[460px_1fr]">
-      <aside className="flex min-h-0 flex-col overflow-y-auto">
-        {/* 1 · Date & time */}
-        <section aria-labelledby="sec-time" className="pb-5">
-          <h2 id="sec-time" className={sectionTitle}>Date &amp; time</h2>
-          <div className={`${subTitle} mt-3`}>
-            <label htmlFor="landing-date">Landing date &amp; time</label>
+    <div className="flex flex-col lg:h-[calc(100vh-65px)]">
+    {comparing && (
+      <ScenarioBar
+        queue={queue}
+        activeIndex={activeIndex}
+        editing={editing !== null}
+        onEdit={editQueued}
+        current={current}
+        draftWhen={when}
+        onRemoveQueued={removeQueued}
+        onRemoveCurrent={removeCurrent}
+      />
+    )}
+    <div className="mx-auto grid w-full max-w-[1600px] gap-6 px-4 py-5 lg:min-h-0 lg:flex-1 lg:grid-cols-[460px_1fr]">
+      <aside ref={asideRef} className="flex min-h-0 flex-col overflow-y-auto">
+        {/* 1 · Date & time selection */}
+        <section aria-label="Date and time selection" className="pb-8">
+          <div className={subTitle}>
+            <label htmlFor="landing-date">Select landing date &amp; time</label>
             <InfoTip title="Why the landing time matters" sources={["jpl-horizons"]}>
               Near the pole the Sun skims the horizon. Shifting a few days can decide whether a site is lit or in shadow, and whether Earth is up for direct contact. Times are UTC.
             </InfoTip>
@@ -171,55 +314,10 @@ export function SiteSelection() {
         </section>
 
         {/* 2 · Site selection */}
-        <section aria-labelledby="sec-site" className="flex min-h-0 flex-1 flex-col border-t border-line py-5">
-          <h2 id="sec-site" className={sectionTitle}>Site selection</h2>
-
-          <div className="mt-3 flex items-center justify-between gap-2">
-            <h3 className={subTitle}>Lunar sites, missions, and features</h3>
-            <FilterMenu groups={ALL_GROUPS} selected={groups} onChange={setGroups} />
-          </div>
-          <div className="relative mt-2">
-            <MagnifyingGlass size={18} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-faint" aria-hidden />
-            <input
-              type="search"
-              aria-label="Search sites, missions or features"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search sites, missions, features"
-              className={`${inputCls} border-line pl-9 pr-3`}
-            />
-          </div>
-          <p className="mt-2 text-xs text-faint">
-            <span className="num">{filtered.length}</span> results
-            {offMapCount > 0 && mode === "polar" ? <> · <span className="num">{offMapCount}</span> outside the south-pole map</> : ""}
-          </p>
-
-          <div className="relative mt-1.5 flex min-h-[180px] flex-1 flex-col overflow-hidden rounded-sm border border-line bg-panel">
-          <ul ref={listRef} aria-label="Lunar sites" className="no-scrollbar min-h-0 flex-1 divide-y divide-line overflow-y-auto">
-            {filtered.map((s) => (
-              <SiteCard
-                key={s.id}
-                s={s}
-                hot={hovered === s.id}
-                selected={siteId === s.id}
-                onHover={(id) => {
-                  setHovered(id);
-                  setListHover(id);
-                }}
-                onPick={() => (siteId === s.id ? setSiteId(null) : pickSite(s))}
-                mode={mode}
-                onShowGlobal={() => setMode("global")}
-              />
-            ))}
-            {filtered.length === 0 && <li className="p-3 text-sm text-muted">No sites match. Try another search or turn on more filters.</li>}
-          </ul>
-          <ScrollThumb target={listRef} />
-          </div>
-
-          <div className="my-4 flex items-center gap-3 text-xs font-semibold tracking-wider text-faint" role="separator" aria-label="or">
-            <span className="h-px flex-1 bg-line" />OR<span className="h-px flex-1 bg-line" />
-          </div>
-
+        <section aria-label="Site selection" className="flex min-h-0 flex-col border-t border-line py-8">
+          {/* The enthusiast view skips typed coordinates; the map click (hint below the list) still works. */}
+          {!enthusiast && (
+          <>
           <label htmlFor="coords" className={subTitle}>
             Enter Lunar Coordinates
             <InfoTip title="Custom coordinates" sources={["lola-pds", "jpl-horizons", "usgs-gazetteer", "psr-atlas"]}>
@@ -255,16 +353,99 @@ export function SiteSelection() {
             <p className="mt-1.5 text-xs text-faint">Reads as <span className="num">{coordText(customPoint.lat, customPoint.lon)}</span></p>
           ) : null}
           <p className="mt-1.5 text-xs text-faint">Or click anywhere on the map to drop a point.</p>
+
+          <div className="my-4 flex items-center justify-center gap-3 text-xs font-semibold tracking-wider text-faint" role="separator" aria-label="or">
+            {/* each rule is a quarter of the column, fading out toward its outer end */}
+            <span className="h-px w-1/4" style={{ background: "linear-gradient(to right, transparent, var(--line))" }} />
+            OR
+            <span className="h-px w-1/4" style={{ background: "linear-gradient(to left, transparent, var(--line))" }} />
+          </div>
+          </>
+          )}
+
+          <div className="flex items-center justify-between gap-2">
+            <h3 className={subTitle}>Select landing site, mission, or feature</h3>
+            <div className="flex shrink-0 items-center gap-2">
+              <FilterMenu groups={ALL_GROUPS} selected={groups} onChange={setGroups} />
+              <SortMenu value={sort} onChange={setSort} />
+            </div>
+          </div>
+          <div className="relative mt-2">
+            <MagnifyingGlass size={18} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-faint" aria-hidden />
+            <input
+              type="search"
+              aria-label="Search sites, missions or features"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search sites, missions, features"
+              className={`${inputCls} border-line pl-9 pr-3`}
+            />
+          </div>
+          <p className="mt-2 text-xs text-faint">
+            <span className="num">{filtered.length}</span> results
+            {offMapCount > 0 && mode === "polar" ? <> · <span className="num">{offMapCount}</span> outside the south-pole map</> : ""}
+          </p>
+
+          <div className="relative mt-1.5 flex min-h-[120px] flex-col overflow-hidden rounded-sm border border-line bg-panel">
+          {/* When it overflows, the list leaves a gutter on the right for its scroll bar (D-064). */}
+          <ul
+            ref={listRef}
+            aria-label="Landing sites, missions, and features"
+            style={listMax ? { maxHeight: listMax } : undefined}
+            className={`no-scrollbar relative min-h-0 divide-y divide-line overflow-y-auto ${listMax ? "pr-3.5" : ""}`}
+          >
+            {filtered.map((s) => (
+              <SiteCard
+                key={s.id}
+                s={s}
+                hot={hovered === s.id}
+                selected={siteId === s.id}
+                onHover={(id) => {
+                  setHovered(id);
+                  setListHover(id);
+                }}
+                onPick={() => (siteId === s.id ? setSiteId(null) : pickSite(s))}
+                mode={mode}
+                onShowGlobal={() => setMode("global")}
+              />
+            ))}
+            {filtered.length === 0 && <li className="p-3 text-sm text-muted">No sites match. Try another search or turn on more filters.</li>}
+          </ul>
+          <ScrollThumb target={listRef} />
+          </div>
+          {enthusiast && (
+            <p className="mt-2 text-xs text-faint">
+              {customPoint ? (
+                <>
+                  Point dropped at <span className="num">{coordText(customPoint.lat, customPoint.lon)}</span>.{" "}
+                  <button type="button" className="underline hover:text-fg" onClick={() => setCoords("")}>Clear</button>
+                </>
+              ) : (
+                "Or click anywhere on the map to drop a point."
+              )}
+            </p>
+          )}
         </section>
 
         <button
           type="button"
-          onClick={explore}
+          onClick={comparing ? startComparison : explore}
           disabled={!valid}
-          className={`inline-flex h-11 w-full shrink-0 items-center justify-center gap-2 rounded-sm bg-primary font-medium text-primary-ink transition-opacity disabled:cursor-not-allowed disabled:opacity-35 ${valid ? "cta-shimmer" : ""}`}
+          className={`inline-flex h-11 w-full shrink-0 items-center justify-center gap-2 rounded-sm bg-primary cursor-pointer font-medium text-primary-ink transition-opacity disabled:cursor-not-allowed disabled:opacity-35 ${valid ? "cta-shimmer" : ""}`}
         >
-          Explore Site Details <ArrowRight size={18} aria-hidden />
+          {comparing ? "Start comparison now" : "Explore Site Details"} <ArrowRight size={18} aria-hidden />
         </button>
+        {/* No free slot left (the form fills the last one): only "Start comparison now" (D-067). */}
+        {canAddMore && (
+        <button
+          type="button"
+          onClick={addAnother}
+          disabled={!valid}
+          className="mt-2 inline-flex h-11 w-full shrink-0 cursor-pointer items-center justify-center gap-2 rounded-sm border border-line bg-panel font-medium text-fg transition-colors hover:border-muted disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:border-line"
+        >
+          <Plus size={18} aria-hidden /> Select another scenario to compare
+        </button>
+        )}
       </aside>
 
       <section className="relative min-h-[60vh]">
@@ -278,6 +459,7 @@ export function SiteSelection() {
           </MoonMap>
         )}
       </section>
+    </div>
     </div>
   );
 }
@@ -304,12 +486,12 @@ function SiteCard({
         onMouseLeave={() => onHover(null)}
         onFocus={() => onHover(s.id)}
         onBlur={() => onHover(null)}
-        className={`relative cursor-pointer px-3 py-2.5 outline-none transition-colors ${
+        className={`relative cursor-pointer px-3 py-2 outline-none transition-colors ${
           selected ? "bg-panel-2 ring-2 ring-inset ring-primary" : hot ? "bg-panel-2/60 ring-1 ring-inset ring-primary/30" : ""
         }`}
       >
         <div className="flex items-start justify-between gap-2">
-          <span className={selected ? "font-semibold" : "font-medium"}>{s.name}</span>
+          <span className={`leading-snug ${selected ? "font-semibold" : "font-medium"}`}>{s.name}</span>
           {selected ? (
             <span className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-fg">
               <CheckCircle size={18} weight="fill" aria-hidden /> Selected
@@ -322,12 +504,12 @@ function SiteCard({
             )
           )}
         </div>
-        <div className="mt-0.5 text-xs text-muted">
+        <div className="text-xs leading-[1.125rem] text-muted">
           {GROUP_LABELS[s.group]}
           {s.date ? <> · <span className="num">{s.date.slice(0, 10)}</span></> : ""}
           {s.status ? ` · ${s.status}` : ""}
         </div>
-        <div className="num mt-0.5 text-xs text-faint">
+        <div className="num text-xs leading-[1.125rem] text-faint">
           {fmtLat(s.lat)}, {fmtLon(s.lon)}
           {!mapped && mode === "polar" && (
             <button

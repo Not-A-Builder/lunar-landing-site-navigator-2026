@@ -6,7 +6,7 @@ const MIN_THUMB = 28;
 const INSET = 4;
 
 /**
- * A persistent, floating vertical scrollbar for a scroll container whose native bar is hidden
+ * A persistent vertical scrollbar, drawn in a gutter on the right edge, for a scroll container whose native bar is hidden
  * (`.no-scrollbar`). It shows only while the content overflows (macOS hides native bars until you
  * scroll). Drag the thumb, or click the track to move a page. Place it in a `relative` parent that
  * wraps the scroller.
@@ -71,11 +71,11 @@ export function ScrollThumb({ target }: { target: React.RefObject<HTMLElement | 
   };
 
   return (
-    <div ref={track} aria-hidden onPointerDown={onTrackDown} style={{ display: "none", paddingBlock: INSET }} className="group absolute bottom-0 right-0 top-0 z-10 w-3.5 cursor-default">
+    <div ref={track} aria-hidden onPointerDown={onTrackDown} style={{ display: "none", paddingBlock: INSET }} className="group absolute bottom-0 right-0 top-0 z-10 w-3.5 cursor-default border-l border-line bg-panel-2/50">
       <div
         ref={thumb}
         onPointerDown={onThumbDown}
-        className="ml-auto mr-1 w-1.5 rounded-sm bg-muted/60 shadow-[0_2px_6px_rgba(0,0,0,0.35),0_1px_2px_rgba(0,0,0,0.25)] transition-[width,background-color] group-hover:w-2 group-hover:bg-muted/85 active:bg-muted"
+        className="mx-auto w-1.5 rounded-sm bg-muted/60 shadow-[0_2px_6px_rgba(0,0,0,0.35),0_1px_2px_rgba(0,0,0,0.25)] transition-[width,background-color] group-hover:w-2 group-hover:bg-muted/85 active:bg-muted"
       />
     </div>
   );
