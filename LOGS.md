@@ -352,3 +352,69 @@ Status: confirmed (owner: "use the dark colour of the opposite theme as the prim
 Decision: filled (primary) buttons use new `--primary` / `--primary-ink` tokens instead of the blue accent. Light theme: near-black `#1b1917` with `#ece8e1` text (the dark theme's colours). Dark theme: warm off-white `#ece8e1` with `#1b1917` text. Applies to the active persona tab, the site-selection mode toggle, "Analyse this point", "Add to comparison" and the custom-coordinate "Use" button.
 Kept: `--accent` (blue) stays for links, the compare-kind label and selected filter chips.
 Consequences: contrast is about 15:1 in both themes.
+
+## D-043 · 2026-11-14 · Site selection redesign: one site field, iOS-style date/time, framed maps, 3D Moon
+Status: confirmed (owner request, 2026-11-14)
+Decision:
+- **Header:** a vertical hairline separates the title from the page links. The current page's link has full-strength text and a small dot under it (`NavLinks`, by pathname); `/` selects "Select sites". The persona control is now a dropdown read as a sentence: "I am [an enthusiast | an educator | a mission planner]" (`PERSONAS[].phrase`), with each option's hint below it.
+- **One site field:** "Select a lunar site" replaces the separate search and coordinate forms. A Name / Lat, lon switch sits on the left; the input on the right changes its placeholder (fainter than before) and behaviour: name mode suggests sites as you type, coordinate mode takes any lunar lat/lon (same parser as before). Switching from a named site to Lat, lon keeps its coordinates. Clicking a pin or list row fills the name; clicking empty map fills the coordinates. Picking never navigates by itself.
+- **Landing date & time:** two fields modelled on iOS Reminders: a month calendar (tap the month title for month/year wheels) and hour/minute scroll wheels, all UTC. Both are prefilled with the current UTC minute (was the current hour). The selected day uses a filled circle, as in iOS; like the dots, it is an exception to the 2px radius rule.
+- **Explore site details:** the primary button stays disabled until the site field holds a valid site or coordinate; it opens `/site/<id>?t=` or `/site/custom?lat&lon&t=` (URL state unchanged, D-015).
+- **List:** under a hairline, a heading "Existing lunar sites, missions, & features", collapsible quick-filter chips (a checkbox on the left; a dark stroke when on), "N results · M outside the south-pole map", then rows split by hairlines. Hovered rows get a light full stroke in the primary colour and the selected row a dark one. The free-text list filter is replaced by name suggestions in the site field.
+- **South-pole map:** framed by latitude (left/right) and longitude (top/bottom) rulers that follow pan and zoom (`map/rulers.ts`, tested). Dashed 0°–180° and 90°E–90°W meridians cross at the pole, which is labelled 90°S. Zoom-out stops when the whole mosaic square fits the view (OpenLayers `showFullExtent`; resolution is now continuous between tile levels).
+- **Whole-Moon map:** the toggle has a Flat / 3D sub-switch. Flat: pins are no longer repeated left and right of the chart (`wrapX: false`), and zoom-out stops just beyond the full chart (4% margin). 3D: a three.js sphere (D-012 is now in use) textured with the same LRO WAC mosaic tiles from Moon Trek, so no new data source. It is stitched in the browser at z2 and then z3 (4096 × 2048 px). Drag to turn and scroll to zoom, between about 140 km altitude and a little beyond where the whole sphere fits. Hovering a list row eases the globe toward that site (exponential easing, about 1 s; the camera stays within ±72° latitude so the controls never flip). Without WebGL the view shows a note instead.
+- **Scale bar:** every map view shows a km and mile scale (metres and feet when zoomed in), measured on the lunar sphere (`MOON_RADIUS_M`) at the centre of the view.
+Consequences: `CustomCoordForm` is no longer used on the home page; site details and compare still use it.
+
+## D-044 · 2026-11-14 · Site selection round 2: two sections, system theme, globe compass
+Status: confirmed (owner request, 2026-11-14; refines D-043)
+Decision:
+- **Left column = two sections + button.** *Site selection*: "Lunar sites, missions, and features" with a filter icon (checkbox menu of the curated lists, plus Select all / Reset / Clear; a dot on the icon means some lists are off), a search box that filters the list, and the results as cards in a scrolling box. The selected card has a dark double stroke, a shadow and a "Selected" check. Then an "OR" divider, "Enter Lunar Coordinates" and the coordinate field. Exactly one input is active: picking a card or pin clears the coordinates; typing or clicking a point on the map clears the card. *Date & time*: the iOS-style pickers from D-043, which now open upward. Then "Explore Site Details". The combined Name / Lat, lon field from D-043 is gone.
+- **Tooltips** (`InfoTip`) render in a portal with fixed positioning, kept inside the viewport and flipped above the icon when needed, so scrolling panels no longer clip them.
+- **Theme on first load** follows the device's light/dark setting (and its changes) until the user picks one with the header button; the choice is still saved (`lsn-theme`). Replaces "light is the default" in D-040.
+- **Map pins** look the same in both themes: the dark theme's light-blue fill with a near-black ring (hover: off-white; selected: amber; features: grey), via new `--pin*` tokens.
+- **Map controls:** the zoom buttons are in the bottom-left corner. The South pole / Whole Moon switch is at the top right, and the Flat / 3D switch is a separate control to its right, shown only for Whole Moon.
+- **3D globe:** a compass (a small globe that turns with the big one, with the 0° meridian, the south pole and a north needle) sits above +/− zoom buttons; clicking it eases back to the default view (35°S over the near side). Drag and scroll are gentler (rotate × 0.45, zoom speed 0.3). Site names are a DOM label projected each frame (drei `<Html>` broke under React StrictMode).
+
+## D-045 · 2026-11-14 · Map name tooltips, pink pins, toggles top-left, flat site list
+Status: confirmed (owner request, 2026-11-14; refines D-043/D-044)
+Decision:
+- **Name tooltip on the maps:** the hovered (else selected) site's name, or "Custom point", appears in a small translucent panel in the current theme (80% panel colour, blur, hairline border) with a pointer touching the top of the pin. One component (`map/MapTip.tsx`) serves the polar, flat and 3D views; it replaces the haloed canvas text labels.
+- **Pink markers:** pins and Artemis region outlines use a saturated pink (`--pin`, `--pin-region` = `#ff2e93`) in both themes, so they stand out on grey terrain. The 0° meridian on the globe compass uses it too. Hovered pins stay off-white, selected amber, features grey. Replaces the light-blue pin colour in D-044.
+- **Map toggles** (South pole / Whole Moon, plus Flat / 3D for Whole Moon) move to the top-left corner of the map.
+- **Site list:** rows split by hairlines inside the scrolling box (no per-row cards). The selected row gets a tint, a 2px dark inset stroke and the "Selected" check; a hovered row gets a light tint and stroke. The "N results · M outside the south-pole map" line sits between the search box and the list.
+
+## D-046 · 2026-11-14 · Globe compass: top-right, "N" only in the default orientation
+Status: confirmed (owner request, 2026-11-14; refines D-044)
+Decision: the 3D globe's compass moves to the top-right corner (zoom buttons stay bottom-left). Its "N" shows only while the globe is turned as in the default view (camera within 2° of 35°S, 0°E; the orbit controls keep north up, so this is when "N is at the top" of the default view). It fades out as soon as the globe is turned away, and returns when the compass is clicked (the reset) or the globe is turned back. The pointer cursor (and the "Reset view" title) appears whenever a click would change the view: when turned away, or zoomed away from the default distance (±2%). The scene reports both states each frame through `GlobeRig.sync`.
+
+## D-047 · 2026-11-14 · Floating list scrollbar; one select-all toggle in the filter menu
+Status: confirmed (owner request, 2026-11-14)
+Decision:
+- **Site list scrollbar:** the native bar is hidden (`.no-scrollbar`) and a floating bar (`ScrollThumb`) is drawn over the list's right edge whenever at least one row overflows; it stays visible (macOS hides native bars until you scroll), sits on a soft drop shadow so it reads as above the list, can be dragged, and a click on the track scrolls a page. It hides when everything fits.
+- **Filter menu:** Reset and Clear are gone. One button toggles between "Select all" (when any list is off) and "Deselect all" (when all are on). The default on first load is unchanged (all lists except named features).
+
+## D-048 · 2026-11-14 · Pointer coordinate readout; filter menu beside its button; boxed theme button
+Status: confirmed (owner request, 2026-11-14)
+Decision:
+- **Coordinate readout** on every map type (polar, flat, 3D): while the pointer is over the map (over the sphere on the globe), the bottom-left corner shows its position as Moon Trek does, `Lat: -88.07025°, Lon: 24.73108°` (planetocentric latitude, east longitude in −180…180, five decimals). It sits to the right of the zoom buttons, which are now ours on all three views (`MapControls`); OpenLayers' own zoom control is off.
+- **Filter menu** opens to the right of the filter button with top edges aligned. It is portalled with fixed positioning so the scrolling column can't clip it, and kept inside the viewport.
+- **Theme button** in the header gets the same bordered 36px square as the filter button.
+
+## D-049 · 2026-11-14 · Clearing a selection: × on the custom point, Esc anywhere
+Status: confirmed (owner request, 2026-11-14)
+Decision: when the map tooltip belongs to the custom point, it shows a × to the right of "Custom point" that clears the point (and the coordinate field) on all three map views. Pressing Esc clears any selection (a curated site or a custom point) on the site-selection page, unless a menu, picker or dialog is open; then Esc only closes that, and a second Esc clears the selection.
+
+## D-050 · 2026-11-14 · CTA shimmer; dev server always on :1313; Turbopack dev cache off
+Status: confirmed (owner requests, 2026-11-14)
+Decision:
+- **CTA shimmer:** while "Explore Site Details" is enabled, an angled highlight (`.cta-shimmer`, skewed −24°) sweeps left to right once every 2 s (a ~1 s pass, then a pause). It runs behind the label (the button isolates its stacking context; the sheen sits at z-index −1), with a per-theme strength (`--shimmer`: soft white on the dark light-theme button, brighter white on the off-white dark-theme button). Off under `prefers-reduced-motion`.
+- **Port:** "always run on port 1313, never 3000". `npm run dev`, `npm run dev:1313` and `npm start` all pass `-p 1313`.
+- **Turbopack dev filesystem cache off** (`experimental.turbopackFileSystemCacheForDev: false`): it kept serving stale `globals.css` output from the `@tailwindcss/turbopack` loader, even across restarts. Live CSS edits can still lag one change behind (upstream behaviour); a dev-server restart now always serves the current file.
+
+## D-051 · 2026-11-14 · Green markers; true colours on the globe; sharp CTA shimmer
+Status: confirmed (owner requests, 2026-11-14; refines D-045 and D-050)
+Decision:
+- **Markers:** pins and region outlines use a bright saturated green, `#24e866` (`--pin`, `--pin-region`; first `#2bff72`, then a touch darker on request), in both themes. Hover off-white, selected amber, features grey, as before.
+- **Globe colours:** tone mapping is off for the globe's materials (`toneMapped={false}`). React Three Fiber's default filmic tone mapping washed out the marker colours and slightly altered the WAC mosaic; both now show as they are.
+- **CTA shimmer:** a solid band (16% of the button width, skewed −24°) with sharp edges instead of a feathered gradient; `--shimmer` is 16% white on the dark button (light theme) and 70% white on the light button (dark theme).

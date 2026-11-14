@@ -1,12 +1,15 @@
 "use client";
 
 import { Info } from "@phosphor-icons/react";
-import { useId, useRef, useState } from "react";
+import { useId, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { SOURCES, type SourceId } from "@/lib/sources";
 
 /**
  * Every data point gets one: helper text plus the data sources it was derived from (LOGS D-010, D-021).
  * Opens on hover, keyboard focus or tap, and stays open while the pointer is over it so links are clickable.
+ * The card is portalled to <body> with fixed positioning, so scrolling panels never clip it; it is kept
+ * inside the viewport and flips above the icon when there is no room below.
  */
 export function InfoTip({
   title,
@@ -34,10 +37,38 @@ export function InfoTip({
     timer.current = setTimeout(() => setOpen(false), 120);
   };
   const uniq = [...new Set(sources ?? [])];
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const tipRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    if (!open) return;
+    const place = () => {
+      const b = btnRef.current?.getBoundingClientRect();
+      const t = tipRef.current;
+      if (!b || !t) return;
+      const M = 12, GAP = 8;
+      const w = t.offsetWidth, h = t.offsetHeight;
+      const vw = window.innerWidth, vh = window.innerHeight;
+      const left = Math.min(Math.max(M, align === "right" ? b.right - w : b.left - 8), vw - w - M);
+      const below = b.bottom + GAP, above = b.top - GAP - h;
+      const top = below + h <= vh - M ? below : above >= M ? above : Math.max(M, vh - h - M);
+      t.style.left = `${left}px`;
+      t.style.top = `${top}px`;
+      t.style.visibility = "visible";
+    };
+    place();
+    window.addEventListener("scroll", place, true);
+    window.addEventListener("resize", place);
+    return () => {
+      window.removeEventListener("scroll", place, true);
+      window.removeEventListener("resize", place);
+    };
+  }, [open, align]);
 
   return (
     <span className="relative inline-block align-middle" onMouseEnter={show} onMouseLeave={hide}>
       <button
+        ref={btnRef}
         type="button"
         aria-label={`About ${title}`}
         aria-expanded={open}
@@ -49,11 +80,15 @@ export function InfoTip({
       >
         <Info size={17} aria-hidden />
       </button>
-      {open && (
-        <span
+      {open && createPortal(
+        <div
+          ref={tipRef}
           id={id}
           role="tooltip"
-          className={`absolute top-7 z-40 block w-96 max-w-[85vw] rounded-sm border border-line bg-panel p-3 text-left text-xs font-normal leading-relaxed text-fg shadow-lg ${align === "right" ? "right-0" : "left-0"}`}
+          onMouseEnter={show}
+          onMouseLeave={hide}
+          style={{ position: "fixed", left: 0, top: 0, visibility: "hidden" }}
+          className="z-50 block w-96 max-w-[calc(100vw-24px)] rounded-sm border border-line bg-panel p-3 text-left text-xs font-normal leading-relaxed text-fg shadow-lg"
         >
           <span className="mb-1 block font-semibold">{title}</span>
           {children && <span className="block text-muted">{children}</span>}
@@ -77,7 +112,8 @@ export function InfoTip({
               )}
             </span>
           )}
-        </span>
+        </div>,
+        document.body,
       )}
     </span>
   );

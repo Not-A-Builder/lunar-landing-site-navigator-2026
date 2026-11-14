@@ -40,7 +40,7 @@ each persona comes from the metrics sheet (`views.enthusiast|educator|planner`).
 ## Commands
 
 ```bash
-npm run dev:1313     # dev server the owner watches: http://localhost:1313 (keep it running)
+npm run dev          # dev server the owner watches: http://localhost:1313 (always 1313, never 3000; keep it running)
 npm run build        # production build (also type-checks)
 npm run lint && npm run typecheck && npm test
 npm run catalog            # metrics catalog from data/source/metrics-draft3.csv (--refresh re-pulls the sheet)

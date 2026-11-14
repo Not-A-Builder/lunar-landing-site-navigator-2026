@@ -22,6 +22,8 @@
   /* Filled buttons take the opposite theme's base colour (D-042). */
   --primary: #1b1917;
   --primary-ink: #ece8e1;
+  /* highlight swept across the active primary CTA */
+  --shimmer: rgba(255, 255, 255, 0.16);
   --sun: #c8521e;
   --earth: #2f6bc9;
   --terrain: #a59e92;
@@ -31,6 +33,13 @@
   --warn: #a8571a;
   --map-label: #1c1a17;
   --map-halo: #fdfcf9;
+  /* Map pins look the same in both themes: a bright saturated green (easy to spot on grey terrain) with a dark ring. */
+  --pin: #24e866;
+  --pin-region: #24e866;
+  --pin-ring: #0b0a09;
+  --pin-hot: #ece8e1;
+  --pin-selected: #e9ae35;
+  --pin-feature: #a8a197;
 }
 
 :root[data-theme="dark"] {
@@ -47,6 +56,7 @@
   --accent-ink: #0b0a09;
   --primary: #ece8e1;
   --primary-ink: #1b1917;
+  --shimmer: rgba(255, 255, 255, 0.7);
   --sun: #e2692f;
   --earth: #4f8fe6;
   --terrain: #4b4741;
@@ -133,6 +143,59 @@ details > summary::-webkit-details-marker {
 }
 details[open] > summary .caret {
   transform: rotate(90deg);
+}
+
+/* iOS-style scroll wheels (date/time pickers): no scrollbar, items fade toward the edges. */
+.wheel {
+  scrollbar-width: none;
+  mask-image: linear-gradient(to bottom, transparent, #000 32%, #000 68%, transparent);
+}
+.wheel::-webkit-scrollbar {
+  display: none;
+}
+
+/* Active primary CTA: an angled highlight sweeps left to right once every 2 s. */
+.cta-shimmer {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.cta-shimmer::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  bottom: -50%;
+  left: 0;
+  width: 16%;
+  /* a solid band: sharp, defined edges (no feathering) */
+  background: var(--shimmer);
+  transform: translateX(-200%) skewX(-24deg);
+  animation: cta-shimmer 2s ease-in-out infinite;
+  pointer-events: none;
+  /* behind the label, above the button's background (the button isolates its stacking context) */
+  z-index: -1;
+}
+@keyframes cta-shimmer {
+  0% {
+    transform: translateX(-200%) skewX(-24deg);
+  }
+  50%,
+  100% {
+    transform: translateX(800%) skewX(-24deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cta-shimmer::after {
+    display: none;
+  }
+}
+
+/* Scrollers that draw their own floating bar (ScrollThumb). */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 /* OpenLayers controls follow the theme */

@@ -13,3 +13,14 @@ const hourNow = () => {
 export function useNowHour(): number | null {
   return useSyncExternalStore(noop, hourNow, () => null);
 }
+
+const minuteNow = () => {
+  const d = new Date();
+  d.setUTCSeconds(0, 0);
+  return d.getTime();
+};
+
+/** Current UTC minute (ms) on the client, null during server render. */
+export function useNowMinute(): number | null {
+  return useSyncExternalStore(noop, minuteNow, () => null);
+}

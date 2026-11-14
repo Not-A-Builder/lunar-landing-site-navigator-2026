@@ -8,9 +8,9 @@ import { persist } from "zustand/middleware";
  * representation and technical depth change (see the "views" columns of the metrics sheet).
  */
 export const PERSONAS = [
-  { id: "enthusiast", label: "Enthusiast", hint: "Plain-language story and visuals" },
-  { id: "educator", label: "Educator", hint: "Mechanisms, diagrams and the why" },
-  { id: "planner", label: "Mission planner", hint: "Numbers, timestamps, thresholds, uncertainty" },
+  { id: "enthusiast", label: "Enthusiast", phrase: "an enthusiast", hint: "Plain-language story and visuals" },
+  { id: "educator", label: "Educator", phrase: "an educator", hint: "Mechanisms, diagrams and the why" },
+  { id: "planner", label: "Mission planner", phrase: "a mission planner", hint: "Numbers, timestamps, thresholds, uncertainty" },
 ] as const;
 
 export type Persona = (typeof PERSONAS)[number]["id"];
