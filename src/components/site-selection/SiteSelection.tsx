@@ -153,8 +153,25 @@ export function SiteSelection() {
   return (
     <div className="mx-auto grid max-w-[1600px] gap-6 px-4 py-5 lg:h-[calc(100vh-65px)] lg:grid-cols-[460px_1fr]">
       <aside className="flex min-h-0 flex-col overflow-y-auto">
-        {/* 1 · Site selection */}
-        <section aria-labelledby="sec-site" className="flex min-h-0 flex-1 flex-col pb-5">
+        {/* 1 · Date & time */}
+        <section aria-labelledby="sec-time" className="pb-5">
+          <h2 id="sec-time" className={sectionTitle}>Date &amp; time</h2>
+          <div className={`${subTitle} mt-3`}>
+            <label htmlFor="landing-date">Landing date &amp; time</label>
+            <InfoTip title="Why the landing time matters" sources={["jpl-horizons"]}>
+              Near the pole the Sun skims the horizon. Shifting a few days can decide whether a site is lit or in shadow, and whether Earth is up for direct contact. Times are UTC.
+            </InfoTip>
+          </div>
+          <div className="mt-2 grid grid-cols-[1fr_auto] gap-2">
+            <DateField id="landing-date" value={when} onChange={setPicked} />
+            <div className="w-36">
+              <TimeField value={when} onChange={setPicked} />
+            </div>
+          </div>
+        </section>
+
+        {/* 2 · Site selection */}
+        <section aria-labelledby="sec-site" className="flex min-h-0 flex-1 flex-col border-t border-line py-5">
           <h2 id="sec-site" className={sectionTitle}>Site selection</h2>
 
           <div className="mt-3 flex items-center justify-between gap-2">
@@ -238,23 +255,6 @@ export function SiteSelection() {
             <p className="mt-1.5 text-xs text-faint">Reads as <span className="num">{coordText(customPoint.lat, customPoint.lon)}</span></p>
           ) : null}
           <p className="mt-1.5 text-xs text-faint">Or click anywhere on the map to drop a point.</p>
-        </section>
-
-        {/* 2 · Date & time */}
-        <section aria-labelledby="sec-time" className="border-t border-line py-5">
-          <h2 id="sec-time" className={sectionTitle}>Date &amp; time</h2>
-          <div className={`${subTitle} mt-3`}>
-            <label htmlFor="landing-date">Landing date &amp; time</label>
-            <InfoTip title="Why the landing time matters" sources={["jpl-horizons"]}>
-              Near the pole the Sun skims the horizon. Shifting a few days can decide whether a site is lit or in shadow, and whether Earth is up for direct contact. Times are UTC.
-            </InfoTip>
-          </div>
-          <div className="mt-2 grid grid-cols-[1fr_auto] gap-2">
-            <DateField id="landing-date" value={when} onChange={setPicked} />
-            <div className="w-36">
-              <TimeField value={when} onChange={setPicked} />
-            </div>
-          </div>
         </section>
 
         <button

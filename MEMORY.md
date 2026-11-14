@@ -6,7 +6,7 @@ which is append-only history). Last updated: **2026-11-14**.
 ## Status
 
 **Phase: computed product + owner round 2 (2026-11-14).** Educator copy is in for all 196 metrics, bands are editable, custom coordinates work everywhere, the NASA terrain bundle is shippable, and SOURCES.md is generated. The dev server runs on http://localhost:1313 (`npm run dev:1313`).
-- Site selection (D-043, D-044): left column = Site selection (filterable, searchable site cards OR a coordinate field) + Date & time (iOS-style UTC pickers) + "Explore Site Details". Polar map with lat/lon rulers, pole crosshair, km/mi scale; whole Moon as a flat chart or a 3D globe (three.js, WAC tiles) with a compass that resets the view. Theme follows the OS until the user picks one. Map pins/regions are bright green `#24e866` (D-051) with themed name tooltips.
+- Site selection (D-043, D-044): left column = Date & time (iOS-style UTC pickers) + Site selection (filterable, searchable site list OR a coordinate field) + "Explore Site Details" (D-055). Polar map with lat/lon rulers, pole crosshair, km/mi scale; whole Moon as a flat chart or a 3D globe (three.js, WAC tiles) with a compass that resets the view. Theme follows the OS until the user picks one. Map pins/regions are bright green `#24e866` (D-051) with themed name tooltips.
 - Site details: horizon panorama, Sun and Earth timelines, libration, battery and power, and all 196 metrics with honest statuses.
 - Compare: up to 3 scenarios, strips, key numbers, "why it differs", 1–10 scores.
 - Data & methods: provenance, references, assumptions and validation.

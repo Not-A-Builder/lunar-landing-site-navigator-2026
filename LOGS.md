@@ -432,3 +432,7 @@ Decision:
 ## D-054 · 2026-11-14 · All markers are circles; no legend
 Status: confirmed (owner request, 2026-11-14; reverts D-053)
 Decision: named features use the same green circle as sites (same size, fill and dark stroke), so every marker on every map view is a circle; hover is off-white and selected is amber. The map legend is removed entirely (`MapLegend` deleted). A site's name and type remain available from its tooltip and the list.
+
+## D-055 · 2026-11-14 · Date & time comes first in the left column
+Status: confirmed (owner request, 2026-11-14; reorders D-044)
+Decision: the left column now reads Date & time (landing date and UTC time pickers), then Site selection (list or coordinates), then "Explore Site Details". The date and time pickers open downward again, over the site section. The site list still takes the remaining height.

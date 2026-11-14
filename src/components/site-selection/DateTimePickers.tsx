@@ -7,7 +7,7 @@ import { usePopover } from "@/lib/use-popover";
 /**
  * Landing date and time pickers, modelled on iOS Reminders: a compact field opens an inline month
  * calendar (tap the month title for month/year wheels) or hour/minute wheels. All values are UTC.
- * Both open upward: they sit at the foot of the site-selection column.
+ * Both open downward, over the site-selection section below them.
  */
 
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -32,7 +32,7 @@ export function DateField({ value, onChange, id }: { value: number | null; onCha
         <span className="num truncate">{label}</span>
       </button>
       {open && d && (
-        <div role="dialog" aria-label="Choose landing date (UTC)" className="absolute bottom-full left-0 z-30 mb-1.5 w-[320px] rounded-sm border border-line bg-panel p-3 shadow-xl">
+        <div role="dialog" aria-label="Choose landing date (UTC)" className="absolute left-0 top-full z-30 mt-1.5 w-[320px] rounded-sm border border-line bg-panel p-3 shadow-xl">
           <Calendar
             value={d}
             onPick={(y, m, day) => {
@@ -122,7 +122,7 @@ export function TimeField({ value, onChange, id }: { value: number | null; onCha
         <span className="ml-auto text-xs text-faint">UTC</span>
       </button>
       {open && d && (
-        <div role="dialog" aria-label="Choose landing time (UTC)" className="absolute bottom-full right-0 z-30 mb-1.5 rounded-sm border border-line bg-panel px-4 py-3 shadow-xl">
+        <div role="dialog" aria-label="Choose landing time (UTC)" className="absolute right-0 top-full z-30 mt-1.5 rounded-sm border border-line bg-panel px-4 py-3 shadow-xl">
           <div className="flex items-center gap-1">
             <Wheel ariaLabel="Hour (UTC)" width={64} items={Array.from({ length: 24 }, (_, h) => ({ value: h, label: pad(h) }))} value={d.getUTCHours()} onChange={(h) => set(h, d.getUTCMinutes())} />
             <span className="num pb-0.5 text-lg font-medium">:</span>
