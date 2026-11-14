@@ -329,3 +329,26 @@ Consequences: Slater Plain is the only Artemis region missing. Proposed fix: the
 Status: confirmed (owner: "github for now. public repo inside not-a-builder")
 Decision: code and the committed data bundle (`data/deploy`, 121 MB; largest file 81 MB, under GitHub's 100 MB limit) go to a public repo under the Not-A-Builder account, default branch `main`. `data/raw` stays git-ignored. Vercel (or another web host) is deferred.
 Consequences: no live URL yet; the app runs locally from the repo. GitHub warns about files over 50 MB; that is expected.
+
+## D-040 · 2026-11-14 · Light + dark themes, IBM Plex, Phosphor icons, flatter layout
+Status: confirmed (owner request; replaces D-008's dark-first theme)
+Decision:
+- **Themes:** light is the default and a header button switches to dark. Both are subtly warm; dark is a deep warm near-black. Tokens are in `globals.css` under `:root[data-theme]`. The choice is saved in localStorage (`lsn-theme`) and applied by an inline `<head>` script before first paint (`src/lib/theme-script.ts`), so there is no flash. Map pins and labels read the same tokens (`src/lib/theme.ts`).
+- **Shape and type:** corner radii are 2px at most (the Tailwind radius tokens are capped; `rounded-full` is kept only for dots). The smallest text is 14px and the scale steps up from it (xs 14, sm 16, base 18, lg 20, xl 24, 3xl 34; body 16; chart ticks 14).
+- **Fonts:** IBM Plex Sans for text and IBM Plex Mono (tabular) for numbers. `NumText` sets the numeric runs inside a sentence in mono.
+- **Icons:** Phosphor (`@phosphor-icons/react`) in place of emoji and text glyphs: the category icons (`CategoryIcon`), RAG status (check circle / warning diamond / warning octagon, still with a word), info tips and actions.
+- **Layout:** sections are separated by hairlines rather than boxed panels, the site list uses rows rather than cards, badges have no chip borders, and notes are a left rule with an icon. All content is kept. Compare's scenario slots stay as cards.
+Contrast: text tokens are ≥ 4.5:1 on their backgrounds in both themes; the amber icon colour is used for graphics only.
+
+## D-041 · 2026-11-14 · Metrics that can't be computed are not shown
+Status: confirmed (owner: "remove all metrics that are not available to be computed or fetched from live data sets. don't show them.")
+Decision: a metric whose value has status `unavailable` for the current site and date is hidden: in the site metric list (along with the "show unavailable" toggle; a category with nothing to show is dropped), in Compare's key numbers (a row is shown if at least one scenario has a value; the others show "—") and in its category scores. Data & methods no longer counts them, and `source-usage.json` / SOURCES.md no longer count them as uses of a source (`pipeline:terrain` skips them; `npm run pipeline:usage` refreshes the usage file alone).
+Kept: `computed`, `modelled`, `reference` (cited lunar-wide values) and `assumption` (your inputs). The metrics catalog still lists all 196; ingesting a new source (open question 2) brings a metric back automatically.
+Consequences: on the Haworth reference run, 38 of 196 metrics are hidden. Metrics that are still computing show "…" and are not hidden.
+
+
+## D-042 · 2026-11-14 · Filled buttons use the opposite theme's base colour
+Status: confirmed (owner: "use the dark colour of the opposite theme as the primary colour for buttons"; chose "inverted neutrals")
+Decision: filled (primary) buttons use new `--primary` / `--primary-ink` tokens instead of the blue accent. Light theme: near-black `#1b1917` with `#ece8e1` text (the dark theme's colours). Dark theme: warm off-white `#ece8e1` with `#1b1917` text. Applies to the active persona tab, the site-selection mode toggle, "Analyse this point", "Add to comparison" and the custom-coordinate "Use" button.
+Kept: `--accent` (blue) stays for links, the compare-kind label and selected filter chips.
+Consequences: contrast is about 15:1 in both themes.

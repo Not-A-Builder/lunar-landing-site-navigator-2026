@@ -54,10 +54,10 @@ export function useWidth(initial = 640) {
 }
 
 export function Tooltip({ x, y, w, children }: { x: number; y: number; w: number; children: ReactNode }) {
-  const left = x > w - 200 ? x - 196 : x + 12;
+  const left = x > w - 268 ? x - 264 : x + 12;
   return (
     <div
-      className="pointer-events-none absolute z-10 w-48 rounded-md border border-line bg-panel-2 px-2.5 py-2 text-[11px] leading-snug text-fg shadow-lg"
+      className="pointer-events-none absolute z-10 w-64 rounded-sm border border-line bg-panel px-3 py-2 text-xs leading-snug text-fg shadow-lg"
       style={{ left, top: Math.max(0, y - 10) }}
     >
       {children}
@@ -67,15 +67,15 @@ export function Tooltip({ x, y, w, children }: { x: number; y: number; w: number
 
 export function Legend({ items }: { items: { label: string; color: string; kind?: "line" | "area" | "dot" }[] }) {
   return (
-    <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-muted">
+    <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-xs text-muted">
       {items.map((i) => (
         <span key={i.label} className="inline-flex items-center gap-1.5">
           {i.kind === "area" ? (
-            <span className="inline-block h-2.5 w-3 rounded-sm" style={{ background: i.color, opacity: 0.5 }} />
+            <span className="inline-block h-3 w-3.5 rounded-sm" style={{ background: i.color, opacity: 0.5 }} />
           ) : i.kind === "dot" ? (
             <span className="inline-block h-2 w-2 rounded-full" style={{ background: i.color }} />
           ) : (
-            <span className="inline-block h-0.5 w-3.5 rounded" style={{ background: i.color }} />
+            <span className="inline-block h-0.5 w-4 rounded" style={{ background: i.color }} />
           )}
           {i.label}
         </span>

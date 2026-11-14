@@ -38,7 +38,7 @@ export function CustomCoordForm({
       }}
     >
       {!compact && (
-        <label htmlFor="custom-coord" className="flex items-center text-xs text-muted">
+        <label htmlFor="custom-coord" className="flex items-center text-sm text-muted">
           Any point on the Moon (lat, lon)
           <InfoTip title="Custom coordinates" sources={["lola-pds", "jpl-horizons", "usgs-gazetteer", "psr-atlas"]}>
             Type latitude then longitude, for example 85.2S 30.1E, -85.2, 30.1, or -89.45 230.22 (east longitude 0–360). You can also click the map. The terrain horizon, slopes and nearby features are computed for that exact point from LOLA elevation data, which takes a few seconds the first time.
@@ -55,14 +55,14 @@ export function CustomCoordForm({
           }}
           placeholder="e.g. 85.2S 30.1E"
           aria-invalid={!!error}
-          className={`min-w-0 flex-1 rounded-md border bg-bg px-2.5 py-1.5 text-sm ${error ? "border-critical" : "border-line"}`}
+          className={`num min-w-0 flex-1 rounded-sm border bg-panel px-2.5 py-1.5 text-sm placeholder:font-sans placeholder:text-faint ${error ? "border-critical" : "border-line"}`}
         />
-        <button type="submit" className="shrink-0 rounded-md bg-accent px-3 py-1.5 text-sm text-accent-ink">{submitLabel}</button>
+        <button type="submit" className="shrink-0 rounded-sm bg-primary px-3 py-1.5 text-sm font-medium text-primary-ink">{submitLabel}</button>
       </div>
       {error ? (
-        <p className="text-[11px] text-critical">{error}</p>
+        <p className="text-xs text-critical">{error}</p>
       ) : parsed?.ok ? (
-        <p className="text-[11px] text-faint">Reads as {fmtLat(parsed.lat)}, {fmtLon(parsed.lon)}</p>
+        <p className="text-xs text-faint">Reads as <span className="num">{fmtLat(parsed.lat)}, {fmtLon(parsed.lon)}</span></p>
       ) : null}
     </form>
   );

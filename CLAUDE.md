@@ -49,6 +49,7 @@ npm run pipeline:ephemeris # public/data/ephemeris 2024–2032 from JPL Horizons
 npm run pipeline:raw       # download NASA rasters into data/raw (git-ignored, ~500 MB, slow)
 npm run pipeline:terrain   # public/data/terrain/*.json + validation + source usage + SOURCES.md (needs data/raw)
 npm run pipeline:deploy    # data/deploy/ compact NASA layers shipped with /api/terrain
+npm run pipeline:usage     # src/data/source-usage.json only (from existing terrain files, no data/raw)
 npm run sources:doc        # regenerate SOURCES.md
 node scripts/screenshot.mjs <outDir> <url…>   # headless screenshots + console errors (visual QA)
 ```
@@ -69,8 +70,8 @@ data/source/             snapshots of research inputs (sheet CSV, sites research
 
 ## Stack
 
-Next.js 16.4 (App Router, `cacheComponents` on) · React 19 · TypeScript · Tailwind 4 (tokens in
-`globals.css`) · zustand (persona, assumptions) · OpenLayers + proj4 (polar stereographic + global maps)
+Next.js 16.4 (App Router, `cacheComponents` on) · React 19 · TypeScript · Tailwind 4 (light/dark tokens in
+`globals.css`, radii ≤ 2px, text ≥ 14px) · IBM Plex Sans + Mono (numbers) · Phosphor icons · zustand (persona, assumptions) · OpenLayers + proj4 (polar stereographic + global maps)
 · geotiff (pipeline) · vitest · playwright-core (screenshots). Pipeline in TypeScript via `tsx` (shares
 `src/lib/engine`), plus small stdlib Python scripts.
 
@@ -94,6 +95,7 @@ Next.js 16.4 (App Router, `cacheComponents` on) · React 19 · TypeScript · Tai
 ## Conventions
 
 - UI copy: plain language first; technical detail goes behind the planner persona or a tooltip.
+- Metrics with status `unavailable` are never shown (D-041). Colours only via tokens, so both themes work (D-040).
 - Keep URLs as state (site, `t` ISO UTC, `s` comparison list) so views are shareable.
 - All times UTC, ISO 8601 with `Z`.
 - Tests sit next to code (`*.test.ts`); fixtures from real API responses in `__fixtures__/`.

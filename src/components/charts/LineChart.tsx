@@ -17,7 +17,7 @@ export function LineChart(props: {
 }) {
   const { setRef, w } = useWidth();
   const h = 160;
-  const m = { l: 44, r: 12, t: 10, b: 24 };
+  const m = { l: 70, r: 28, t: 10, b: 30 };
   const { t, v } = props;
   const n = t.length;
   let lo = props.min ?? Infinity, hi = props.max ?? -Infinity;
@@ -37,11 +37,11 @@ export function LineChart(props: {
         {niceTicks(lo, hi, 4).map((z) => (
           <g key={z}>
             <line x1={m.l} x2={w - m.r} y1={y(z)} y2={y(z)} stroke="var(--grid)" />
-            <text x={m.l - 6} y={y(z) + 3} textAnchor="end" fontSize={10} fill="var(--muted)">{fmt(z)}</text>
+            <text x={m.l - 6} y={y(z) + 3} textAnchor="end" fontSize={14} fontFamily="var(--font-plex-mono)" fill="var(--muted)">{fmt(z)}</text>
           </g>
         ))}
         {timeTicks(t[0], t[n - 1]).map((z) => (
-          <text key={z} x={x(z)} y={h - 6} textAnchor="middle" fontSize={10} fill="var(--muted)">{fmtTick(z)}</text>
+          <text key={z} x={x(z)} y={h - 6} textAnchor="middle" fontSize={14} fontFamily="var(--font-plex-mono)" fill="var(--muted)">{fmtTick(z)}</text>
         ))}
         <path d={area} fill={props.color} opacity={0.1} />
         <path d={d} fill="none" stroke={props.color} strokeWidth={2} />

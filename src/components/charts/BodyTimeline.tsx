@@ -25,7 +25,7 @@ export function BodyTimeline(props: {
 }) {
   const { setRef, w } = useWidth();
   const h = 200;
-  const m = { l: 40, r: 12, t: 10, b: 38 };
+  const m = { l: 58, r: 28, t: 10, b: 44 };
   const { t, el, hz, frac } = props;
   const n = t.length;
   const t0 = t[0], t1 = t[n - 1];
@@ -59,11 +59,11 @@ export function BodyTimeline(props: {
         {niceTicks(lo, hi, 4).map((v) => (
           <g key={v}>
             <line x1={m.l} x2={w - m.r} y1={y(v)} y2={y(v)} stroke="var(--grid)" strokeWidth={1} />
-            <text x={m.l - 6} y={y(v) + 3} textAnchor="end" fontSize={10} fill="var(--muted)">{v}°</text>
+            <text x={m.l - 6} y={y(v) + 3} textAnchor="end" fontSize={14} fontFamily="var(--font-plex-mono)" fill="var(--muted)">{v}°</text>
           </g>
         ))}
         {timeTicks(t0, t1).map((v) => (
-          <text key={v} x={x(v)} y={h - 4} textAnchor="middle" fontSize={10} fill="var(--muted)">{fmtTick(v)}</text>
+          <text key={v} x={x(v)} y={h - 4} textAnchor="middle" fontSize={14} fontFamily="var(--font-plex-mono)" fill="var(--muted)">{fmtTick(v)}</text>
         ))}
         <path d={line(hz)} fill="none" stroke="var(--terrain)" strokeWidth={2} />
         <path d={line(el)} fill="none" stroke={props.color} strokeWidth={2} strokeLinejoin="round" />

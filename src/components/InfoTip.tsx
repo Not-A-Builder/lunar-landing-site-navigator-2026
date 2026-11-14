@@ -1,5 +1,6 @@
 "use client";
 
+import { Info } from "@phosphor-icons/react";
 import { useId, useRef, useState } from "react";
 import { SOURCES, type SourceId } from "@/lib/sources";
 
@@ -44,20 +45,20 @@ export function InfoTip({
         onClick={() => setOpen((o) => !o)}
         onFocus={show}
         onBlur={hide}
-        className="ml-1 inline-flex h-4 w-4 items-center justify-center rounded-full border border-line text-[10px] leading-none text-muted hover:border-muted hover:text-fg"
+        className="ml-1 inline-flex items-center justify-center rounded-sm align-[-2px] text-faint hover:text-fg"
       >
-        i
+        <Info size={17} aria-hidden />
       </button>
       {open && (
         <span
           id={id}
           role="tooltip"
-          className={`absolute top-6 z-40 block w-80 max-w-[80vw] rounded-md border border-line bg-panel-2 p-3 text-left text-xs font-normal leading-relaxed text-fg shadow-xl ${align === "right" ? "right-0" : "left-0"}`}
+          className={`absolute top-7 z-40 block w-96 max-w-[85vw] rounded-sm border border-line bg-panel p-3 text-left text-xs font-normal leading-relaxed text-fg shadow-lg ${align === "right" ? "right-0" : "left-0"}`}
         >
           <span className="mb-1 block font-semibold">{title}</span>
           {children && <span className="block text-muted">{children}</span>}
           {(uniq.length > 0 || sourceLabel) && (
-            <span className="mt-2 block border-t border-line pt-2 text-[11px]">
+            <span className="mt-2 block border-t border-line pt-2 text-xs">
               <span className="block text-faint">Data sources</span>
               {uniq.map((s) => (
                 <a key={s} href={SOURCES[s].url} target={SOURCES[s].url.startsWith("/") ? undefined : "_blank"} rel="noreferrer" className="block text-fg underline decoration-line underline-offset-2 hover:decoration-fg">

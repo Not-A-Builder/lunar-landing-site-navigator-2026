@@ -7,6 +7,15 @@ import type VectorLayer from "ol/layer/Vector";
 import type VectorSource from "ol/source/Vector";
 import { GLOBAL_MAP, POLAR_MAP, SOUTH_POLAR_PROJ, type MapLayerConfig } from "@/lib/moon";
 import type { Site } from "@/lib/sites";
+import { cssVar, useTheme } from "@/lib/theme";
+
+type Palette = { accent: string; fg: string; muted: string; label: string; halo: string; selected: string };
+const readPalette = (): Palette => ({ accent: cssVar("--accent"), fg: cssVar("--fg"), muted: cssVar("--muted"), label: cssVar("--map-label"), halo: cssVar("--map-halo"), selected: cssVar("--warning") });
+/** "#rrggbb" + alpha → rgba() for OpenLayers fills. */
+const alpha = (hex: string, a: number) => {
+  const n = parseInt(hex.replace("#", ""), 16);
+  return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
+};
 
 export type MapMode = "polar" | "global";
 
@@ -34,6 +43,8 @@ export function MoonMap({ mode, sites, hoveredId, selectedIds = [], onHover, onS
   const stateRef = useRef({ hoveredId, selectedIds, onHover, onSelect, onPickCoordinate });
   const sitesRef = useRef(sites);
   const customRef = useRef(customPoint);
+  const theme = useTheme();
+  const paletteRef = useRef<Palette | null>(null);
   const featureModRef = useRef<{ Feature: typeof import("ol/Feature").default; Point: typeof import("ol/geom/Point").default; Polygon: typeof import("ol/geom/Polygon").default } | null>(null);
 
   useEffect(() => {
@@ -92,27 +103,29 @@ export function MoonMap({ mode, sites, hoveredId, selectedIds = [], onHover, onS
           const hot = s.hoveredId === id;
           const sel = s.selectedIds.includes(id);
           const kind = f.get("kind");
+          const p = (paletteRef.current ??= readPalette());
+          const font = `600 14px ${cssVar("--font-plex-sans") || "system-ui"}, sans-serif`;
           if (kind === "custom") {
             return new style.Style({
-              image: new style.Circle({ radius: hot ? 10 : 9, fill: new style.Fill({ color: "rgba(255,255,255,0.15)" }), stroke: new style.Stroke({ color: "#ffffff", width: 3 }) }),
+              image: new style.Circle({ radius: hot ? 10 : 9, fill: new style.Fill({ color: alpha(p.halo, 0.25) }), stroke: new style.Stroke({ color: p.fg, width: 3 }) }),
               zIndex: 20,
-              text: new style.Text({ text: "Custom point", offsetY: -20, font: "600 12px system-ui, sans-serif", fill: new style.Fill({ color: "#e8ebf1" }), stroke: new style.Stroke({ color: "#0b0d12", width: 4 }) }),
+              text: new style.Text({ text: "Custom point", offsetY: -20, font, fill: new style.Fill({ color: p.label }), stroke: new style.Stroke({ color: p.halo, width: 4 }) }),
             });
           }
           if (f.getGeometry()?.getType() === "Polygon") {
             return new style.Style({
-              stroke: new style.Stroke({ color: hot ? "#f5f7fa" : "rgba(124,196,255,0.7)", width: hot ? 2 : 1 }),
-              fill: new style.Fill({ color: hot ? "rgba(124,196,255,0.18)" : "rgba(124,196,255,0.06)" }),
+              stroke: new style.Stroke({ color: hot ? p.fg : alpha(p.accent, 0.75), width: hot ? 2 : 1 }),
+              fill: new style.Fill({ color: alpha(p.accent, hot ? 0.18 : 0.06) }),
             });
           }
-          const color = kind === "feature" ? "#9aa3b2" : sel ? "#f5b942" : "#7cc4ff";
+          const color = kind === "feature" ? p.muted : sel ? p.selected : p.accent;
           return new style.Style({
-            image: pin(hot ? "#ffffff" : color, hot ? 8 : kind === "feature" ? 4 : 6, "#0b0d12"),
+            image: pin(hot ? p.fg : color, hot ? 8 : kind === "feature" ? 4 : 6, p.halo),
             zIndex: hot ? 10 : sel ? 5 : 1,
             text: hot
               ? new style.Text({
-                  text: f.get("name"), offsetY: -18, font: "600 12px system-ui, sans-serif",
-                  fill: new style.Fill({ color: "#e8ebf1" }), stroke: new style.Stroke({ color: "#0b0d12", width: 4 }),
+                  text: f.get("name"), offsetY: -18, font,
+                  fill: new style.Fill({ color: p.label }), stroke: new style.Stroke({ color: p.halo, width: 4 }),
                 })
               : undefined,
           });
@@ -186,11 +199,17 @@ export function MoonMap({ mode, sites, hoveredId, selectedIds = [], onHover, onS
     }
   }
 
+  // Re-read the colour tokens when the theme changes and redraw the pins.
+  useEffect(() => {
+    paletteRef.current = null;
+    layerRef.current?.changed();
+  }, [theme]);
+
   useEffect(() => {
     sitesRef.current = sites;
     customRef.current = customPoint;
     syncFeatures();
   }, [sites, customPoint]);
 
-  return <div ref={el} className="h-full min-h-105 w-full overflow-hidden rounded-lg bg-black" aria-label={mode === "polar" ? "Map of the lunar south pole" : "Map of the whole Moon"} />;
+  return <div ref={el} className="h-full min-h-105 w-full overflow-hidden rounded-sm bg-black" aria-label={mode === "polar" ? "Map of the lunar south pole" : "Map of the whole Moon"} />;
 }

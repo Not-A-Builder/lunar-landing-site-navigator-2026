@@ -13,7 +13,7 @@ import { Legend, niceTicks, scale, Tooltip, useWidth } from "./chart-kit";
 export function HorizonPanorama({ sc, cursor, simple }: { sc: Scenario; cursor: number; simple?: boolean }) {
   const { setRef, w } = useWidth();
   const h = simple ? 220 : 260;
-  const m = { l: 40, r: 12, t: 12, b: 28 };
+  const m = { l: 58, r: 12, t: 12, b: 34 };
   const s = sc.series;
   const [hover, setHover] = useState<{ x: number; y: number; az: number } | null>(null);
 
@@ -68,11 +68,11 @@ export function HorizonPanorama({ sc, cursor, simple }: { sc: Scenario; cursor: 
         {yTicks.map((v) => (
           <g key={v}>
             <line x1={m.l} x2={w - m.r} y1={y(v)} y2={y(v)} stroke="var(--grid)" strokeWidth={1} />
-            <text x={m.l - 6} y={y(v) + 3} textAnchor="end" fontSize={10} fill="var(--muted)">{v}°</text>
+            <text x={m.l - 6} y={y(v) + 3} textAnchor="end" fontSize={14} fontFamily="var(--font-plex-mono)" fill="var(--muted)">{v}°</text>
           </g>
         ))}
         {[0, 90, 180, 270, 360].map((v) => (
-          <text key={v} x={x(v)} y={h - 10} textAnchor="middle" fontSize={10} fill="var(--muted)">
+          <text key={v} x={x(v)} y={h - 10} textAnchor={v === 0 ? "start" : v === 360 ? "end" : "middle"} fontSize={14} fontFamily="var(--font-plex-mono)" fill="var(--muted)">
             {["N", "E", "S", "W", "N"][v / 90]} {v}°
           </text>
         ))}
@@ -104,13 +104,13 @@ export function HorizonPanorama({ sc, cursor, simple }: { sc: Scenario; cursor: 
           </Tooltip>
         );
       })()}
-      <div className="mt-1">
+      <div>
         <Legend items={[
           { label: "Terrain horizon (LOLA)", color: "var(--terrain)", kind: "area" },
           { label: "Sun path", color: "var(--sun)" },
           { label: "Earth path", color: "var(--earth)" },
         ]} />
-        <p className="mt-1 text-[11px] text-faint">Faded marker = hidden behind terrain at the time cursor.</p>
+        <p className="mt-1.5 text-xs text-faint">Faded marker = hidden behind terrain at the time cursor.</p>
       </div>
     </div>
   );

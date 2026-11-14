@@ -12,7 +12,7 @@ import { niceTicks, scale, Tooltip, useWidth } from "./chart-kit";
 export function LibrationChart({ sc, cursor }: { sc: Scenario; cursor: number }) {
   const { setRef, w } = useWidth(360);
   const h = 240;
-  const m = { l: 44, r: 12, t: 12, b: 30 };
+  const m = { l: 62, r: 28, t: 12, b: 34 };
   const s = sc.series;
   const [hover, setHover] = useState<{ x: number; y: number; i: number } | null>(null);
   let azMin = 360, azMax = 0, elMin = 90, elMax = -90;
@@ -47,11 +47,11 @@ export function LibrationChart({ sc, cursor }: { sc: Scenario; cursor: number })
         {niceTicks(y.invert(h - m.b), y.invert(m.t), 4).map((v) => (
           <g key={v}>
             <line x1={m.l} x2={w - m.r} y1={y(v)} y2={y(v)} stroke="var(--grid)" />
-            <text x={m.l - 6} y={y(v) + 3} textAnchor="end" fontSize={10} fill="var(--muted)">{v}°</text>
+            <text x={m.l - 6} y={y(v) + 3} textAnchor="end" fontSize={14} fontFamily="var(--font-plex-mono)" fill="var(--muted)">{v}°</text>
           </g>
         ))}
         {niceTicks(azMin - padAz, azMax + padAz, 4).map((v) => (
-          <text key={v} x={x(v)} y={h - 10} textAnchor="middle" fontSize={10} fill="var(--muted)">az {v}°</text>
+          <text key={v} x={x(v)} y={h - 10} textAnchor="middle" fontSize={14} fontFamily="var(--font-plex-mono)" fill="var(--muted)">az {v}°</text>
         ))}
         <path d={path} fill="none" stroke="var(--earth)" strokeWidth={2} />
         <circle cx={x(s.earthAz[ci])} cy={y(s.earthEl[ci])} r={6} fill="var(--earth)" fillOpacity={s.earthFrac[ci] > 0 ? 1 : 0.15} stroke={s.earthFrac[ci] > 0 ? "var(--panel)" : "var(--earth)"} strokeWidth={2} />

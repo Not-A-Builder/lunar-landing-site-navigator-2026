@@ -35,6 +35,8 @@ function loadEph() {
 
 async function main() {
   const only = process.argv[2];
+  // `--usage-only`: refresh src/data/source-usage.json from the existing terrain files (no raw data needed)
+  if (only === "--usage-only") return sourceUsage(loadEph());
   mkdirSync(OUT, { recursive: true });
   const ctx = await loadTerrainContext();
   const eph = loadEph();
@@ -105,6 +107,8 @@ async function sourceUsage(eph: EphemerisSet) {
   const status: Record<string, number> = {};
   for (const v of Object.values(vals)) {
     status[v.status] = (status[v.status] ?? 0) + 1;
+    // Unavailable metrics are not shown anywhere (LOGS D-041), so they don't count as a use of a source.
+    if (v.status === "unavailable") continue;
     for (const src of v.sources) (usage[src] ??= []).push(v.id);
   }
   writeFileSync(join(process.cwd(), "src", "data", "source-usage.json"), JSON.stringify({ generatedAt: new Date().toISOString(), basedOn: `${id} @ 2027-01-01`, status, usage }, null, 1) + "\n");

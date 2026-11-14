@@ -10,6 +10,8 @@ which is append-only history). Last updated: **2026-11-14**.
 - Site details: horizon panorama, Sun and Earth timelines, libration, battery and power, and all 196 metrics with honest statuses.
 - Compare: up to 3 scenarios, strips, key numbers, "why it differs", 1–10 scores.
 - Data & methods: provenance, references, assumptions and validation.
+- Design (D-040): light default + dark toggle, warm tokens, IBM Plex Sans/Mono, Phosphor icons, radii ≤ 2px, text ≥ 14px, hairline sections instead of boxes.
+- Unavailable metrics are hidden everywhere (D-041); 38 of 196 on the Haworth reference run.
 
 ## Data in the repo (all regenerable)
 
@@ -36,7 +38,7 @@ which is append-only history). Last updated: **2026-11-14**.
 ## Open questions for the owner
 
 1. **Slater Plain coordinate:** OK to add the USGS Artemis III region-grid release (doi:10.5066/P13FD9ZD) as a source? ScienceBase blocks scripted downloads, so the owner would download the zip in a browser into `data/source/` (D-038). Until then Slater Plain is not listed.
-2. **Unavailable metrics:** which candidate sources to ingest (see the 2026-11-14 answer: USGS geologic map, LEND/LP neutron, LP/Kaguya magnetics, Mini-RF, crater/boulder catalogues). 18 of the 38 need mission inputs rather than data; a few need in-situ measurements and can't be answered from orbit.
+2. **Unavailable metrics (now hidden, D-041):** which candidate sources to ingest (see the 2026-11-14 answer: USGS geologic map, LEND/LP neutron, LP/Kaguya magnetics, Mini-RF, crater/boulder catalogues). 18 of the 38 need mission inputs rather than data; a few need in-situ measurements and can't be answered from orbit.
 
 Resolved 2026-11-14: ship the terrain data (D-032), editable bands with defaults (D-033), the accurate Artemis label (D-036), richer educator copy (D-034), custom coordinates (D-037), and SOURCES.md (D-035). Every site needs a cited coordinate (D-038). Hosting = public GitHub repo under Not-A-Builder (D-039).
 

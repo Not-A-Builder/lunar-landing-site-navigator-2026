@@ -1,11 +1,14 @@
 "use client";
 
+import { ArrowRight, Copy, Warning, X } from "@phosphor-icons/react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { BandsPanel } from "@/components/BandsPanel";
+import { CategoryIcon } from "@/components/CategoryIcon";
 import { CustomCoordForm } from "@/components/CustomCoordForm";
 import { InfoTip } from "@/components/InfoTip";
+import { NumText } from "@/components/Num";
 import { RAG_META, RagBadge } from "@/components/RagBadge";
 import { useAssumptions } from "@/lib/assumptions-store";
 import { MAX_COMPARE } from "@/lib/config";
@@ -52,15 +55,18 @@ function resolveSite(id: string): { site: Site | null; lat: number; lon: number;
   return s && hasCoordinates(s) ? { site: s, lat: s.lat, lon: s.lon, name: s.name } : null;
 }
 
-/** Runs the analysis for one scenario and reports it upward. */
-function Runner({ i, sc, nowHour, onResult }: { i: number; sc: Scenario; nowHour: number | null; onResult: (i: number, a: Analysis) => void }) {
+/** Identity of a scenario's analysis: same site + time ⇒ same result, whatever slot it sits in. */
+const scenarioId = (sc: Scenario) => `${sc.siteId}|${sc.t}`;
+
+/** Runs the analysis for one scenario and reports it upward under its scenario id. */
+function Runner({ id, sc, nowHour, onResult }: { id: string; sc: Scenario; nowHour: number | null; onResult: (id: string, a: Analysis) => void }) {
   const a = useAssumptions((s) => s.a);
   const bandOverrides = useAssumptions((s) => s.bands);
   const r = useMemo(() => resolveSite(sc.siteId), [sc.siteId]);
   const key = useMemo(() => (r ? (r.site ? { siteId: r.site.id } : { lat: r.lat, lon: r.lon }) : null), [r]);
   const t = sc.t ? Date.parse(sc.t) : nowHour;
   const an = useAnalysis(key, r?.site ?? null, Number.isFinite(t) ? t : null, a, bandOverrides);
-  useEffect(() => onResult(i, an), [i, an, onResult]);
+  useEffect(() => onResult(id, an), [id, an, onResult]);
   return null;
 }
 
@@ -70,40 +76,46 @@ export function CompareView() {
   const persona = usePersona((s) => s.persona);
   const nowHour = useNowHour();
   const scenarios = parseScenarios(params.get("s"));
-  const [results, setResults] = useState<Record<number, Analysis>>({});
+  // Results are keyed by scenario id (not slot index), so adding, changing or removing one
+  // scenario never discards the finished analyses of the others (their Runners stay mounted).
+  const [byId, setById] = useState<Record<string, Analysis>>({});
   const [customSlot, setCustomSlot] = useState<number | null>(null);
-  const onResult = useCallback((i: number, a: Analysis) => setResults((r) => (r[i] === a ? r : { ...r, [i]: a })), []);
+  const onResult = useCallback((id: string, a: Analysis) => setById((r) => (r[id] === a ? r : { ...r, [id]: a })), []);
   const update = (next: Scenario[]) => {
-    setResults({});
     router.replace(next.length ? `/compare?s=${serialise(next)}` : "/compare", { scroll: false });
   };
   const defaultT = nowHour ? new Date(nowHour).toISOString() : "";
+
+  const ids = scenarios.map(scenarioId);
+  // Stable, unique Runner keys: identical (duplicated) scenarios get an occurrence suffix.
+  const runnerKeys = ids.map((id, i) => `${id}#${ids.slice(0, i).filter((x) => x === id).length}`);
+  const results: Record<number, Analysis> = Object.fromEntries(ids.flatMap((id, i) => (byId[id] ? [[i, byId[id]]] : [])));
 
   const resolved = scenarios.map((s) => resolveSite(s.siteId));
   const ready = scenarios.map((_, i) => results[i]?.stage === "full" || results[i]?.stage === "base");
   const kind = compareKind(scenarios, defaultT);
 
   return (
-    <div className="mx-auto max-w-7xl space-y-5 px-4 py-5">
-      {scenarios.map((sc, i) => <Runner key={`${i}-${sc.siteId}-${sc.t}`} i={i} sc={sc} nowHour={nowHour} onResult={onResult} />)}
-      <header>
-        <h1 className="text-xl font-semibold">Compare scenarios</h1>
-        <p className="text-sm text-muted">
-          Up to {MAX_COMPARE} site + landing-time combinations. Try one site on two dates, or two nearby sites on the same date, and see how small changes move the power and communication windows.
+    <div className="mx-auto max-w-7xl space-y-8 px-4 py-6">
+      {scenarios.map((sc, i) => <Runner key={runnerKeys[i]} id={ids[i]} sc={sc} nowHour={nowHour} onResult={onResult} />)}
+      <header className="space-y-1">
+        <h1 className="text-3xl font-semibold tracking-tight">Compare scenarios</h1>
+        <p className="max-w-3xl text-sm text-muted">
+          Up to <span className="num">{MAX_COMPARE}</span> site + landing-time combinations. Try one site on two dates, or two nearby sites on the same date, and see how small changes move the power and communication windows.
         </p>
-        {kind && <p className="mt-1 text-sm"><span className="rounded-full border border-line px-2 py-0.5 text-xs">{kind}</span></p>}
+        {kind && <p className="text-sm font-medium text-accent">{kind}</p>}
       </header>
 
-      <div className="grid gap-3 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-3">
         {Array.from({ length: MAX_COMPARE }, (_, i) => {
           const sc = scenarios[i];
           const r = resolved[i];
           const res = results[i];
           return (
-            <div key={i} className="rounded-lg border border-line bg-panel p-3 text-sm">
-              <div className="mb-2 flex items-center justify-between">
-                <span className="text-xs font-semibold text-muted">Scenario {LETTERS[i]}</span>
-                {sc && <button className="text-xs text-muted underline" onClick={() => update(scenarios.filter((_, k) => k !== i))}>Remove</button>}
+            <div key={i} className="rounded-sm border border-line bg-panel p-4 text-sm">
+              <div className="mb-3 flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wider text-faint">Scenario {LETTERS[i]}</span>
+                {sc && <button aria-label={`Remove scenario ${LETTERS[i]}`} title="Remove" className="-m-1 rounded-sm p-1 text-muted hover:bg-panel-2 hover:text-fg" onClick={() => update(scenarios.filter((_, k) => k !== i))}><X size={18} /></button>}
               </div>
               <select
                 aria-label={`Site for scenario ${LETTERS[i]}`}
@@ -116,7 +128,7 @@ export function CompareView() {
                   if (e.target.value) next[sc ? i : scenarios.length] = { siteId: e.target.value, t: sc?.t ?? scenarios[0]?.t ?? defaultT };
                   update(next);
                 }}
-                className="mb-2 w-full rounded border border-line bg-bg px-2 py-1 disabled:opacity-40"
+                className="mb-2 w-full rounded-sm border border-line bg-bg px-2 py-1.5 disabled:opacity-40"
               >
                 <option value="">{i > scenarios.length ? "Fill the previous slot first" : "Add a site…"}</option>
                 <option value="__custom">Custom coordinates…</option>
@@ -148,28 +160,31 @@ export function CompareView() {
                       next[i] = { ...sc, t: e.target.value ? new Date(e.target.value + "Z").toISOString() : "" };
                       update(next);
                     }}
-                    className="w-full rounded border border-line bg-bg px-2 py-1"
+                    className="num w-full rounded-sm border border-line bg-bg px-2 py-1.5"
                   />
-                  <div className="mt-1 flex gap-1">
+                  <div className="mt-2 flex gap-2">
+                    <div className="flex divide-x divide-line rounded-sm border border-line" role="group" aria-label={`Shift landing time for scenario ${LETTERS[i]}`}>
                     {[-1, 1, 7].map((d) => (
-                      <button key={d} className="rounded border border-line px-1.5 py-0.5 text-[11px] text-muted hover:text-fg"
+                      <button key={d} className="px-2 py-0.5 text-xs text-muted hover:bg-panel-2 hover:text-fg"
                         onClick={() => { const next = [...scenarios]; next[i] = { ...sc, t: new Date(Date.parse(sc.t || defaultT) + d * DAY_MS).toISOString() }; update(next); }}>
-                        {d > 0 ? `+${d}` : d} d
+                        <span className="num">{d > 0 ? `+${d}` : d}</span> d
                       </button>
                     ))}
-                    <button className="ml-auto rounded border border-line px-1.5 py-0.5 text-[11px] text-muted hover:text-fg" onClick={() => scenarios.length < MAX_COMPARE && update([...scenarios, { ...sc }])} disabled={scenarios.length >= MAX_COMPARE}>
-                      Duplicate
+                    </div>
+                    <button className="ml-auto inline-flex items-center gap-1 rounded-sm px-1.5 py-0.5 text-xs text-muted hover:bg-panel-2 hover:text-fg disabled:opacity-40" onClick={() => scenarios.length < MAX_COMPARE && update([...scenarios, { ...sc }])} disabled={scenarios.length >= MAX_COMPARE}>
+                      <Copy size={16} aria-hidden /> Duplicate
                     </button>
                   </div>
-                  {r && <div className="mt-2 text-[11px] text-faint">{fmtLat(r.lat)}, {fmtLon(r.lon)}</div>}
+                  {r && <div className="num mt-3 text-xs text-faint">{fmtLat(r.lat)}, {fmtLon(r.lon)}</div>}
                   {r && !isPolar(r.lat) && (
-                    <div className="mt-2 rounded border border-warn/50 bg-warn/10 px-2 py-1 text-[11px]">
-                      <b>Not a south-pole site.</b> Lighting and Earth visibility follow a regular equatorial/mid-latitude pattern, so differences against polar sites mostly reflect latitude, not site choice.
-                    </div>
+                    <p className="mt-2 flex gap-1.5 text-xs text-muted">
+                      <Warning size={17} className="mt-px shrink-0 text-warn" aria-hidden />
+                      <span><b className="font-semibold text-fg">Not a south-pole site.</b> Lighting and Earth visibility follow a regular equatorial/mid-latitude pattern, so differences against polar sites mostly reflect latitude, not site choice.</span>
+                    </p>
                   )}
-                  {res?.stage === "error" && <div className="mt-2 text-[11px] text-critical">{res.error}</div>}
-                  {res && res.stage !== "full" && res.stage !== "error" && <div className="mt-2 text-[11px] text-muted">Computing…</div>}
-                  {r && <Link className="mt-2 inline-block text-[11px] underline" href={r.site ? `/site/${r.site.id}?t=${encodeURIComponent(sc.t || defaultT)}` : `/site/custom?lat=${r.lat}&lon=${r.lon}&t=${encodeURIComponent(sc.t || defaultT)}`}>Open full details</Link>}
+                  {res?.stage === "error" && <div className="mt-2 text-xs text-critical">{res.error}</div>}
+                  {res && res.stage !== "full" && res.stage !== "error" && <div className="mt-2 text-xs text-muted">Computing…</div>}
+                  {r && <Link className="mt-3 inline-flex items-center gap-1 text-xs text-fg underline" href={r.site ? `/site/${r.site.id}?t=${encodeURIComponent(sc.t || defaultT)}` : `/site/custom?lat=${r.lat}&lon=${r.lon}&t=${encodeURIComponent(sc.t || defaultT)}`}>Open full details <ArrowRight size={15} aria-hidden /></Link>}
                 </>
               )}
             </div>
@@ -187,7 +202,7 @@ export function CompareView() {
         </>
       )}
       {scenarios.length === 0 && (
-        <div className="rounded-lg border border-dashed border-line p-8 text-center text-sm text-muted">
+        <div className="rounded-sm border border-dashed border-line p-8 text-center text-sm text-muted">
           Pick a site in Scenario A to begin, or open any site and press “Add to comparison”.
         </div>
       )}
@@ -205,24 +220,24 @@ function compareKind(scenarios: Scenario[], defaultT: string) {
 function Strips({ scenarios, results }: { scenarios: Scenario[]; results: Record<number, Analysis> }) {
   const days = Math.max(...scenarios.map((_, i) => (results[i]?.scenario ? (results[i].scenario!.end - results[i].scenario!.start) / DAY_MS : 0)), 1);
   return (
-    <section className="rounded-lg border border-line bg-panel p-4">
-      <h2 className="mb-1 font-medium">
+    <section className="border-t border-line pt-6">
+      <h2 className="mb-4 text-lg font-semibold">
         Sunlight and Earth contact, day by day
         <InfoTip title="Visibility strips" sources={["jpl-horizons", "lola-pds", "dsn-810-005"]}>Each scenario on the same time axis (days after its own landing). Orange = sunlit, blue = Earth in view. Gaps are darkness or blackout.</InfoTip>
       </h2>
-      <div className="space-y-3">
+      <div className="space-y-4">
         {scenarios.map((sc, i) => {
           const s = results[i]?.scenario;
-          if (!s) return <div key={i} className="h-10 text-xs text-muted">Scenario {LETTERS[i]}: computing…</div>;
+          if (!s) return <div key={i} className="h-10 text-sm text-muted">Scenario {LETTERS[i]}: computing…</div>;
           const pos = (t: number) => `${(100 * (t - s.start)) / (days * DAY_MS)}%`;
           const wid = (a: number, b: number) => `${Math.max(0.2, (100 * (b - a)) / (days * DAY_MS))}%`;
           return (
             <div key={i}>
-              <div className="mb-0.5 text-xs text-muted">{LETTERS[i]} · {resolveSite(sc.siteId)?.name} · from {fmtUTC(s.start)}</div>
+              <div className="mb-1 text-sm text-muted"><b className="font-semibold text-fg">{LETTERS[i]}</b> · {resolveSite(sc.siteId)?.name} · from <span className="num">{fmtUTC(s.start)}</span></div>
               {(["sunlit", "dte"] as const).map((k) => (
-                <div key={k} className="relative mb-1 h-3 rounded-full bg-panel-2" aria-label={`${k === "sunlit" ? "Sunlit" : "Earth in view"} intervals for scenario ${LETTERS[i]}`}>
+                <div key={k} className="relative mb-1 h-3 rounded-sm bg-panel-2" aria-label={`${k === "sunlit" ? "Sunlit" : "Earth in view"} intervals for scenario ${LETTERS[i]}`}>
                   {s.windows[k].map((w, j) => (
-                    <div key={j} className="absolute top-0 h-3 rounded-full" title={`${fmtUTC(w.start)} → ${fmtUTC(w.end)} (${fmtHours((w.end - w.start) / HOUR_MS)})`}
+                    <div key={j} className="absolute top-0 h-3 rounded-sm" title={`${fmtUTC(w.start)} → ${fmtUTC(w.end)} (${fmtHours((w.end - w.start) / HOUR_MS)})`}
                       style={{ left: pos(w.start), width: wid(w.start, w.end), background: k === "sunlit" ? "var(--sun)" : "var(--earth)" }} />
                   ))}
                 </div>
@@ -230,8 +245,8 @@ function Strips({ scenarios, results }: { scenarios: Scenario[]; results: Record
             </div>
           );
         })}
-        <div className="flex justify-between text-[10px] text-faint">
-          {Array.from({ length: 5 }, (_, k) => <span key={k}>day {Math.round((k * days) / 4)}</span>)}
+        <div className="flex justify-between text-xs text-faint">
+          {Array.from({ length: 5 }, (_, k) => <span key={k}>day <span className="num">{Math.round((k * days) / 4)}</span></span>)}
         </div>
       </div>
     </section>
@@ -253,38 +268,40 @@ const KEY_ROWS: { id: string; label: string; better: "higher" | "lower" | null; 
 
 function KeyTable({ scenarios, results }: { scenarios: Scenario[]; results: Record<number, Analysis> }) {
   return (
-    <section className="overflow-x-auto rounded-lg border border-line bg-panel p-4">
-      <h2 className="mb-2 font-medium">Key numbers</h2>
+    <section className="overflow-x-auto border-t border-line pt-6">
+      <h2 className="mb-3 text-lg font-semibold">Key numbers</h2>
       <table className="w-full min-w-140 text-sm">
         <thead>
-          <tr className="text-left text-xs text-muted">
-            <th className="py-1 font-normal">Metric</th>
-            {scenarios.map((_, i) => <th key={i} className="py-1 font-normal">Scenario {LETTERS[i]}</th>)}
+          <tr className="text-left text-xs text-faint">
+            <th className="py-1.5 font-normal">Metric</th>
+            {scenarios.map((_, i) => <th key={i} className="py-1.5 font-normal">Scenario {LETTERS[i]}</th>)}
           </tr>
         </thead>
         <tbody>
           {KEY_ROWS.map((row) => {
             const vals = scenarios.map((_, i) => results[i]?.metrics?.[row.id]);
+            // Not computable for any scenario: the row is not shown (LOGS D-041).
+            if (vals.every((v) => v?.status === "unavailable")) return null;
             const nums = vals.map((v) => (typeof v?.value === "number" ? v.value : null));
             const valid = nums.filter((x): x is number => x !== null);
             const allSame = valid.every((x) => Math.abs(x - valid[0]) < 1e-6);
             const best = row.better && valid.length > 1 && !allSame ? (row.better === "higher" ? Math.max(...valid) : Math.min(...valid)) : null;
             return (
               <tr key={row.id} className="border-t border-line align-top">
-                <td className="py-2 pr-2">
+                <td className="py-2.5 pr-4">
                   {row.label}
                   <InfoTip title={catalog.metrics.find((m) => m.id === row.id)?.name ?? row.label} sources={vals.find((v) => v)?.sources}>{catalog.metrics.find((m) => m.id === row.id)?.definition}</InfoTip>
                 </td>
                 {vals.map((v, i) => {
                   const d = i > 0 && nums[i] !== null && nums[0] !== null ? nums[i]! - nums[0]! : null;
                   return (
-                    <td key={i} className="py-2 pr-2">
-                      <div className="flex flex-wrap items-center gap-1.5">
+                    <td key={i} className="py-2.5 pr-4">
+                      <div className="flex flex-wrap items-center gap-2">
                         {v?.rating && <RagBadge rag={v.rating.rag} compact />}
-                        <span className="font-mono text-[13px]">{v?.display ?? "…"}</span>
-                        {best !== null && nums[i] === best && <span className="text-[10px] text-good">best</span>}
+                        <span className="font-mono">{v?.status === "unavailable" ? "—" : v?.display ?? "…"}</span>
+                        {best !== null && nums[i] === best && <span className="text-xs font-medium text-good">best</span>}
                       </div>
-                      {d !== null && Math.abs(d) > 1e-6 && <div className="text-[11px] text-muted">{d > 0 ? "+" : ""}{d.toFixed(Math.abs(d) < 10 ? 1 : 0)} {row.unit} vs A</div>}
+                      {d !== null && Math.abs(d) > 1e-6 && <div className="text-xs text-muted"><span className="num">{d > 0 ? "+" : ""}{d.toFixed(Math.abs(d) < 10 ? 1 : 0)} {row.unit}</span> vs A</div>}
                     </td>
                   );
                 })}
@@ -329,39 +346,42 @@ function WhyItDiffers({ scenarios, results, resolved, kind }: { scenarios: Scena
     }
   });
   return (
-    <section className="rounded-lg border border-line bg-panel p-4">
-      <h2 className="mb-2 font-medium">
+    <section className="border-t border-line pt-6">
+      <h2 className="mb-3 text-lg font-semibold">
         Why these scenarios differ
         <InfoTip title="How this is explained" sources={["jpl-horizons", "lola-pds"]}>Generated from the computed geometry: horizon height toward the Sun, distances, elevations and libration. {kind}.</InfoTip>
       </h2>
-      <ul className="list-disc space-y-1 pl-5 text-sm text-muted">{lines.map((l, k) => <li key={k}>{l}</li>)}</ul>
+      <ul className="max-w-4xl list-disc space-y-1.5 pl-5 text-sm leading-relaxed text-muted marker:text-faint">{lines.map((l, k) => <li key={k}><NumText>{l}</NumText></li>)}</ul>
     </section>
   );
 }
 
 function Scores({ scenarios, results, persona }: { scenarios: Scenario[]; results: Record<number, Analysis>; persona: string }) {
   return (
-    <section className="overflow-x-auto rounded-lg border border-line bg-panel p-4">
-      <h2 className="mb-1 font-medium">
+    <section className="overflow-x-auto border-t border-line pt-6">
+      <h2 className="mb-1 text-lg font-semibold">
         At-a-glance score per category (1–10)
         <InfoTip title="How scores work" sources={["mission-assumption"]}>
           Scores appear only here, for comparison. Each rated metric sits in red / amber / green bands; its position across the bands gives 0–10, and a category averages its rated metrics (mapped to 1–10). Bands are planning defaults or tied to your assumptions, so there is no single right answer: a lower score can be the better trade for a given mission.
         </InfoTip>
       </h2>
-      <p className="mb-2 text-xs text-muted">Hover a score to see which metrics fed it. Categories with no rated metric show “n/a”.</p>
+      <p className="mb-3 text-sm text-muted">Hover a score to see which metrics fed it. Categories with no rated metric show “n/a”.</p>
       <table className="w-full min-w-140 text-sm">
         <tbody>
-          {catalog.categories.map((c) => (
+          {catalog.categories.filter((c) => !scenarios.every((_, i) => {
+            const m = results[i]?.metrics;
+            return m && metricsInCategory(c.id).every((d) => m[d.id]?.status === "unavailable");
+          })).map((c) => (
             <tr key={c.id} className="border-t border-line">
-              <th scope="row" className="py-2 pr-2 text-left font-normal">{c.emoji} {c.label}</th>
+              <th scope="row" className="py-2.5 pr-2 text-left font-normal"><span className="inline-flex items-center gap-2.5"><CategoryIcon id={c.id} />{c.label}</span></th>
               {scenarios.map((_, i) => {
                 const m = results[i]?.metrics;
                 const rated = metricsInCategory(c.id).map((d) => ({ d, v: m?.[d.id] })).filter((x) => x.v?.rating);
                 const r = rollUp(rated.map((x) => x.v!.rating!));
                 return (
-                  <td key={i} className="w-40 py-2 text-center" title={rated.length ? `${rated.length} rated metric${rated.length === 1 ? "" : "s"}:\n` + rated.map((x) => `${x.d.name}: ${x.v!.display} (${RAG_META[x.v!.rating!.rag].label})`).join("\n") : "No rated metrics in this category"}>
+                  <td key={i} className="w-40 py-2.5 text-center" title={rated.length ? `${rated.length} rated metric${rated.length === 1 ? "" : "s"}:\n` + rated.map((x) => `${x.d.name}: ${x.v!.display} (${RAG_META[x.v!.rating!.rag].label})`).join("\n") : "No rated metrics in this category"}>
                     {!m ? <span className="text-muted">…</span> : r ? (
-                      <span className="inline-flex items-center gap-2 whitespace-nowrap"><span className="font-mono text-base">{r.score}</span><RagBadge rag={r.rag} compact={persona !== "enthusiast"} /></span>
+                      <span className="inline-flex items-center gap-2 whitespace-nowrap"><span className="font-mono text-base font-medium">{r.score}</span><RagBadge rag={r.rag} compact={persona !== "enthusiast"} /></span>
                     ) : <span className="text-faint">n/a</span>}
                   </td>
                 );

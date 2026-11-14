@@ -1,28 +1,61 @@
 @import "tailwindcss";
 
 /*
- * Design tokens. Dark-first (LOGS D-008). Chart colours follow the dataviz reference palette
- * (dark steps): Earth = series blue, Sun = series orange. Status (RAG) colours are reserved for
- * green/amber/red and always ship with an icon + label (LOGS D-024).
+ * Design tokens (LOGS D-040). Two themes, both subtly warm: light is the default, dark is a deep
+ * warm near-black. The theme lives on <html data-theme>, set before first paint from localStorage.
+ * Chart colours: Earth = blue, Sun = orange. Status (RAG) colours are reserved for green/amber/red
+ * and always ship with an icon + label (LOGS D-024). Corner radii never exceed 2px.
  */
-:root {
-  --bg: #0b0d12;
-  --panel: #141821;
-  --panel-2: #1a1f2a;
-  --line: #262c38;
-  --grid: #2a303c;
-  --fg: #e8ebf1;
-  --muted: #9aa3b2;
-  --faint: #6b7383;
-  --accent: #7cc4ff;
-  --accent-ink: #06121f;
-  --sun: #d95926;
-  --earth: #3987e5;
-  --terrain: #5b6272;
-  --good: #0ca30c;
-  --warning: #fab219;
-  --critical: #d03b3b;
-  --warn: #ff9f5a;
+:root,
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f7f5f0;
+  --panel: #fdfcf9;
+  --panel-2: #efebe4;
+  --line: #e0dbd1;
+  --grid: #e9e5dd;
+  --fg: #1c1a17;
+  --muted: #58534b;
+  --faint: #6c665c;
+  --accent: #2b5fae;
+  --accent-ink: #ffffff;
+  /* Filled buttons take the opposite theme's base colour (D-042). */
+  --primary: #1b1917;
+  --primary-ink: #ece8e1;
+  --sun: #c8521e;
+  --earth: #2f6bc9;
+  --terrain: #a59e92;
+  --good: #217a3a;
+  --warning: #a86b0c;
+  --critical: #bb3a2f;
+  --warn: #a8571a;
+  --map-label: #1c1a17;
+  --map-halo: #fdfcf9;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0b0a09;
+  --panel: #121110;
+  --panel-2: #1b1917;
+  --line: #2a2723;
+  --grid: #201e1b;
+  --fg: #ece8e1;
+  --muted: #a8a197;
+  --faint: #857f75;
+  --accent: #8cb6ee;
+  --accent-ink: #0b0a09;
+  --primary: #ece8e1;
+  --primary-ink: #1b1917;
+  --sun: #e2692f;
+  --earth: #4f8fe6;
+  --terrain: #4b4741;
+  --good: #3fae5a;
+  --warning: #e9ae35;
+  --critical: #e05a4f;
+  --warn: #f09a55;
+  --map-label: #ece8e1;
+  --map-halo: #0b0a09;
 }
 
 @theme inline {
@@ -36,6 +69,8 @@
   --color-faint: var(--faint);
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
+  --color-primary: var(--primary);
+  --color-primary-ink: var(--primary-ink);
   --color-sun: var(--sun);
   --color-earth: var(--earth);
   --color-terrain: var(--terrain);
@@ -43,31 +78,79 @@
   --color-warning: var(--warning);
   --color-critical: var(--critical);
   --color-warn: var(--warn);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-plex-sans), system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
 }
 
-html {
-  color-scheme: dark;
+/* 2px is the largest corner radius anywhere (rounded-full is kept only for dots). */
+@theme {
+  --radius: 2px;
+  --radius-xs: 1px;
+  --radius-sm: 2px;
+  --radius-md: 2px;
+  --radius-lg: 2px;
+  --radius-xl: 2px;
+  --radius-2xl: 2px;
+  --radius-3xl: 2px;
+  --radius-4xl: 2px;
+  /* 14px is the smallest text size; the rest of the scale steps up from it. */
+  --text-xs: 0.875rem;
+  --text-xs--line-height: 1.25rem;
+  --text-sm: 1rem;
+  --text-sm--line-height: 1.5rem;
+  --text-base: 1.125rem;
+  --text-base--line-height: 1.625rem;
+  --text-lg: 1.25rem;
+  --text-lg--line-height: 1.75rem;
+  --text-xl: 1.5rem;
+  --text-xl--line-height: 2rem;
+  --text-2xl: 1.75rem;
+  --text-2xl--line-height: 2.25rem;
+  --text-3xl: 2.125rem;
+  --text-3xl--line-height: 2.5rem;
 }
 
 body {
   background: var(--bg);
   color: var(--fg);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-family: var(--font-plex-sans), system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
 }
 
-/* OpenLayers controls in the dark theme */
+.font-mono,
+.num {
+  font-family: var(--font-plex-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Collapsible rows: caret turns when open, default marker hidden. */
+details > summary {
+  list-style: none;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
+details[open] > summary .caret {
+  transform: rotate(90deg);
+}
+
+/* OpenLayers controls follow the theme */
 .ol-zoom button,
 .ol-rotate button,
 .ol-attribution button {
-  background: var(--panel-2) !important;
+  background: var(--panel) !important;
   color: var(--fg) !important;
+  border-radius: 2px !important;
+}
+.ol-zoom,
+.ol-attribution {
+  border-radius: 2px !important;
 }
 .ol-attribution {
-  background: rgba(11, 13, 18, 0.7) !important;
+  background: color-mix(in srgb, var(--panel) 85%, transparent) !important;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 14px;
 }
 .ol-attribution a {
   color: var(--muted);

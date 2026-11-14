@@ -16,10 +16,12 @@
     "pipeline:ephemeris": "tsx pipeline/fetch-ephemeris.ts 2024 2032",
     "pipeline:terrain": "tsx pipeline/build-terrain.ts && npm run sources:doc",
     "pipeline:raw": "bash pipeline/download-raw.sh",
+    "pipeline:usage": "tsx pipeline/build-terrain.ts --usage-only",
     "sources:doc": "tsx scripts/build-sources-md.ts",
     "pipeline:deploy": "tsx pipeline/build-deploy-bundle.ts"
   },
   "dependencies": {
+    "@phosphor-icons/react": "^2.1.10",
     "@react-three/drei": "^10.7.9",
     "@react-three/fiber": "^9.8.2",
     "next": "16.4.6",

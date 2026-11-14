@@ -18,12 +18,12 @@ export function EducatorText({ id, v }: { id: string; v: MetricValue | undefined
   const wantsValue = c.lead.includes("{value}");
   const [before, after] = c.lead.split("{value}");
   return (
-    <div className="space-y-1 text-[13px] leading-relaxed">
+    <div className="space-y-1 text-sm leading-relaxed">
       {wantsValue ? (
         hasValue ? (
           <p className="text-fg">
             {before}
-            <b className="font-semibold">{v!.display}</b>
+            <b className="num font-medium">{v!.display}</b>
             {after}
           </p>
         ) : (
@@ -32,7 +32,7 @@ export function EducatorText({ id, v }: { id: string; v: MetricValue | undefined
       ) : (
         <>
           <p className="text-fg">{c.lead}</p>
-          {hasValue && <p className="text-fg">For this site and date: <b className="font-semibold">{v!.display}</b></p>}
+          {hasValue && <p className="text-fg">For this site and date: <b className="num font-medium">{v!.display}</b></p>}
         </>
       )}
       <p className="text-muted">{c.explain}</p>

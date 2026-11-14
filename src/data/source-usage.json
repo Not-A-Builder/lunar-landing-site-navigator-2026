@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-11-14T05:50:53.674Z",
+ "generatedAt": "2026-11-14T07:29:33.810Z",
  "basedOn": "haworth @ 2027-01-01",
  "status": {
   "computed": 108,
@@ -280,7 +280,6 @@
    "spatial.selenographic-longitude",
    "spatial.distance-to-pole",
    "spatial.nearby-infrastructures-exclusion-zones",
-   "terrain.boulder-size-and-abundance",
    "logistics.nearby-landings-plume-exclusion",
    "logistics.site-infrastructure-reuse-potential",
    "heritage.previous-landing-impact-locations",
@@ -295,7 +294,6 @@
   ],
   "usgs-gazetteer": [
    "spatial.named-region-landmark-proximity",
-   "terrain.crater-size-and-abundance",
    "science.scientific-target-identification",
    "science.science-diversity-score"
   ],
@@ -308,18 +306,11 @@
    "heritage.documented-hazard-or-rover-traverse-events",
    "heritage.nearby-active-planned-missions-interference"
   ],
-  "diviner": [
-   "terrain.surface-material-blockiness",
-   "regolith.minimum-maximum-surface-temperature",
-   "science.cold-trap-thermal-stability",
-   "heritage.prior-orbital-coverage-repeat-imagery"
-  ],
   "reference-literature": [
    "regolith.regolith-thickness",
    "regolith.particle-size-distribution",
    "regolith.bulk-density-porosity",
    "regolith.cohesion-and-internal-friction",
-   "regolith.soil-abrasiveness-dust-adhesion",
    "regolith.surface-dielectric-rf-properties",
    "regolith.lunar-seismic-moonquake-environment",
    "regolith.regolith-thermal-inertia",
@@ -327,7 +318,13 @@
    "space-weather.galactic-cosmic-ray-exposure",
    "space-weather.surface-plasma-solar-wind-environment",
    "space-weather.micrometeoroid-background-impact-flux",
-   "space-weather.recent-local-impact-detection-new-craters"
+   "space-weather.recent-local-impact-detection-new-craters",
+   "heritage.cultural-heritage-preservation-zones"
+  ],
+  "diviner": [
+   "regolith.minimum-maximum-surface-temperature",
+   "science.cold-trap-thermal-stability",
+   "heritage.prior-orbital-coverage-repeat-imagery"
   ],
   "nasa-artemis": [
    "trajectory.landing-abort-alternate-sites",

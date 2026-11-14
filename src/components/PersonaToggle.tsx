@@ -19,7 +19,7 @@ export function PersonaToggle() {
   const setPersona = usePersona((s) => s.setPersona);
 
   return (
-    <div role="radiogroup" aria-label="Information level" className="flex rounded-full border border-line bg-panel p-0.5 text-sm">
+    <div role="radiogroup" aria-label="Information level" className="flex rounded-sm border border-line bg-panel p-0.5 text-sm">
       {PERSONAS.map((p) => {
         const active = p.id === persona;
         return (
@@ -29,8 +29,8 @@ export function PersonaToggle() {
             aria-checked={active}
             title={p.hint}
             onClick={() => setPersona(p.id)}
-            className={`rounded-full px-3 py-1 transition-colors ${
-              active ? "bg-accent text-accent-ink" : "text-muted hover:text-fg"
+            className={`rounded-sm px-3 py-1 transition-colors ${
+              active ? "bg-primary text-primary-ink" : "text-muted hover:text-fg"
             }`}
           >
             {p.label}

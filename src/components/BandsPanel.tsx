@@ -14,19 +14,19 @@ export function BandsPanel() {
   const { a, bands, setBand, resetBand, resetBands } = useAssumptions();
   const resolved = resolveBands(a, bands);
   return (
-    <section id="bands" className="rounded-lg border border-line bg-panel p-4">
-      <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-        <h2 className="font-medium">Rating bands</h2>
-        <button onClick={resetBands} className="text-xs text-muted underline">Reset all to defaults</button>
+    <section id="bands" className="border-t border-line pt-6">
+      <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
+        <h2 className="text-lg font-semibold">Rating bands</h2>
+        <button onClick={resetBands} className="text-sm text-muted underline hover:text-fg">Reset all to defaults</button>
       </div>
-      <p className="mb-3 text-xs text-muted">
+      <p className="mb-4 max-w-3xl text-sm text-muted">
         These thresholds decide red / amber / green for every rated metric and the 1–10 scores on Compare. Each one starts at a default with a stated reason. Change any of them for your mission; linked bands follow your assumptions until you edit them.
       </p>
       <div className="overflow-x-auto">
-        <table className="w-full min-w-180 text-xs">
+        <table className="w-full min-w-180 text-sm">
           <thead>
-            <tr className="text-left text-faint">
-              <th className="py-1 font-normal">Band set</th>
+            <tr className="text-left text-xs text-faint">
+              <th className="py-1.5 font-normal">Band set</th>
               <th className="font-normal">Better</th>
               <th className="font-normal">Amber starts at</th>
               <th className="font-normal">Green starts at</th>
@@ -65,7 +65,7 @@ function BandRow({ k, edited, spec, defaults, onSet, onReset }: {
     <tr className="border-t border-line align-top">
       <td className="py-2 pr-2">
         <div className="text-fg">{d.label}</div>
-        <div className="text-faint" title={spec.basis}>{edited ? "Edited" : "Default"}{d.linkedTo && !edited ? ` · linked to ${d.linkedTo}` : ""}</div>
+        <div className="text-xs text-faint" title={spec.basis}>{edited ? "Edited" : "Default"}{d.linkedTo && !edited ? ` · linked to ${d.linkedTo}` : ""}</div>
       </td>
       <td className="py-2 pr-2 text-muted">{d.better === "higher" ? "Higher" : "Lower"}</td>
       {(["amber", "green"] as const).map((f) => (
@@ -78,18 +78,18 @@ function BandRow({ k, edited, spec, defaults, onSet, onReset }: {
               step="any"
               onChange={(e) => update(f, e.target.value)}
               onBlur={() => setDraft(null)}
-              className={`w-20 rounded border bg-bg px-1.5 py-1 font-mono ${valid ? "border-line" : "border-critical"}`}
+              className={`w-20 rounded-sm border bg-panel px-1.5 py-1 font-mono ${valid ? "border-line" : "border-critical"}`}
             />
-            <span className="text-faint">{d.unit.trim()}</span>
+            <span className="text-xs text-faint">{d.unit.trim()}</span>
           </label>
-          <div className="text-[10px] text-faint">default {+defaults[f].toFixed(2)}</div>
+          <div className="text-xs text-faint">default <span className="num">{+defaults[f].toFixed(2)}</span></div>
         </td>
       ))}
       <td className="py-2 pr-2">
         <BandStrip rating={rate(mid, spec)} value={mid} />
-        {!valid && <div className="mt-1 text-[10px] text-critical">Green must be {d.better === "higher" ? "at or above" : "at or below"} amber; not applied.</div>}
+        {!valid && <div className="mt-1 text-xs text-critical">Green must be {d.better === "higher" ? "at or above" : "at or below"} amber; not applied.</div>}
       </td>
-      <td className="py-2">{edited && <button onClick={() => { setDraft(null); onReset(); }} className="text-[11px] text-muted underline">Reset</button>}</td>
+      <td className="py-2">{edited && <button onClick={() => { setDraft(null); onReset(); }} className="text-xs text-muted underline hover:text-fg">Reset</button>}</td>
     </tr>
   );
 }
