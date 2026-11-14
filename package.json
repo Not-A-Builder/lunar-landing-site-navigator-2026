@@ -1,0 +1,50 @@
+{
+  "name": "lunar-landing-site-navigator",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write .",
+    "catalog": "python3 pipeline/build_metrics_catalog.py",
+    "dev:1313": "next dev -p 1313",
+    "pipeline:sites": "python3 pipeline/build_sites.py",
+    "pipeline:ephemeris": "tsx pipeline/fetch-ephemeris.ts 2024 2032",
+    "pipeline:terrain": "tsx pipeline/build-terrain.ts && npm run sources:doc",
+    "pipeline:raw": "bash pipeline/download-raw.sh",
+    "sources:doc": "tsx scripts/build-sources-md.ts",
+    "pipeline:deploy": "tsx pipeline/build-deploy-bundle.ts"
+  },
+  "dependencies": {
+    "@react-three/drei": "^10.7.9",
+    "@react-three/fiber": "^9.8.2",
+    "next": "16.4.6",
+    "ol": "^10.11.0",
+    "proj4": "^2.23.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "three": "^0.187.0",
+    "zustand": "^5.1.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/turbopack": "4.3.3",
+    "@types/node": "^24.19.2",
+    "@types/proj4": "^2.5.6",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@types/three": "^0.187.0",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.6",
+    "geotiff": "^3.1.0-beta.0",
+    "playwright-core": "^1.48.2",
+    "prettier": "^3.10.1",
+    "tailwindcss": "4.3.3",
+    "tsx": "^4.23.15",
+    "typescript": "^5",
+    "vitest": "^5.1.0"
+  }
+}

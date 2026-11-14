@@ -1,0 +1,21 @@
+import { chromium } from "playwright-core";
+// Visual QA of the site selection page: polar view, list hover, whole-Moon view. Usage: node scripts/qa-selection.mjs <outDir>
+import { homedir } from "node:os";
+const out = process.argv[2];
+const b = await chromium.launch({ executablePath: homedir() + "/Library/Caches/ms-playwright/chromium-1140/chrome-mac/Chromium.app/Contents/MacOS/Chromium" });
+const p = await b.newPage({ viewport: { width: 1440, height: 900 } });
+const errs = [];
+p.on("console", (m) => m.type() === "error" && errs.push(m.text()));
+p.on("pageerror", (e) => errs.push(e.message));
+p.on("response", (r) => r.status() >= 400 && errs.push(`HTTP ${r.status()} ${r.url()}`));
+await p.goto("http://localhost:1313/", { waitUntil: "networkidle" });
+await p.waitForTimeout(2500);
+await p.screenshot({ path: out + "/sel-polar.png" });
+await p.hover('[data-site="haworth"] a');
+await p.waitForTimeout(600);
+await p.screenshot({ path: out + "/sel-hover.png" });
+await p.getByRole("radio", { name: "Whole Moon" }).click();
+await p.waitForTimeout(2500);
+await p.screenshot({ path: out + "/sel-global.png" });
+console.log(errs.slice(0, 20).join("\n") || "no errors");
+await b.close();

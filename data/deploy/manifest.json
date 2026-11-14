@@ -1,0 +1,64 @@
+{
+ "generatedAt": "2026-11-14T06:18:48.548Z",
+ "note": "Compact copies of NASA layers for /api/terrain in production. Rebuild: npx tsx pipeline/build-deploy-bundle.ts",
+ "files": {
+  "ldem_75s_120m.img.br": {
+   "bytes": 84845588,
+   "from": "PDS LOLA GDR polar/img/ldem_75s_120m.img"
+  },
+  "ldem_16.img.br": {
+   "bytes": 28747666,
+   "from": "PDS LOLA GDR cylindrical/img/ldem_16.img"
+  },
+  "psr_south.json.br": {
+   "bytes": 375544,
+   "from": "LROC NAC_POLE_PSR_SOUTH.ZIP (LOLA_PSR_75S_120M_82S_060M_5KM2_FINAL)"
+  },
+  "gazetteer.json.br": {
+   "bytes": 141172,
+   "from": "USGS MOON_nomenclature_center_pts.zip (IAU-adopted features)"
+  },
+  "diviner_south80_summer_max.i16.br": {
+   "bytes": 6923122,
+   "from": "UCLA Diviner level4_polar polar_south_80_summer_max-float.tif (stored as K×10)"
+  },
+  "diviner_south80_winter_min.i16.br": {
+   "bytes": 5654772,
+   "from": "UCLA Diviner level4_polar polar_south_80_winter_min-float.tif (stored as K×10)"
+  }
+ },
+ "diviner": {
+  "summer_max": {
+   "w": 2533,
+   "h": 2533,
+   "origin": [
+    -304005.54,
+    304005.54,
+    0
+   ],
+   "resolution": [
+    240.03595736281088,
+    -240.03595736281088,
+    0
+   ],
+   "scale": 0.1,
+   "nodata": -32768
+  },
+  "winter_min": {
+   "w": 2533,
+   "h": 2533,
+   "origin": [
+    -304005.54,
+    304005.54,
+    0
+   ],
+   "resolution": [
+    240.03595736281088,
+    -240.03595736281088,
+    0
+   ],
+   "scale": 0.1,
+   "nodata": -32768
+  }
+ }
+}

@@ -1,0 +1,286 @@
+{
+ "generatedAt": "2026-11-14T05:50:53.675Z",
+ "window": "2026–2029, default assumptions",
+ "sites": [
+  {
+   "id": "peak-near-cabeus-b",
+   "name": "Peak near Cabeus B",
+   "sunlitFrac": 0.5007,
+   "dteFrac": 0.3582,
+   "slope": 8.47,
+   "psrKm": 19.71
+  },
+  {
+   "id": "haworth",
+   "name": "Haworth",
+   "sunlitFrac": 0.3173,
+   "dteFrac": 0.245,
+   "slope": 8.7,
+   "psrKm": 18.05
+  },
+  {
+   "id": "malapert-massif",
+   "name": "Malapert Massif",
+   "sunlitFrac": 0.3339,
+   "dteFrac": 0.4088,
+   "slope": 7.92,
+   "psrKm": 27.42
+  },
+  {
+   "id": "mons-mouton-plateau",
+   "name": "Mons Mouton Plateau",
+   "sunlitFrac": 0.2725,
+   "dteFrac": 0.6932,
+   "slope": 7.08,
+   "psrKm": 9.79
+  },
+  {
+   "id": "mons-mouton",
+   "name": "Mons Mouton",
+   "sunlitFrac": 0.1341,
+   "dteFrac": 0.5949,
+   "slope": 4.91,
+   "psrKm": 4.71
+  },
+  {
+   "id": "nobile-rim-1",
+   "name": "Nobile Rim 1",
+   "sunlitFrac": 0.1341,
+   "dteFrac": 0.5949,
+   "slope": 4.91,
+   "psrKm": 4.71
+  },
+  {
+   "id": "nobile-rim-2",
+   "name": "Nobile Rim 2",
+   "sunlitFrac": 0.3461,
+   "dteFrac": 0.6013,
+   "slope": 10.09,
+   "psrKm": 8.04
+  },
+  {
+   "id": "de-gerlache-rim-2",
+   "name": "de Gerlache Rim 2",
+   "sunlitFrac": 0.3324,
+   "dteFrac": 0.5631,
+   "slope": 16.69,
+   "psrKm": 10.37
+  },
+  {
+   "id": "im-1-odysseus",
+   "name": "IM-1 Odysseus",
+   "sunlitFrac": 0.397,
+   "dteFrac": 1,
+   "slope": 11.45,
+   "psrKm": 9.07
+  },
+  {
+   "id": "im-2-athena",
+   "name": "IM-2 Athena",
+   "sunlitFrac": 0.4535,
+   "dteFrac": 0.8161,
+   "slope": 2.19,
+   "psrKm": 15.17
+  },
+  {
+   "id": "griffin-mission-one",
+   "name": "Griffin Mission One (Moon Base II) - target Nobile Crater",
+   "sunlitFrac": 0.3425,
+   "dteFrac": 0.2327,
+   "slope": 7.8,
+   "psrKm": 2.16
+  },
+  {
+   "id": "im-4",
+   "name": "IM-4 - target Mons Mouton",
+   "sunlitFrac": 0.3105,
+   "dteFrac": 0.5778,
+   "slope": 9.16,
+   "psrKm": 7.96
+  },
+  {
+   "id": "blue-moon-mk1-endurance",
+   "name": "Blue Moon MK1 'Endurance' (Moon Base I) - Shackleton Connecting Ridge",
+   "sunlitFrac": 0.4106,
+   "dteFrac": 0.5348,
+   "slope": 15.5,
+   "psrKm": 10.22
+  },
+  {
+   "id": "viper-on-blue-moon-mk1-2",
+   "name": "VIPER on Blue Moon MK1 #2 - target Mons Mouton",
+   "sunlitFrac": 0.3105,
+   "dteFrac": 0.5778,
+   "slope": 9.16,
+   "psrKm": 7.96
+  },
+  {
+   "id": "chang-e-7",
+   "name": "Chang'e 7 - target Shackleton crater rim region",
+   "sunlitFrac": 0,
+   "dteFrac": 0,
+   "slope": 0.4,
+   "psrKm": 0
+  },
+  {
+   "id": "feature-shackleton-crater",
+   "name": "Shackleton crater",
+   "sunlitFrac": 0,
+   "dteFrac": 0,
+   "slope": 0.4,
+   "psrKm": 0
+  },
+  {
+   "id": "feature-de-gerlache-crater",
+   "name": "de Gerlache crater",
+   "sunlitFrac": 0,
+   "dteFrac": 0,
+   "slope": 15.8,
+   "psrKm": 0
+  },
+  {
+   "id": "feature-haworth-crater",
+   "name": "Haworth crater",
+   "sunlitFrac": 0,
+   "dteFrac": 0,
+   "slope": 5.52,
+   "psrKm": 0
+  },
+  {
+   "id": "feature-nobile-crater",
+   "name": "Nobile crater",
+   "sunlitFrac": 0.3425,
+   "dteFrac": 0.2327,
+   "slope": 7.8,
+   "psrKm": 2.16
+  },
+  {
+   "id": "feature-malapert-crater",
+   "name": "Malapert crater",
+   "sunlitFrac": 0.1115,
+   "dteFrac": 0.4877,
+   "slope": 2.38,
+   "psrKm": 22.33
+  },
+  {
+   "id": "feature-mons-malapert",
+   "name": "Mons Malapert (Malapert Massif)",
+   "sunlitFrac": 0.4343,
+   "dteFrac": 1,
+   "slope": 6.29,
+   "psrKm": 24.13
+  },
+  {
+   "id": "feature-cabeus-crater",
+   "name": "Cabeus crater",
+   "sunlitFrac": 0,
+   "dteFrac": 0,
+   "slope": 19.31,
+   "psrKm": 0
+  },
+  {
+   "id": "feature-cabeus-b-crater",
+   "name": "Cabeus B crater",
+   "sunlitFrac": 0.0841,
+   "dteFrac": 0.3885,
+   "slope": 2.94,
+   "psrKm": 7.92
+  },
+  {
+   "id": "feature-faustini-crater",
+   "name": "Faustini crater",
+   "sunlitFrac": 0,
+   "dteFrac": 0,
+   "slope": 2.75,
+   "psrKm": 0
+  },
+  {
+   "id": "feature-shoemaker-crater",
+   "name": "Shoemaker crater",
+   "sunlitFrac": 0,
+   "dteFrac": 0.1845,
+   "slope": 2.1,
+   "psrKm": 0
+  },
+  {
+   "id": "feature-sverdrup-crater",
+   "name": "Sverdrup crater",
+   "sunlitFrac": 0,
+   "dteFrac": 0.0046,
+   "slope": 3.85,
+   "psrKm": 0
+  },
+  {
+   "id": "feature-slater-crater",
+   "name": "Slater crater",
+   "sunlitFrac": 0,
+   "dteFrac": 0.1728,
+   "slope": 5.77,
+   "psrKm": 0
+  },
+  {
+   "id": "feature-amundsen-crater",
+   "name": "Amundsen crater",
+   "sunlitFrac": 0.1315,
+   "dteFrac": 0.0023,
+   "slope": 1.61,
+   "psrKm": 10.22
+  },
+  {
+   "id": "feature-scott-crater",
+   "name": "Scott crater",
+   "sunlitFrac": 0.2983,
+   "dteFrac": 0.567,
+   "slope": 6.95,
+   "psrKm": 19.83
+  },
+  {
+   "id": "feature-mons-mouton",
+   "name": "Mons Mouton (formerly Leibnitz Beta)",
+   "sunlitFrac": 0.3105,
+   "dteFrac": 0.5778,
+   "slope": 9.16,
+   "psrKm": 7.96
+  },
+  {
+   "id": "feature-kocher-crater",
+   "name": "Kocher crater",
+   "sunlitFrac": 0,
+   "dteFrac": 0,
+   "slope": 5.02,
+   "psrKm": 0
+  },
+  {
+   "id": "feature-mons-kocher",
+   "name": "Mons Kocher",
+   "sunlitFrac": 0.1068,
+   "dteFrac": 0.2014,
+   "slope": 3.85,
+   "psrKm": 9.53
+  },
+  {
+   "id": "feature-mons-cabeus",
+   "name": "Mons Cabeus",
+   "sunlitFrac": 0.5195,
+   "dteFrac": 1,
+   "slope": 3.83,
+   "psrKm": 9.24
+  },
+  {
+   "id": "feature-henson-crater",
+   "name": "Henson crater",
+   "sunlitFrac": 0.0072,
+   "dteFrac": 0,
+   "slope": 4.84,
+   "psrKm": 0.9
+  },
+  {
+   "id": "feature-shackleton-de-gerlache-connecting-ridge",
+   "name": "Shackleton - de Gerlache Connecting Ridge",
+   "sunlitFrac": 0.4106,
+   "dteFrac": 0.5348,
+   "slope": 15.5,
+   "psrKm": 10.22
+  }
+ ]
+}

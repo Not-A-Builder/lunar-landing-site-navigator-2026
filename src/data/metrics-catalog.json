@@ -1,0 +1,3828 @@
+{
+  "generatedAt": "2026-11-14T04:37:52+00:00",
+  "source": {
+    "sheet": "https://docs.google.com/spreadsheets/d/151XYyyy9HRlFYEFu9zvzud_sK3iOMXjHK_wNixa7Cr8/edit?gid=380290889",
+    "tab": "Draft 3",
+    "rows": 196,
+    "columns": 13
+  },
+  "categories": [
+    {
+      "id": "overall",
+      "emoji": "🍀",
+      "label": "Overall decision metrics",
+      "metricIds": [
+        "overall.joint-sunlit-dte-window",
+        "overall.longest-gap-without-simultaneous-sun-and-dte-visibility",
+        "overall.feasible-operational-hours-total",
+        "overall.mission-constraint-compatibility",
+        "overall.comparison-against-site-alternatives",
+        "overall.pareto-optimal-sites",
+        "overall.mission-weighted-suitability-index",
+        "overall.sensitivity-to-time-shift",
+        "overall.sensitivity-to-position-shift",
+        "overall.sensitivity-to-mast-height",
+        "overall.risk-weighted-percentile-performance",
+        "overall.constraint-failure-explanation",
+        "overall.opportunity-cost-science-gained",
+        "overall.evidence-maturity-analysis-confidence",
+        "overall.joint-illumination-and-slope-qualifying-area",
+        "overall.qualifying-pixel-count-per-landing-area-grid-cell",
+        "overall.connectivity-fragmentation-of-qualifying-terrain",
+        "overall.illumination-slope-qualifying-area-resolution-sensitivity"
+      ]
+    },
+    {
+      "id": "sun",
+      "emoji": "☀️",
+      "label": "Sun geometry, illumination & energy",
+      "metricIds": [
+        "sun.sun-azimuth",
+        "sun.sun-elevation",
+        "sun.sun-angular-diameter",
+        "sun.instantaneous-terrain-shadow-state",
+        "sun.sunrise-sunset-crossings",
+        "sun.illumination-time-series",
+        "sun.solar-availability-fraction",
+        "sun.full-vs-partial-solar-illumination",
+        "sun.longest-continuous-darkness",
+        "sun.total-dark-duration",
+        "sun.longest-continuous-sunlight",
+        "sun.illumination-seasonality-multiyear-average",
+        "sun.solar-incidence-on-panel",
+        "sun.surface-shadow-length-direction",
+        "sun.observer-or-panel-height",
+        "sun.mutual-artificial-shadowing",
+        "sun.solar-eclipse-intervals",
+        "sun.illumination-model-cadence",
+        "sun.solar-polar-latitude-envelope",
+        "sun.solar-visible-disk-coefficient-f-t",
+        "sun.disk-weighted-annual-illumination-rate",
+        "sun.solar-disk-visibility-threshold-for-day-night",
+        "sun.continuous-solar-months-per-year-disk-threshold",
+        "sun.total-dark-days-during-polar-winter-synodic-month",
+        "sun.winter-month-longest-uninterrupted-darkness",
+        "sun.uniform-vs-ephemeris-solar-illumination-comparison",
+        "sun.sun-position-temporal-occupancy-distribution",
+        "sun.time-resolved-absorbed-surface-solar-flux",
+        "sun.sun-moon-distance-correction-to-irradiance",
+        "sun.surface-versus-elevated-solar-visibility-profile",
+        "sun.fraction-of-candidate-landing-area-illuminated-at-time-t",
+        "sun.candidate-area-illumination-episode-windows",
+        "sun.shadow-gap-bridging-sustained-operation-window",
+        "sun.area-above-chosen-annual-illumination-threshold",
+        "sun.radiative-view-factors",
+        "sun.solar-irradiance-at-site-panel",
+        "sun.solar-array-generating-power",
+        "sun.battery-charge-energy-reserve",
+        "sun.maximum-survivable-darkness",
+        "sun.duty-cycle-power-load",
+        "sun.heater-power-survival-mode",
+        "sun.peak-power-deficit-minimum-energy-margin",
+        "sun.array-orientation-and-tracking-limits",
+        "sun.dust-fouling-degradation-over-time"
+      ]
+    },
+    {
+      "id": "earth",
+      "emoji": "🌎",
+      "label": "Earth geometry, DTE comms & relay",
+      "metricIds": [
+        "earth.earth-azimuth",
+        "earth.earth-elevation",
+        "earth.libration-of-earth-in-lunar-sky",
+        "earth.earth-angular-diameter-disk-visibility",
+        "earth.dte-geometric-line-of-sight",
+        "earth.dte-visibility-intervals",
+        "earth.total-dte-visibility-fraction",
+        "earth.longest-dte-blackout",
+        "earth.dte-visibility-ground-station-availability",
+        "earth.earth-elevation-margin-horizon-clearance",
+        "earth.antenna-field-of-view-and-tracking",
+        "earth.rf-link-margin-received-signal",
+        "earth.data-rate-downlink-volume",
+        "earth.radio-multipath-terrain-scattering",
+        "earth.relay-satellite-visibility",
+        "earth.relay-infrastructure-availability",
+        "earth.two-way-light-time-and-latency",
+        "earth.contact-concurrency-with-sunlight",
+        "earth.earth-disk-visibility-criterion-any-half-full",
+        "earth.multiyear-dte-fraction-for-0-50-100-earth-disk",
+        "earth.earth-position-temporal-occupancy-distribution",
+        "earth.uniform-vs-ephemeris-earth-visibility-comparison",
+        "earth.high-ground-terrestrial-los-reflector-relay-opportunity",
+        "earth.earth-visibility-sensitivity-to-tower-height-three-disk-levels"
+      ]
+    },
+    {
+      "id": "spatial",
+      "emoji": "🌕",
+      "label": "Spatial context & geometry",
+      "metricIds": [
+        "spatial.selenographic-latitude",
+        "spatial.selenographic-longitude",
+        "spatial.site-elevation-above-datum",
+        "spatial.planetographic-reference-frame",
+        "spatial.map-projection-grid",
+        "spatial.distance-to-pole",
+        "spatial.nearside-farside-orientation",
+        "spatial.named-region-landmark-proximity",
+        "spatial.landing-site-area-footprint",
+        "spatial.nearby-infrastructures-exclusion-zones"
+      ]
+    },
+    {
+      "id": "terrain",
+      "emoji": "🪨",
+      "label": "Terrain & physical landing surface",
+      "metricIds": [
+        "terrain.terrain-elevation-model-dem",
+        "terrain.local-slope-magnitude",
+        "terrain.slope-aspect",
+        "terrain.micro-roughness-relief",
+        "terrain.boulder-size-and-abundance",
+        "terrain.crater-size-and-abundance",
+        "terrain.obstacle-free-landing-area",
+        "terrain.horizon-elevation-profile-mask",
+        "terrain.horizon-azimuth-far-field-occlusion",
+        "terrain.vertical-clearance-edge-drop",
+        "terrain.terrain-visibility-from-spacecraft",
+        "terrain.surface-material-blockiness"
+      ]
+    },
+    {
+      "id": "regolith",
+      "emoji": "🪨",
+      "label": "Regolith, geotechnical, thermal & local environment",
+      "metricIds": [
+        "regolith.regolith-thickness",
+        "regolith.particle-size-distribution",
+        "regolith.bulk-density-porosity",
+        "regolith.cohesion-and-internal-friction",
+        "regolith.bearing-capacity-and-expected-sinkage",
+        "regolith.soil-abrasiveness-dust-adhesion",
+        "regolith.electrostatic-charging-dust-lofting",
+        "regolith.local-magnetic-anomalies",
+        "regolith.surface-dielectric-rf-properties",
+        "regolith.lunar-seismic-moonquake-environment",
+        "regolith.surface-temperature-time-series",
+        "regolith.minimum-maximum-surface-temperature",
+        "regolith.temperature-gradient-cycling-rate",
+        "regolith.regolith-thermal-inertia"
+      ]
+    },
+    {
+      "id": "landing",
+      "emoji": "🛬",
+      "label": "Landing, descent & touchdown hazards",
+      "metricIds": [
+        "landing.touchdown-dispersion-ellipse",
+        "landing.terrain-relative-navigation-capability",
+        "landing.hazard-detection-and-avoidance-envelope",
+        "landing.lander-slope-tilt-tolerance",
+        "landing.landing-footpad-bearing-pressure",
+        "landing.plume-surface-interaction",
+        "landing.descent-sun-glare-and-visual-contrast",
+        "landing.descent-path-terrain-clearance",
+        "landing.landing-area-hazard-probability",
+        "landing.post-landing-stability-and-egress"
+      ]
+    },
+    {
+      "id": "trajectory",
+      "emoji": "🌀",
+      "label": "Launch, orbital transfer & descent trajectory",
+      "metricIds": [
+        "trajectory.earth-launch-window-availability",
+        "trajectory.translunar-transfer-type-time",
+        "trajectory.arrival-orbit-geometry",
+        "trajectory.orbital-phasing-descent-opportunities",
+        "trajectory.approach-direction-azimuth",
+        "trajectory.delta-v-budget-reserve",
+        "trajectory.descent-lighting-comm-continuity",
+        "trajectory.propellant-and-payload-mass-margin",
+        "trajectory.departure-ascent-rendezvous-timing",
+        "trajectory.landing-abort-alternate-sites"
+      ]
+    },
+    {
+      "id": "science",
+      "emoji": "🔬",
+      "label": "Science value, geology & volatiles",
+      "metricIds": [
+        "science.scientific-target-identification",
+        "science.distance-to-science-targets",
+        "science.geologic-units-stratigraphy",
+        "science.rock-composition-spectral-minerals",
+        "science.geologic-age-crater-chronology",
+        "science.permanently-shadowed-region-psr-coverage",
+        "science.psr-access-distance-and-difficulty",
+        "science.hydrogen-proxy-concentration",
+        "science.water-ice-abundance-estimate",
+        "science.ice-physical-state-and-depth",
+        "science.cold-trap-thermal-stability",
+        "science.other-volatiles-organics",
+        "science.resource-extraction-feasibility",
+        "science.science-diversity-score",
+        "science.instrument-deployment-suitability"
+      ]
+    },
+    {
+      "id": "logistics",
+      "emoji": "🧰",
+      "label": "Surface mission logistics & infrastructure",
+      "metricIds": [
+        "logistics.activity-timeline-critical-path",
+        "logistics.operational-mode-autonomy-rules",
+        "logistics.consumables-spares-reserves",
+        "logistics.command-telemetry-buffer",
+        "logistics.deployment-and-workspace-area",
+        "logistics.anchor-structure-erectability",
+        "logistics.ground-station-schedules-downlink-priority",
+        "logistics.nearby-landings-plume-exclusion",
+        "logistics.operational-safety-margins-reserve-time",
+        "logistics.site-infrastructure-reuse-potential"
+      ]
+    },
+    {
+      "id": "rover",
+      "emoji": "🛞",
+      "label": "Rover traversability & field ops",
+      "metricIds": [
+        "rover.traversable-slope-cross-slope",
+        "rover.route-obstacle-density",
+        "rover.route-length-and-cumulative-ascent",
+        "rover.travel-speed-slip",
+        "rover.traverse-energy-consumption",
+        "rover.dynamic-sunlight-along-route",
+        "rover.dynamic-communications-along-route",
+        "rover.safe-haven-waypoints",
+        "rover.route-temporal-feasibility-return-margin",
+        "rover.localization-navigation-uncertainty",
+        "rover.visibility-visual-ergonomics",
+        "rover.route-science-yield-vs-cost"
+      ]
+    },
+    {
+      "id": "space-weather",
+      "emoji": "☄️",
+      "label": "Space weather, impact & rare-event hazards",
+      "metricIds": [
+        "space-weather.solar-energetic-particle-sep-events",
+        "space-weather.galactic-cosmic-ray-exposure",
+        "space-weather.radiation-dose-behind-shielding",
+        "space-weather.surface-plasma-solar-wind-environment",
+        "space-weather.micrometeoroid-background-impact-flux",
+        "space-weather.predictable-meteor-stream-exposure",
+        "space-weather.known-asteroid-or-comet-lunar-impact-risk",
+        "space-weather.recent-local-impact-detection-new-craters",
+        "space-weather.eclipse-occultation-by-orbital-bodies",
+        "space-weather.radiation-impact-event-alert-confidence"
+      ]
+    },
+    {
+      "id": "heritage",
+      "emoji": "📌",
+      "label": "Mission heritage, nearby activity & historical evidence",
+      "metricIds": [
+        "heritage.previous-landing-impact-locations",
+        "heritage.mission-outcome-and-anomaly-history",
+        "heritage.prior-orbital-coverage-repeat-imagery",
+        "heritage.prior-in-situ-chemistry-soil-observations",
+        "heritage.documented-hazard-or-rover-traverse-events",
+        "heritage.nearby-active-planned-missions-interference",
+        "heritage.cultural-heritage-preservation-zones"
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "id": "overall.joint-sunlit-dte-window",
+      "categoryId": "overall",
+      "name": "Joint sunlit & DTE window",
+      "question": "When are both sunlight and communication available?",
+      "definition": "Intersection of mission-specific solar and geometric Earth windows.",
+      "unit": "UTC; h",
+      "significance": "Directly serves challenge central question.",
+      "dependencies": "Sun/DTE series",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Best overlapping windows",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Challenge synthesis",
+      "caveats": null
+    },
+    {
+      "id": "overall.longest-gap-without-simultaneous-sun-and-dte-visibility",
+      "categoryId": "overall",
+      "name": "Longest gap without simultaneous Sun and DTE visibility",
+      "question": "What is the worst period without both essentials?",
+      "definition": "Maximum gap where required simultaneous conditions do not hold.",
+      "unit": "h / d",
+      "significance": "Continuity of real-time science/ops.",
+      "dependencies": "Joint window series",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "What is the worst period without both essentials",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Challenge synthesis",
+      "caveats": null
+    },
+    {
+      "id": "overall.feasible-operational-hours-total",
+      "categoryId": "overall",
+      "name": "Feasible operational-hours total",
+      "question": "How many hours can planned activities proceed?",
+      "definition": "Sum of intervals satisfying power, comm, thermal and activity criteria.",
+      "unit": "h; %",
+      "significance": "Mission-specific opportunity, not raw lighting only.",
+      "dependencies": "All constraints, task requirements",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA Site Selection",
+      "caveats": null
+    },
+    {
+      "id": "overall.mission-constraint-compatibility",
+      "categoryId": "overall",
+      "name": "Mission constraint compatibility",
+      "question": "Does any full mission interval work?",
+      "definition": "Feasibility intersection over touchdown through end-of-mission with buffers.",
+      "unit": "Boolean / intervals",
+      "significance": "Moves from site score to credible mission planning.",
+      "dependencies": "Trajectory, terrain, Sun, comm, vehicle",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA Site Selection",
+      "caveats": null
+    },
+    {
+      "id": "overall.comparison-against-site-alternatives",
+      "categoryId": "overall",
+      "name": "Comparison against site alternatives",
+      "question": "Which sites trade sunlight for contact?",
+      "definition": "Side-by-side metrics and site-by-date ranking with explicit thresholds.",
+      "unit": "comparative",
+      "significance": "Makes trade-offs legible across options.",
+      "dependencies": "Aligned scenario, metrics",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Which sites trade sunlight for contact",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Challenge",
+      "caveats": null
+    },
+    {
+      "id": "overall.pareto-optimal-sites",
+      "categoryId": "overall",
+      "name": "Pareto-optimal sites",
+      "question": "Which options are not dominated?",
+      "definition": "Sites where no alternative improves one criterion without worsening another.",
+      "unit": "set / IDs",
+      "significance": "Avoids arbitrary composite score.",
+      "dependencies": "Comparable metrics",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Decision analysis synthesis",
+      "caveats": null
+    },
+    {
+      "id": "overall.mission-weighted-suitability-index",
+      "categoryId": "overall",
+      "name": "Mission weighted suitability index",
+      "question": "What is best given declared priorities?",
+      "definition": "Normalized criteria aggregated with weights after hard gates.",
+      "unit": "0–100 index",
+      "significance": "Compact comparisons and what-if decisions.",
+      "dependencies": "Weights, normalizations, source metrics",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Decision analysis synthesis",
+      "caveats": "Never imply an official NASA safety certification"
+    },
+    {
+      "id": "overall.sensitivity-to-time-shift",
+      "categoryId": "overall",
+      "name": "Sensitivity to time shift",
+      "question": "What if landing slips a few days?",
+      "definition": "Variation of feasibility across ±dates.",
+      "unit": "hours margin; %",
+      "significance": "Schedule resilience and alternate launch windows.",
+      "dependencies": "Ephemeris, scenario",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "What if landing slips a few days",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Challenge synthesis",
+      "caveats": null
+    },
+    {
+      "id": "overall.sensitivity-to-position-shift",
+      "categoryId": "overall",
+      "name": "Sensitivity to position shift",
+      "question": "What if lander touches down 50 m away?",
+      "definition": "Variation of Sun/DTE/hazards over nearby grid or landing ellipse.",
+      "unit": "% / m / deg",
+      "significance": "Tests fragility to precision.",
+      "dependencies": "DEM, ellipse",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA PGDA",
+      "caveats": null
+    },
+    {
+      "id": "overall.sensitivity-to-mast-height",
+      "categoryId": "overall",
+      "name": "Sensitivity to mast height",
+      "question": "Would raising antenna or panel improve conditions?",
+      "definition": "Recalculate visibility at chosen observer height.",
+      "unit": "h improvement / m",
+      "significance": "Engineering tradeoff around site.",
+      "dependencies": "Horizon mask, mast",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Would raising antenna or panel improve conditions",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant 2009",
+      "caveats": null
+    },
+    {
+      "id": "overall.risk-weighted-percentile-performance",
+      "categoryId": "overall",
+      "name": "Risk-weighted / percentile performance",
+      "question": "What if conditions are worse than predicted?",
+      "definition": "Pessimistic percentile over input uncertainty ensembles.",
+      "unit": "P5, P50, P95",
+      "significance": "Better than optimistic single line.",
+      "dependencies": "Uncertainty, scenarios",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA PGDA",
+      "caveats": null
+    },
+    {
+      "id": "overall.constraint-failure-explanation",
+      "categoryId": "overall",
+      "name": "Constraint failure explanation",
+      "question": "Why is this option infeasible?",
+      "definition": "Human-readable reason codes, affected window and evidence links.",
+      "unit": "reason list",
+      "significance": "Supports debugging and education.",
+      "dependencies": "All gates",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Why is this option infeasible",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Decision analysis synthesis",
+      "caveats": null
+    },
+    {
+      "id": "overall.opportunity-cost-science-gained",
+      "categoryId": "overall",
+      "name": "Opportunity cost / science gained",
+      "question": "What is sacrificed choosing this site?",
+      "definition": "Incremental accessible science targets per lost power/contact/time.",
+      "unit": "relative score",
+      "significance": "Exposes choices hidden by scalar score.",
+      "dependencies": "Site alternatives, objectives",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "Decision analysis synthesis",
+      "caveats": null
+    },
+    {
+      "id": "overall.evidence-maturity-analysis-confidence",
+      "categoryId": "overall",
+      "name": "Evidence maturity / analysis confidence",
+      "question": "How close to actionable planning is analysis?",
+      "definition": "Evidence maturity, unsupported inputs, engineering-review requirements.",
+      "unit": "tier / score",
+      "significance": "Prevents prototype from claiming flight readiness.",
+      "dependencies": "All provenance & review gates",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Engineering synthesis",
+      "caveats": null
+    },
+    {
+      "id": "overall.joint-illumination-and-slope-qualifying-area",
+      "categoryId": "overall",
+      "name": "Joint illumination-and-slope qualifying area",
+      "question": "How much terrain meets both lighting and safety constraints?",
+      "definition": "Area of DEM pixels satisfying both terrain slope ≤ selected limit (e.g. 5/15/25°) and annual illumination rate ≥ selected level (e.g. 50/60/70%).",
+      "unit": "km²; % of candidate region",
+      "significance": "Screens out sunlit but steep landing terrain.",
+      "dependencies": "Slope per DEM pixel, solar illumination rate, thresholds, resolution",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Find flatter ground with enough sunlight",
+        "educator": "Overlay sunlight and slope filters like Liu Figures 6–7",
+        "planner": "Expose calculation, thresholds, timestamp, evidence and uncertainty"
+      },
+      "source": "Liu et al. (2023), Lunar South Polar Landing Area Selection Constrained by Illumination Conditions and Slopes, DOI:10.15982/j.issn.2096-9287.2023.20220091, pp.547–548, Figs.6–7; Table 4 p.554",
+      "caveats": "Liu's ≤15° and ≥60% are study screening choices, not universal lander certification limits."
+    },
+    {
+      "id": "overall.qualifying-pixel-count-per-landing-area-grid-cell",
+      "categoryId": "overall",
+      "name": "Qualifying-pixel count per landing-area grid cell",
+      "question": "Where are enough qualifying pixels grouped into a candidate area?",
+      "definition": "Count of pixels satisfying joint light-and-slope criteria in each 1×1-km comparison grid; Liu uses 2,500 ×20-m pixels/cell or 100 ×100-m pixels for alternate comparison.",
+      "unit": "pixels/cell; m²",
+      "significance": "Quantifies size of candidate landing regions and avoids mistaking one lucky pixel for an available landing zone.",
+      "dependencies": "Joint threshold masks, grid definition, pixel size",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "How much usable landing ground lies in each zone?",
+        "educator": "Count green safe/sunny pixels in 1km squares",
+        "planner": "Expose calculation, thresholds, timestamp, evidence and uncertainty"
+      },
+      "source": "Liu et al. (2023), Lunar South Polar Landing Area Selection Constrained by Illumination Conditions and Slopes, DOI:10.15982/j.issn.2096-9287.2023.20220091, pp.548–549, Fig.8",
+      "caveats": "Count is grid-resolution-dependent; edge cases and footprints require explicit handling."
+    },
+    {
+      "id": "overall.connectivity-fragmentation-of-qualifying-terrain",
+      "categoryId": "overall",
+      "name": "Connectivity / fragmentation of qualifying terrain",
+      "question": "Is suitable terrain one continuous patch or isolated fragments?",
+      "definition": "Spatial contiguity and patch sizes of pixels meeting sunlight and slope constraints, including neighboring-grid connectivity rather than pixel counts alone.",
+      "unit": "count; largest contiguous area km²; connectivity flag",
+      "significance": "Supports real landing footprint and rover access, not just scattered favorable pixels.",
+      "dependencies": "Qualifying map, spatial resolution, neighborhood connectivity rule",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Can a lander fit on one continuous safe patch?",
+        "educator": "Compare sparse dots with a connected safe landing patch",
+        "planner": "Expose calculation, thresholds, timestamp, evidence and uncertainty"
+      },
+      "source": "Liu et al. (2023), Lunar South Polar Landing Area Selection Constrained by Illumination Conditions and Slopes, DOI:10.15982/j.issn.2096-9287.2023.20220091, pp.548–549, §3.2, Figs.8–9",
+      "caveats": "Contiguity of DEM cells is a screening proxy, not proof of sub-meter touchdown safety."
+    },
+    {
+      "id": "overall.illumination-slope-qualifying-area-resolution-sensitivity",
+      "categoryId": "overall",
+      "name": "Illumination/slope qualifying-area resolution sensitivity",
+      "question": "How much do landing results change with map pixel size?",
+      "definition": "Difference in qualifying landing area or slope/illumination classification when using 20-m versus 60-m DEM/illumination grids at comparable thresholds.",
+      "unit": "km² difference; relative %",
+      "significance": "Quantifies screening uncertainty and false confidence from coarse terrain maps.",
+      "dependencies": "DEM resolution, illumination model, slope calculation, thresholds",
+      "role": "Validation",
+      "views": {
+        "enthusiast": "Do more detailed Moon maps change where you can land?",
+        "educator": "Toggle 20m and 60m suitability areas; observe differences",
+        "planner": "Expose calculation, thresholds, timestamp, evidence and uncertainty"
+      },
+      "source": "Liu et al. (2023), Lunar South Polar Landing Area Selection Constrained by Illumination Conditions and Slopes, DOI:10.15982/j.issn.2096-9287.2023.20220091, pp.552–554, Tables 2–4, Fig.15",
+      "caveats": "Paper's 60m map is multi-nodal-cycle illumination and 20m map is 2026 illumination: differences are not solely spatial-resolution effects."
+    },
+    {
+      "id": "sun.sun-azimuth",
+      "categoryId": "sun",
+      "name": "Sun azimuth",
+      "question": "Which compass direction is the Sun?",
+      "definition": "Sun bearing in site-centered horizon coordinates.",
+      "unit": "deg",
+      "significance": "Locates cast shadows and array orientation.",
+      "dependencies": "Ephemeris, site, time",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Sun direction on sky dome",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant 2009 / JPL Horizons",
+      "caveats": null
+    },
+    {
+      "id": "sun.sun-elevation",
+      "categoryId": "sun",
+      "name": "Sun elevation",
+      "question": "How high above the local horizontal is the Sun?",
+      "definition": "Topocentric center-of-Sun angle above tangent plane.",
+      "unit": "deg",
+      "significance": "Controls shallow light and line-of-sight.",
+      "dependencies": "Ephemeris, site, time",
+      "role": "Input",
+      "views": {
+        "enthusiast": "How high the Sun sits",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant 2009 / JPL Horizons",
+      "caveats": null
+    },
+    {
+      "id": "sun.sun-angular-diameter",
+      "categoryId": "sun",
+      "name": "Sun angular diameter",
+      "question": "Is a sliver or all of the Sun visible?",
+      "definition": "Angular size of the solar disk (Bryant uses ~0.53° diameter) and instantaneous area fraction of the disk above the terrain horizon (f in Liu et al.; 0 ≤ f ≤ 1).",
+      "unit": "deg; 0–1 disk fraction",
+      "significance": "Prevents binary light/dark oversimplification.",
+      "dependencies": "Sun geometry, horizon mask",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Is a sliver or all of the Sun visible",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant (2009), IPN Progress Report 42-176, 176C.pdf, pp.9,13–15; Liu et al. (2023), Lunar South Polar Landing Area Selection Constrained by Illumination Conditions and Slopes, DOI:10.15982/j.issn.2096-9287.2023.20220091, pp.549,551–552",
+      "caveats": "Disk-area fraction f is not electrical power, nor is it identical to a binary sunlit/no-sunlit fraction."
+    },
+    {
+      "id": "sun.instantaneous-terrain-shadow-state",
+      "categoryId": "sun",
+      "name": "Instantaneous terrain-shadow state",
+      "question": "Is this site illuminated right now?",
+      "definition": "Visible solar disk accounting for terrain self-shadow and distant obstruction.",
+      "unit": "Boolean / %",
+      "significance": "Immediate power/visibility assessment.",
+      "dependencies": "Sun az, el, horizon mask",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Is this site illuminated right now",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant 2009",
+      "caveats": null
+    },
+    {
+      "id": "sun.sunrise-sunset-crossings",
+      "categoryId": "sun",
+      "name": "Sunrise/sunset crossings",
+      "question": "When does sunlight become available or vanish?",
+      "definition": "Times sunlight passes effective local horizon, including disk radius.",
+      "unit": "UTC instants",
+      "significance": "Operating/recharge scheduling.",
+      "dependencies": "Sun trajectory, horizon",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "When light begins and ends",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant 2009",
+      "caveats": null
+    },
+    {
+      "id": "sun.illumination-time-series",
+      "categoryId": "sun",
+      "name": "Illumination time series",
+      "question": "How does lighting change hour by hour?",
+      "definition": "Time sequence of solar visibility through mission window.",
+      "unit": "% / timestamp",
+      "significance": "Shows mission-specific temporal evolution.",
+      "dependencies": "Ephemeris, horizon, cadence",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "How does lighting change hour by hour",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Challenge / Bryant 2009",
+      "caveats": null
+    },
+    {
+      "id": "sun.solar-availability-fraction",
+      "categoryId": "sun",
+      "name": "Solar availability fraction",
+      "question": "What percentage of the mission receives light?",
+      "definition": "Fraction of specified interval meeting an explicit solar-disk visibility threshold (any disk / ≥50% / full disk). NOT the same as Liu's disk-weighted illumination rate.",
+      "unit": "% time",
+      "significance": "High-level site comparison (not power output).",
+      "dependencies": "Illumination series, thresholds, interval",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "What percentage of the mission receives light",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant (2009), IPN Progress Report 42-176, 176C.pdf, pp.13–15, Table 3; Liu et al. (2023), Lunar South Polar Landing Area Selection Constrained by Illumination Conditions and Slopes, DOI:10.15982/j.issn.2096-9287.2023.20220091, pp.547,551–552",
+      "caveats": "Always label the visibility threshold and time interval; do not substitute a multiyear mean for exact mission dates."
+    },
+    {
+      "id": "sun.full-vs-partial-solar-illumination",
+      "categoryId": "sun",
+      "name": "Full vs partial solar illumination",
+      "question": "How much of the solar disk is visible?",
+      "definition": "Three separate thresholded metrics: any solar-disk area visible (>0), at least approximately half the disk visible (≥0.5), and entire disk visible (=1). Bryant labels these the 0/50/100% disk-visible metrics.",
+      "unit": "0/50/100% disk",
+      "significance": "Clarifies differing illumination metrics in paper.",
+      "dependencies": "Solar disk, horizon",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "How much of the solar disk is visible",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant (2009), IPN Progress Report 42-176, 176C.pdf, pp.13–15, Table 3",
+      "caveats": "Bryant's '0% disk-visible metric' represents time when ANY part is visible, not time when sunlight is absent; define labels clearly."
+    },
+    {
+      "id": "sun.longest-continuous-darkness",
+      "categoryId": "sun",
+      "name": "Longest continuous darkness",
+      "question": "What is the worst unbroken power deficit?",
+      "definition": "Greatest uninterrupted interval in which the selected solar visibility threshold is not met, calculated for specified date window. Bryant also calculates 'days longest darkness' for 0/50/100% disk levels.",
+      "unit": "h / d",
+      "significance": "Storage, survival and safe-haven planning.",
+      "dependencies": "Time series, light threshold",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Longest time in darkness",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant (2009), IPN Progress Report 42-176, 176C.pdf, pp.15,29, Table 3; Liu et al. (2023), Lunar South Polar Landing Area Selection Constrained by Illumination Conditions and Slopes, DOI:10.15982/j.issn.2096-9287.2023.20220091, pp.551–552, Fig.13",
+      "caveats": "Time resolution and threshold affect result; winter-only and entire-window values are distinct."
+    },
+    {
+      "id": "sun.total-dark-duration",
+      "categoryId": "sun",
+      "name": "Total dark duration",
+      "question": "How much time is dark overall?",
+      "definition": "Total durations failing a stated visibility criterion over the selected period; distinct from longest uninterrupted darkness and Bryant's winter-synodic-month sum.",
+      "unit": "h / d",
+      "significance": "Energy accounting and operational loss.",
+      "dependencies": "Time series",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "How much time is dark overall",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant (2009), IPN Progress Report 42-176, 176C.pdf, pp.15,29, Table 3",
+      "caveats": "Must state averaging interval and visible disk threshold."
+    },
+    {
+      "id": "sun.longest-continuous-sunlight",
+      "categoryId": "sun",
+      "name": "Longest continuous sunlight",
+      "question": "How long can operations run uninterrupted in sunlight?",
+      "definition": "Maximum uninterrupted run when solar disk visibility exceeds the selected threshold for a POINT; separate from the duration of illumination across an entire candidate region.",
+      "unit": "h / d",
+      "significance": "Science campaign opportunities.",
+      "dependencies": "Time series",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "How long can operations run uninterrupted in sunlight",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Liu et al. (2023), Lunar South Polar Landing Area Selection Constrained by Illumination Conditions and Slopes, DOI:10.15982/j.issn.2096-9287.2023.20220091, pp.549–552, Table 1, Figs.10–13",
+      "caveats": "Regional light spans must not be presented as guaranteed illumination at every location inside the region."
+    },
+    {
+      "id": "sun.illumination-seasonality-multiyear-average",
+      "categoryId": "sun",
+      "name": "Illumination seasonality / multiyear average",
+      "question": "Does the result change by lunar season?",
+      "definition": "Variation of solar visibility with selected dates and the long-term mean. Bryant averages over an 18.6-year lunar nodal cycle (2009–2028 actual ephemeris comparison); Liu separately calculates calendar-year 2026.",
+      "unit": "% / cycle",
+      "significance": "Stops users mistaking long-term mean for date-specific feasibility.",
+      "dependencies": "Ephemeris, years, DEM",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant (2009), IPN Progress Report 42-176, 176C.pdf, pp.11–13,30–33,37–38; Liu et al. (2023), Lunar South Polar Landing Area Selection Constrained by Illumination Conditions and Slopes, DOI:10.15982/j.issn.2096-9287.2023.20220091, pp.547,552",
+      "caveats": "Bryant's long-term uniform Sun distribution is an approximation; Liu's 2026 annual rate is not interchangeable with it."
+    },
+    {
+      "id": "sun.solar-incidence-on-panel",
+      "categoryId": "sun",
+      "name": "Solar incidence on panel",
+      "question": "How directly does sunlight hit hardware?",
+      "definition": "Angle between sunlight and solar-array normal.",
+      "unit": "deg; cos factor",
+      "significance": "Predicts array flux, beyond Sun visible/not.",
+      "dependencies": "Sun angles, mounting orientation",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant 2009",
+      "caveats": null
+    },
+    {
+      "id": "sun.surface-shadow-length-direction",
+      "categoryId": "sun",
+      "name": "Surface shadow length/direction",
+      "question": "Where will shadows extend?",
+      "definition": "Geometry of cast shadows for known obstacle heights.",
+      "unit": "m; deg",
+      "significance": "Traversability, cameras, deployable panels.",
+      "dependencies": "Sun elevation, obstacle geometry",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA South Pole Environment",
+      "caveats": null
+    },
+    {
+      "id": "sun.observer-or-panel-height",
+      "categoryId": "sun",
+      "name": "Observer or panel height",
+      "question": "Would a mast make sunlight available?",
+      "definition": "Instrument or solar-array height above LOCAL terrain at which the Sun/Earth horizon is evaluated (e.g., 0 and 2 m in Liu; 2–3000 m tower cases in Bryant).",
+      "unit": "m",
+      "significance": "Visibility can improve radically with height.",
+      "dependencies": "Terrain, site structure",
+      "role": "Constraint",
+      "views": {
+        "enthusiast": "Would a mast make sunlight available",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant (2009), IPN Progress Report 42-176, 176C.pdf, pp.5,7–9,37–38; Liu et al. (2023), Lunar South Polar Landing Area Selection Constrained by Illumination Conditions and Slopes, DOI:10.15982/j.issn.2096-9287.2023.20220091, pp.551–552, Fig.12",
+      "caveats": "Height changes should recompute terrain-shadow geometry; no guarantee that taller equipment improves all mission outcomes."
+    },
+    {
+      "id": "sun.mutual-artificial-shadowing",
+      "categoryId": "sun",
+      "name": "Mutual artificial shadowing",
+      "question": "Will spacecraft or habitats block sunlight?",
+      "definition": "Occlusion from landed hardware and infrastructure.",
+      "unit": "h; % shadowed",
+      "significance": "Operational array siting and co-located hardware.",
+      "dependencies": "Asset geometry, Sun",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "NASA South Pole Environment",
+      "caveats": null
+    },
+    {
+      "id": "sun.solar-eclipse-intervals",
+      "categoryId": "sun",
+      "name": "Solar eclipse intervals",
+      "question": "Could Earth temporarily eclipse the Sun?",
+      "definition": "Predicted times when Earth's shadow blocks the solar disk from the lunar site.",
+      "unit": "UTC; h",
+      "significance": "Short power interruptions not captured by terrain alone.",
+      "dependencies": "Ephemeris, lunar site",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant (2009), IPN Progress Report 42-176, 176C.pdf, p.15",
+      "caveats": "Bryant's winter-darkness metrics explicitly do not account for eclipses; include them in a date-specific operational model."
+    },
+    {
+      "id": "sun.illumination-model-cadence",
+      "categoryId": "sun",
+      "name": "Illumination model cadence",
+      "question": "Could short darkness windows be missed?",
+      "definition": "Temporal spacing of ephemerides and visibility calculations (Liu: 1 h in 2026, 8,760 steps; Bryant's ephemeris-distribution demonstrations used 24-h samples over 2009–2028).",
+      "unit": "s; min; h",
+      "significance": "Accuracy of event durations and decision windows.",
+      "dependencies": "Ephemeris cost, site",
+      "role": "Metadata",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant (2009), IPN Progress Report 42-176, 176C.pdf, pp.11–12,30; Liu et al. (2023), Lunar South Polar Landing Area Selection Constrained by Illumination Conditions and Slopes, DOI:10.15982/j.issn.2096-9287.2023.20220091, p.547",
+      "caveats": "A coarse cadence can miss short horizon crossings or eclipses; spatial resolution is a separate quantity."
+    },
+    {
+      "id": "sun.solar-polar-latitude-envelope",
+      "categoryId": "sun",
+      "name": "Solar polar-latitude envelope",
+      "question": "How high or low can the Sun travel at the pole?",
+      "definition": "Sun-center motion stays approximately within ±1.54° selenographic latitude while moving through all longitudes; disk limbs extend beyond those limits.",
+      "unit": "deg",
+      "significance": "Defines the seasonal solar horizon envelope and polar shadow extremes.",
+      "dependencies": "Lunar obliquity, ephemeris, coordinate frame",
+      "role": "Input",
+      "views": {
+        "enthusiast": "How high the Sun can go",
+        "educator": "Compare the solar path band to the terrain skyline",
+        "planner": "Expose calculation, thresholds, timestamp, evidence and uncertainty"
+      },
+      "source": "Bryant (2009), IPN Progress Report 42-176, 176C.pdf, pp.1,9–11, Figs.5–8",
+      "caveats": "Geometric envelope is not a local sun-above-terrain calculation."
+    },
+    {
+      "id": "sun.solar-visible-disk-coefficient-f-t",
+      "categoryId": "sun",
+      "name": "Solar visible-disk coefficient f(t)",
+      "question": "How much of the Sun can we see right now?",
+      "definition": "Fraction of the apparent solar disk unoccluded by terrain at each time step; Liu's f_i=0 fully blocked, 0<f_i<1 partly visible, f_i=1 fully visible.",
+      "unit": "0–1",
+      "significance": "Supplies physically meaningful partial-Sun weighting for illumination and absorbed-flux models.",
+      "dependencies": "Sun position, angular radius, local terrain horizon, observer height",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "How much of the Sun shows above the ridge",
+        "educator": "Explore the solar disk passing behind a ridge",
+        "planner": "Expose calculation, thresholds, timestamp, evidence and uncertainty"
+      },
+      "source": "Liu et al. (2023), Lunar South Polar Landing Area Selection Constrained by Illumination Conditions and Slopes, DOI:10.15982/j.issn.2096-9287.2023.20220091, pp.549,551, §4.1, Fig.12",
+      "caveats": "Do not confuse disk area fraction with daylight fraction or irradiance."
+    },
+    {
+      "id": "sun.disk-weighted-annual-illumination-rate",
+      "categoryId": "sun",
+      "name": "Disk-weighted annual illumination rate",
+      "question": "How much of the year’s possible sunlight actually reaches this spot?",
+      "definition": "Liu's annual illumination rate is the time average of per-step Sun-visible coefficients f_i: Σ(f_i Δt) / ΣΔt; their 2026 calculation uses Δt = 1 hour over 8,760 hours.",
+      "unit": "0–1; %",
+      "significance": "Scores exposure while assigning partial-Sun steps fractional weight.",
+      "dependencies": "Solar visible-disk coefficient, temporal cadence, selected calendar year",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Share of the year the Sun is effectively visible",
+        "educator": "Compare weighted annual light with a binary daylight count",
+        "planner": "Expose calculation, thresholds, timestamp, evidence and uncertainty"
+      },
+      "source": "Liu et al. (2023), Lunar South Polar Landing Area Selection Constrained by Illumination Conditions and Slopes, DOI:10.15982/j.issn.2096-9287.2023.20220091, p.547, Fig.4",
+      "caveats": "This is not Bryant's separate 0/50/100% thresholded availability, nor full photovoltaic energy output."
+    },
+    {
+      "id": "sun.solar-disk-visibility-threshold-for-day-night",
+      "categoryId": "sun",
+      "name": "Solar-disk visibility threshold for day/night",
+      "question": "What counts as sunlight for this mission?",
+      "definition": "Selected cutoff f ≥ τ used to convert continuous disk fraction into binary visible/dark states; Liu uses τ=0.5 for PLS1 continuous-day/night intervals.",
+      "unit": "disk fraction (0–1)",
+      "significance": "Changes lengths and timing of light/dark periods used in power survival planning.",
+      "dependencies": "Solar visible-disk coefficient, mission requirements",
+      "role": "Constraint",
+      "views": {
+        "enthusiast": "Set how much Sun must show to count as daytime",
+        "educator": "Compare 0%, 50%, 100% disk criteria and how windows move",
+        "planner": "Expose calculation, thresholds, timestamp, evidence and uncertainty"
+      },
+      "source": "Liu et al. (2023), Lunar South Polar Landing Area Selection Constrained by Illumination Conditions and Slopes, DOI:10.15982/j.issn.2096-9287.2023.20220091, p.552, §4.2, Fig.13; Bryant (2009), IPN Progress Report 42-176, 176C.pdf, p.13–15",
+      "caveats": "A disk threshold is an analysis choice; f≥0.5 is not a universal lander power threshold."
+    },
+    {
+      "id": "sun.continuous-solar-months-per-year-disk-threshold",
+      "categoryId": "sun",
+      "name": "Continuous solar months per year (disk threshold)",
+      "question": "For how many lunar months is the Sun continuously visible?",
+      "definition": "Bryant's 'months 100% visible' estimate of synodic months per year with uninterrupted visibility for each 0/50/100% visible-disk criterion.",
+      "unit": "synodic months/year",
+      "significance": "Indicates extended uninterrupted illumination and potential power continuity.",
+      "dependencies": "Horizon mask, solar latitude envelope, solar-disk threshold",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "How many months never lose the Sun",
+        "educator": "Compare continuous solar months with average sunshine percent",
+        "planner": "Expose calculation, thresholds, timestamp, evidence and uncertainty"
+      },
+      "source": "Bryant (2009), IPN Progress Report 42-176, 176C.pdf, p.15 and Table 3, p.29",
+      "caveats": "This is a long-term average estimate, not a guarantee for any specified mission month."
+    },
+    {
+      "id": "sun.total-dark-days-during-polar-winter-synodic-month",
+      "categoryId": "sun",
+      "name": "Total dark days during polar winter synodic month",
+      "question": "How much of the worst winter month is dark in total?",
+      "definition": "Bryant's 'days dark in winter month': sum of shadowed intervals within the winter synodic month (≈29.5 d), separately for 0/50/100% solar-disk criteria.",
+      "unit": "days per winter synodic month",
+      "significance": "Supports battery-storage upper-bound assessments under severe illumination.",
+      "dependencies": "Winter Sun envelope, horizon mask, disk visibility threshold",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Dark days added up in the harshest lunar month",
+        "educator": "Contrast total winter darkness with longest single outage",
+        "planner": "Expose calculation, thresholds, timestamp, evidence and uncertainty"
+      },
+      "source": "Bryant (2009), IPN Progress Report 42-176, 176C.pdf, pp.15–16, Table 3 p.29",
+      "caveats": "Sum of separate dark spans; is NOT the longest unbroken night. Bryant omits eclipse effects."
+    },
+    {
+      "id": "sun.winter-month-longest-uninterrupted-darkness",
+      "categoryId": "sun",
+      "name": "Winter-month longest uninterrupted darkness",
+      "question": "What is the longest single winter shadow interval?",
+      "definition": "Maximum continuous interval below each visibility threshold during the selected winter synodic month (Bryant's 'days longest darkness' statistic).",
+      "unit": "days",
+      "significance": "Directly influences battery and heater endurance for winter missions.",
+      "dependencies": "Terrain horizon, solar path, disk threshold",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Longest one-time shadow in winter",
+        "educator": "Compare longest continuous winter outage vs cumulative darkness",
+        "planner": "Expose calculation, thresholds, timestamp, evidence and uncertainty"
+      },
+      "source": "Bryant (2009), IPN Progress Report 42-176, 176C.pdf, p.15, Table 3 p.29",
+      "caveats": "This source-specific winter statistic is distinct from mission-window longest darkness."
+    },
+    {
+      "id": "sun.uniform-vs-ephemeris-solar-illumination-comparison",
+      "categoryId": "sun",
+      "name": "Uniform-vs-ephemeris solar illumination comparison",
+      "question": "How close is a long-term approximation to actual Sun motion?",
+      "definition": "Compare annual/multiyear solar visibility from uniform occupation of the Sun's bounding latitude–longitude region against integration of actual JPL Horizons trajectories.",
+      "unit": "% illumination; percentage-point difference",
+      "significance": "Shows whether rapid long-term estimates can be trusted for the use case.",
+      "dependencies": "Solar motion distribution, horizon mask, time interval",
+      "role": "Validation",
+      "views": {
+        "enthusiast": "Estimated versus calculated sunshine",
+        "educator": "Show why an approximation differs from dated ephemeris",
+        "planner": "Expose calculation, thresholds, timestamp, evidence and uncertainty"
+      },
+      "source": "Bryant (2009), IPN Progress Report 42-176, 176C.pdf, pp.11–13,30–33,37–38, Table 5",
+      "caveats": "Bryant finds close agreement for examined sites over 2009–2028; do not assume same error for every site/date."
+    },
+    {
+      "id": "sun.sun-position-temporal-occupancy-distribution",
+      "categoryId": "sun",
+      "name": "Sun-position temporal occupancy distribution",
+      "question": "Does the Sun spend equal time at all positions?",
+      "definition": "Time-weighted occupancy of Sun-center locations in selenographic latitude/longitude across a period; Bryant compares a uniform bounding region with an ephemeris-derived nonuniform distribution.",
+      "unit": "hours per angular bin",
+      "significance": "Avoids assuming all Sun azimuth/elevation positions are equally frequent.",
+      "dependencies": "JPL Horizons Sun ephemeris, sample interpolation, binning",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Where the Sun spends more time",
+        "educator": "Explore why Sun-position heat maps are not uniform",
+        "planner": "Expose calculation, thresholds, timestamp, evidence and uncertainty"
+      },
+      "source": "Bryant (2009), IPN Progress Report 42-176, 176C.pdf, pp.11–13,30–33, Figs.29–30",
+      "caveats": "Frequency distribution is not itself a terrain illumination map."
+    },
+    {
+      "id": "sun.time-resolved-absorbed-surface-solar-flux",
+      "categoryId": "sun",
+      "name": "Time-resolved absorbed surface solar flux",
+      "question": "How much direct solar energy reaches the ground?",
+      "definition": "Liu's modeled absorbed direct irradiance S_i=f_i(1−a₀)S₀ cosθ_i/R_i² for illuminated surface elements, including disk fraction, albedo, local incidence angle and Sun–Moon distance in AU.",
+      "unit": "W/m²",
+      "significance": "Links visibility to local absorbed solar energy and thermal environment.",
+      "dependencies": "Sun-visible coefficient, terrain slope/aspect, albedo, solar constant, Sun–Moon distance",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "How strong the sunshine is",
+        "educator": "Change slope and albedo to show weaker or stronger received sunlight",
+        "planner": "Expose calculation, thresholds, timestamp, evidence and uncertainty"
+      },
+      "source": "Liu et al. (2023), Lunar South Polar Landing Area Selection Constrained by Illumination Conditions and Slopes, DOI:10.15982/j.issn.2096-9287.2023.20220091, p.549, §4.1",
+      "caveats": "This is surface absorbed flux under a Lambertian assumption, NOT spacecraft solar-panel electrical output."
+    },
+    {
+      "id": "sun.sun-moon-distance-correction-to-irradiance",
+      "categoryId": "sun",
+      "name": "Sun–Moon distance correction to irradiance",
+      "question": "How does changing Sun distance affect sunlight strength?",
+      "definition": "Relative incident solar flux scales with inverse square of instantaneous Sun–Moon distance R_i in AU in Liu's irradiance equation.",
+      "unit": "AU; relative flux",
+      "significance": "Refines incident flux estimates across mission dates.",
+      "dependencies": "Solar system ephemeris, irradiance model",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Sunlight strength changes slightly with distance",
+        "educator": "Explore inverse-square falloff without confusing with shadows",
+        "planner": "Expose calculation, thresholds, timestamp, evidence and uncertainty"
+      },
+      "source": "Liu et al. (2023), Lunar South Polar Landing Area Selection Constrained by Illumination Conditions and Slopes, DOI:10.15982/j.issn.2096-9287.2023.20220091, p.549, §4.1",
+      "caveats": "A secondary factor compared with terrain obstruction at the poles."
+    },
+    {
+      "id": "sun.surface-versus-elevated-solar-visibility-profile",
+      "categoryId": "sun",
+      "name": "Surface versus elevated solar visibility profile",
+      "question": "Would a 2-m-high panel see Sun that the ground misses?",
+      "definition": "Time-series comparison of f_i at the ground and at elevated observation/panel height (Liu compares 0 and 2 m at PLS1 and PLS2).",
+      "unit": "0–1 f(t); percentage-point change",
+      "significance": "Quantifies benefits of raised arrays and mast location.",
+      "dependencies": "Terrain horizon, equipment height, Sun ephemeris",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "See how a higher panel clears nearby obstacles",
+        "educator": "Compare ground-level and elevated f(t) curves",
+        "planner": "Expose calculation, thresholds, timestamp, evidence and uncertainty"
+      },
+      "source": "Liu et al. (2023), Lunar South Polar Landing Area Selection Constrained by Illumination Conditions and Slopes, DOI:10.15982/j.issn.2096-9287.2023.20220091, pp.551–552, Fig.12; Bryant (2009), IPN Progress Report 42-176, 176C.pdf, Tables 5–6",
+      "caveats": "Liu reports PLS2 full Sun-disk visibility at 2 m during 2026; do not generalize this result."
+    },
+    {
+      "id": "sun.fraction-of-candidate-landing-area-illuminated-at-time-t",
+      "categoryId": "sun",
+      "name": "Fraction of candidate landing area illuminated at time t",
+      "question": "How much of the landing zone is sunlit at this moment?",
+      "definition": "Sum of illuminated land-area pixels inside a selected polygon at timestamp t divided by all evaluable pixels; area-level extension of Liu's illumination maps.",
+      "unit": "% area; km²",
+      "significance": "Shows dynamic usable surface extent instead of assuming all points in a region behave identically.",
+      "dependencies": "Pixelwise solar f(t), region polygon, DEM coverage",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "How much of the landing area is lit now",
+        "educator": "Animate illuminated-pixel area within a defined landing zone",
+        "planner": "Expose calculation, thresholds, timestamp, evidence and uncertainty"
+      },
+      "source": "Liu et al. (2023), Lunar South Polar Landing Area Selection Constrained by Illumination Conditions and Slopes, DOI:10.15982/j.issn.2096-9287.2023.20220091, pp.549–551, Figs.10–11 (area animation; fraction is our derived extension)",
+      "caveats": "A zone being partly lit does not mean every possible landing point is sunlit."
+    },
+    {
+      "id": "sun.candidate-area-illumination-episode-windows",
+      "categoryId": "sun",
+      "name": "Candidate-area illumination episode windows",
+      "question": "When is any or all of a proposed landing region illuminated?",
+      "definition": "Intervals between first onset and last disappearance of illuminated patches across a defined candidate area; Liu tabulates ~7–12-day area illumination episodes in 2026 for two regions.",
+      "unit": "UTC interval; days",
+      "significance": "Helps compare region-scale deployment opportunities and terrain exposure.",
+      "dependencies": "Pixelwise illumination, candidate polygon, observation time",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "When the area begins to brighten and goes dark",
+        "educator": "Walk through Liu's 2026 area-level illumination episodes",
+        "planner": "Expose calculation, thresholds, timestamp, evidence and uncertainty"
+      },
+      "source": "Liu et al. (2023), Lunar South Polar Landing Area Selection Constrained by Illumination Conditions and Slopes, DOI:10.15982/j.issn.2096-9287.2023.20220091, pp.549–551, Table 1, Figs.10–11",
+      "caveats": "Published region episodes do NOT guarantee continuous sunlight at any one fixed point."
+    },
+    {
+      "id": "sun.shadow-gap-bridging-sustained-operation-window",
+      "categoryId": "sun",
+      "name": "Shadow-gap bridging / sustained operation window",
+      "question": "Can stored energy carry the mission through a short blackout?",
+      "definition": "Maximum continuous operations interval when intervening shadow gaps shorter than survivable stored-energy/thermal endurance are bridged (Liu illustrates 4–4.5-day gaps between illuminated episodes).",
+      "unit": "days; number of bridged gaps",
+      "significance": "Connects light availability to plausible uninterrupted SURFACE operations.",
+      "dependencies": "Dark intervals, battery autonomy, heating and activity loads",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Keep operating through a short night",
+        "educator": "Let learners vary battery survival and see if mission runs can connect",
+        "planner": "Expose calculation, thresholds, timestamp, evidence and uncertainty"
+      },
+      "source": "Liu et al. (2023), Lunar South Polar Landing Area Selection Constrained by Illumination Conditions and Slopes, DOI:10.15982/j.issn.2096-9287.2023.20220091, pp.549–550, §4.1 (conditional discussion); product-derived extension",
+      "caveats": "A survivable gap does not become 'continuous sunlight'; quantify energy consumption and recharge."
+    },
+    {
+      "id": "sun.area-above-chosen-annual-illumination-threshold",
+      "categoryId": "sun",
+      "name": "Area above chosen annual illumination threshold",
+      "question": "How much landing terrain meets a sunlight percentage target?",
+      "definition": "Total pixel area with year-specific or multiyear disk-weighted illumination rate ≥ a chosen cutoff; Liu maps 2026 50/60/70% levels for a 15×15-km region.",
+      "unit": "km²; %",
+      "significance": "Quantifies shrinking spatial options as sunlight threshold rises.",
+      "dependencies": "Pixelwise illumination rate, grid resolution, coverage, date span",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "How much terrain is sunny enough",
+        "educator": "Slide 50–70% cutoff and watch qualifying ground shrink",
+        "planner": "Expose calculation, thresholds, timestamp, evidence and uncertainty"
+      },
+      "source": "Liu et al. (2023), Lunar South Polar Landing Area Selection Constrained by Illumination Conditions and Slopes, DOI:10.15982/j.issn.2096-9287.2023.20220091, p.547, Figs.4–5, Table 3 p.553",
+      "caveats": "Sun-only suitability is not safe landing area; slopes and connectivity also matter."
+    },
+    {
+      "id": "sun.radiative-view-factors",
+      "categoryId": "sun",
+      "name": "Radiative view factors",
+      "question": "What portions of sky and terrain exchange heat?",
+      "definition": "Fractional thermal radiation exchange with space/surrounding terrain.",
+      "unit": "0–1",
+      "significance": "Equipment equilibrium and PSR conditions.",
+      "dependencies": "Topography, orientation, temperatures",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "Engineering synthesis",
+      "caveats": null
+    },
+    {
+      "id": "sun.solar-irradiance-at-site-panel",
+      "categoryId": "sun",
+      "name": "Solar irradiance at site/panel",
+      "question": "How much solar power hits a panel?",
+      "definition": "Incident irradiance including distance, visible disk, angle, shadow.",
+      "unit": "W/m²",
+      "significance": "More precise than daylight fraction.",
+      "dependencies": "Solar distance, angles, shading",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "JPL Horizons / Bryant 2009",
+      "caveats": null
+    },
+    {
+      "id": "sun.solar-array-generating-power",
+      "categoryId": "sun",
+      "name": "Solar array generating power",
+      "question": "How much electricity can we produce?",
+      "definition": "Instantaneous photovoltaic electrical output after losses.",
+      "unit": "W",
+      "significance": "Power balance for operations.",
+      "dependencies": "Irradiance, area, efficiency, temperature",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant 2009",
+      "caveats": null
+    },
+    {
+      "id": "sun.battery-charge-energy-reserve",
+      "categoryId": "sun",
+      "name": "Battery charge/energy reserve",
+      "question": "Can hardware ride through dark intervals?",
+      "definition": "Available stored energy and minimum state of charge.",
+      "unit": "Wh; % SoC",
+      "significance": "Primary survivability test for power-limited systems.",
+      "dependencies": "Generation, load, temperature, battery",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant 2009",
+      "caveats": null
+    },
+    {
+      "id": "sun.maximum-survivable-darkness",
+      "categoryId": "sun",
+      "name": "Maximum survivable darkness",
+      "question": "What is the lander darkness tolerance?",
+      "definition": "Maximum unpowered/low-power duration under equipment limits.",
+      "unit": "h",
+      "significance": "Threshold for no-go and safe haven requirements.",
+      "dependencies": "Battery, heaters, safe modes",
+      "role": "Constraint",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA VIPER Operations",
+      "caveats": null
+    },
+    {
+      "id": "sun.duty-cycle-power-load",
+      "categoryId": "sun",
+      "name": "Duty-cycle power load",
+      "question": "How much energy will planned activities consume?",
+      "definition": "Time-varying consumption by instruments, motors, computers and transmitters.",
+      "unit": "W vs time",
+      "significance": "Checks actual energy feasibility not just illumination.",
+      "dependencies": "Activity plan, mode",
+      "role": "Constraint",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Engineering synthesis",
+      "caveats": null
+    },
+    {
+      "id": "sun.heater-power-survival-mode",
+      "categoryId": "sun",
+      "name": "Heater power & survival mode",
+      "question": "How much power is needed just to stay alive?",
+      "definition": "Thermal control energy demand during cold exposure.",
+      "unit": "W; Wh",
+      "significance": "Can dominate night endurance.",
+      "dependencies": "Thermal, insulation, vehicle",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA VIPER Operations",
+      "caveats": null
+    },
+    {
+      "id": "sun.peak-power-deficit-minimum-energy-margin",
+      "categoryId": "sun",
+      "name": "Peak power deficit / minimum energy margin",
+      "question": "Does supply ever fall below demand?",
+      "definition": "Worst forecast battery/energy buffer under planned workload.",
+      "unit": "Wh / %",
+      "significance": "Mission-ready viability criterion.",
+      "dependencies": "Power generation, loads, storage",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Engineering synthesis",
+      "caveats": null
+    },
+    {
+      "id": "sun.array-orientation-and-tracking-limits",
+      "categoryId": "sun",
+      "name": "Array orientation and tracking limits",
+      "question": "Must panels actively follow the Sun?",
+      "definition": "Tilt, azimuth travel, fixed vs gimballed panels, sun-tracking mechanics.",
+      "unit": "deg; type",
+      "significance": "Near-horizon Sun penalizes poorly aimed panels.",
+      "dependencies": "Sun geometry, hardware",
+      "role": "Constraint",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant 2009",
+      "caveats": null
+    },
+    {
+      "id": "sun.dust-fouling-degradation-over-time",
+      "categoryId": "sun",
+      "name": "Dust fouling / degradation over time",
+      "question": "Will solar collection decline?",
+      "definition": "Solar-panel transmittance/efficiency reduction from dust and aging.",
+      "unit": "% loss",
+      "significance": "Longer mission robustness.",
+      "dependencies": "Plume, dust exposure, aging",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "Engineering synthesis",
+      "caveats": null
+    },
+    {
+      "id": "earth.earth-azimuth",
+      "categoryId": "earth",
+      "name": "Earth azimuth",
+      "question": "Where in the lunar sky is Earth?",
+      "definition": "Topocentric Earth bearing.",
+      "unit": "deg",
+      "significance": "Antenna pointing, terrain occlusion.",
+      "dependencies": "Ephemeris, location, time",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Earth direction on sky dome",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant 2009",
+      "caveats": null
+    },
+    {
+      "id": "earth.earth-elevation",
+      "categoryId": "earth",
+      "name": "Earth elevation",
+      "question": "How far above the horizon is Earth?",
+      "definition": "Topocentric Earth-center angular height.",
+      "unit": "deg",
+      "significance": "Key visibility geometry at pole.",
+      "dependencies": "Ephemeris, site, time",
+      "role": "Input",
+      "views": {
+        "enthusiast": "How high Earth sits",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant 2009",
+      "caveats": null
+    },
+    {
+      "id": "earth.libration-of-earth-in-lunar-sky",
+      "categoryId": "earth",
+      "name": "Libration of Earth in lunar sky",
+      "question": "Why does Earth rise and set near a pole?",
+      "definition": "Time-dependent change in apparent Earth-center selenographic longitude/latitude. Bryant uses bounding extents ±8.16° longitude and ±6.87° latitude.",
+      "unit": "deg vs time",
+      "significance": "Explains changing communication periods.",
+      "dependencies": "Moon rotation/orbit",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant (2009), IPN Progress Report 42-176, 176C.pdf, pp.2,9–15",
+      "caveats": "These are maxima for Earth-center motion, not a claim that every position is equally likely or that every site sees Earth continuously."
+    },
+    {
+      "id": "earth.earth-angular-diameter-disk-visibility",
+      "categoryId": "earth",
+      "name": "Earth angular diameter & disk visibility",
+      "question": "Is any, half, or all of Earth visible?",
+      "definition": "Apparent angular diameter of Earth (~1.9° in Bryant) and portion of its disk above the local terrain horizon; distinguish any disk, ≥50%, and full-disk criteria.",
+      "unit": "deg; % disk",
+      "significance": "Nuanced geometrical Earth visibility.",
+      "dependencies": "Earth apparent size, horizon",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Is any, half, or all of Earth visible",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant (2009), IPN Progress Report 42-176, 176C.pdf, pp.9,15,29, Table 4",
+      "caveats": "An Earth disk fraction is geometric visibility, not a telecommunications service level."
+    },
+    {
+      "id": "earth.dte-geometric-line-of-sight",
+      "categoryId": "earth",
+      "name": "DTE geometric line of sight",
+      "question": "Can a straight ray connect to Earth?",
+      "definition": "Unobstructed ray/path to target terrestrial station direction or Earth disk.",
+      "unit": "Boolean",
+      "significance": "Necessary but not sufficient for live radio link.",
+      "dependencies": "Earth position, horizon",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Can a straight ray connect to Earth",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant 2009 / NASA Surface Propagation",
+      "caveats": null
+    },
+    {
+      "id": "earth.dte-visibility-intervals",
+      "categoryId": "earth",
+      "name": "DTE visibility intervals",
+      "question": "When can Earth be seen?",
+      "definition": "Start/end times during which the specified Earth visibility criterion is satisfied at a site using dated ephemerides and horizon profile.",
+      "unit": "UTC; h",
+      "significance": "Scheduling ground contacts and rover activities.",
+      "dependencies": "DTE geometry, interval",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "When Earth can be contacted",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant (2009), IPN Progress Report 42-176, 176C.pdf, pp.9–15,30–33 (methodology; Bryant principally reports MULTIYEAR averages)",
+      "caveats": "Specific dated DTE windows are a browser-derived extension; Bryant's tabulated 0/50/100% values are multiyear averages, not published contact schedules."
+    },
+    {
+      "id": "earth.total-dte-visibility-fraction",
+      "categoryId": "earth",
+      "name": "Total DTE visibility fraction",
+      "question": "How much of the mission has geometry for contact?",
+      "definition": "Fraction of an interval meeting a specified geometric Earth-disk visibility criterion: any/≥50%/100% disk or point-target LOS. Bryant reports distinct multiyear averages for three disk thresholds.",
+      "unit": "% time",
+      "significance": "Side-by-side comparison of sites.",
+      "dependencies": "DTE intervals",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "How much of the mission has geometry for contact",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant (2009), IPN Progress Report 42-176, 176C.pdf, pp.15,29, Table 4",
+      "caveats": "Must show whether criterion is Earth disk or an Earth station target; separate geometrical LOS from actual RF contact."
+    },
+    {
+      "id": "earth.longest-dte-blackout",
+      "categoryId": "earth",
+      "name": "Longest DTE blackout",
+      "question": "What is the longest period without Earth geometry?",
+      "definition": "Maximum continuous Earth-occulted or terrain-blocked duration.",
+      "unit": "h / d",
+      "significance": "Onboard autonomy and data storage needs.",
+      "dependencies": "DTE interval series",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "What is the longest period without Earth geometry",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant 2009",
+      "caveats": null
+    },
+    {
+      "id": "earth.dte-visibility-ground-station-availability",
+      "categoryId": "earth",
+      "name": "DTE visibility + ground station availability",
+      "question": "Can we actually talk to a station?",
+      "definition": "Overlap with Earth station pointing, Earth rotation, weather and scheduled assets.",
+      "unit": "UTC; %",
+      "significance": "Converts mere Earth visibility to usable contact.",
+      "dependencies": "Earth geometry, DSN station geometry, schedule",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA Surface Propagation",
+      "caveats": "Ground resource bookings may not be public"
+    },
+    {
+      "id": "earth.earth-elevation-margin-horizon-clearance",
+      "categoryId": "earth",
+      "name": "Earth elevation margin / horizon clearance",
+      "question": "How close is the radio ray to obstruction?",
+      "definition": "Angular separation of Earth's chosen reference (center, limb, or station direction) from the terrain horizon at that azimuth.",
+      "unit": "deg",
+      "significance": "Tests sensitivity to DEM uncertainty and beam blockage.",
+      "dependencies": "Earth angle, horizon",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant (2009), IPN Progress Report 42-176, 176C.pdf, pp.9–10,15",
+      "caveats": "Earth-center clearance near zero can coexist with partial disk visibility; center, nearest limb and full-disk criteria differ."
+    },
+    {
+      "id": "earth.antenna-field-of-view-and-tracking",
+      "categoryId": "earth",
+      "name": "Antenna field of view and tracking",
+      "question": "Can the antenna point to Earth?",
+      "definition": "Gimbal bounds or beamwidth/steering envelope.",
+      "unit": "deg",
+      "significance": "Hardware may not point even during DTE LoS.",
+      "dependencies": "Earth az/el, spacecraft attitude",
+      "role": "Constraint",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Engineering synthesis",
+      "caveats": null
+    },
+    {
+      "id": "earth.rf-link-margin-received-signal",
+      "categoryId": "earth",
+      "name": "RF link margin / received signal",
+      "question": "Will a signal be decodable?",
+      "definition": "Received power margin relative to demodulation threshold after link losses.",
+      "unit": "dB / dB-Hz",
+      "significance": "Geometric visibility does not guarantee communications.",
+      "dependencies": "Tx power, gains, range, noise, polarization",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA Surface Propagation",
+      "caveats": null
+    },
+    {
+      "id": "earth.data-rate-downlink-volume",
+      "categoryId": "earth",
+      "name": "Data rate & downlink volume",
+      "question": "How much information can be exchanged?",
+      "definition": "Available throughput and cumulative data capacity over contact windows.",
+      "unit": "bit/s; GB",
+      "significance": "Determines science return and telemetry scheduling.",
+      "dependencies": "Link margin, contact time",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Engineering synthesis",
+      "caveats": null
+    },
+    {
+      "id": "earth.radio-multipath-terrain-scattering",
+      "categoryId": "earth",
+      "name": "Radio multipath / terrain scattering",
+      "question": "Could the terrain corrupt the signal?",
+      "definition": "Reflections, diffraction and interference near the local horizon.",
+      "unit": "dB; delay spread",
+      "significance": "Important low-elevation link degradation.",
+      "dependencies": "Surface RF properties, link geometry",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "NASA Surface Propagation",
+      "caveats": null
+    },
+    {
+      "id": "earth.relay-satellite-visibility",
+      "categoryId": "earth",
+      "name": "Relay satellite visibility",
+      "question": "Can an orbital relay remove DTE gaps?",
+      "definition": "Line of sight and contact times to a lunar orbiter or relay.",
+      "unit": "UTC windows; %",
+      "significance": "Expands operational coverage.",
+      "dependencies": "Relay orbit, horizon",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA Site Selection",
+      "caveats": "Needs a defined relay, not speculative availability"
+    },
+    {
+      "id": "earth.relay-infrastructure-availability",
+      "categoryId": "earth",
+      "name": "Relay infrastructure availability",
+      "question": "Is a working relay actually available?",
+      "definition": "Operational status, channels, protocols and allocation.",
+      "unit": "Boolean; Mbps; schedule",
+      "significance": "Distinguishes potential coverage from service commitment.",
+      "dependencies": "Relay mission, ground segment",
+      "role": "Constraint",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "Engineering synthesis",
+      "caveats": null
+    },
+    {
+      "id": "earth.two-way-light-time-and-latency",
+      "categoryId": "earth",
+      "name": "Two-way light-time and latency",
+      "question": "How quickly can controllers respond?",
+      "definition": "Propagation delay Earth–Moon and back plus processing.",
+      "unit": "s",
+      "significance": "Remote operations latency and autonomy.",
+      "dependencies": "Earth–Moon range, network",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "JPL Horizons",
+      "caveats": null
+    },
+    {
+      "id": "earth.contact-concurrency-with-sunlight",
+      "categoryId": "earth",
+      "name": "Contact concurrency with sunlight",
+      "question": "When do both power and communications work?",
+      "definition": "Intersection of sunlit and DTE or relay windows.",
+      "unit": "UTC; h; %",
+      "significance": "Directly answers joint mission opportunity question.",
+      "dependencies": "Sun intervals; comm intervals",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "When sunlight and Earth overlap",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Challenge synthesis",
+      "caveats": null
+    },
+    {
+      "id": "earth.earth-disk-visibility-criterion-any-half-full",
+      "categoryId": "earth",
+      "name": "Earth-disk visibility criterion (any / half / full)",
+      "question": "Does seeing just a piece of Earth count?",
+      "definition": "Three distinct geometric Earth-disk visibility levels: any visible area (>0), ≥50% visible, or complete disk visible; Bryant's Table 4 lists each separately.",
+      "unit": "0–1 disk fraction; categorical threshold",
+      "significance": "Prevents conflating partial and full Earth visibility in DTE planning.",
+      "dependencies": "Earth apparent disk, horizon mask, observer height",
+      "role": "Constraint",
+      "views": {
+        "enthusiast": "Is some, half, or all of Earth visible?",
+        "educator": "Place the Earth disk behind the horizon and change criterion",
+        "planner": "Expose calculation, thresholds, timestamp, evidence and uncertainty"
+      },
+      "source": "Bryant (2009), IPN Progress Report 42-176, 176C.pdf, pp.9,15, Table 4 p.29",
+      "caveats": "The '0%' metric in Bryant means ANY Earth disk visible, not zero visibility."
+    },
+    {
+      "id": "earth.multiyear-dte-fraction-for-0-50-100-earth-disk",
+      "categoryId": "earth",
+      "name": "Multiyear DTE fraction for 0/50/100% Earth disk",
+      "question": "How often is Earth visible at each disk threshold?",
+      "definition": "Three separate fractions averaged over years, based on Earth's allowable position region above a terrain horizon; Bryant reports these at sites including B1, MA, LB.",
+      "unit": "% of multiyear interval (three values)",
+      "significance": "Compares geometric communication opportunity across candidate sites.",
+      "dependencies": "Horizon mask, lunar libration, Earth disk radius, averaging method",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "How often can we see part versus all of Earth?",
+        "educator": "Read Bryant Table 4 to compare the 3 percentages",
+        "planner": "Expose calculation, thresholds, timestamp, evidence and uncertainty"
+      },
+      "source": "Bryant (2009), IPN Progress Report 42-176, 176C.pdf, pp.15,29, Table 4",
+      "caveats": "A mean disk visibility percentage is not a sequence of dated radio contact slots."
+    },
+    {
+      "id": "earth.earth-position-temporal-occupancy-distribution",
+      "categoryId": "earth",
+      "name": "Earth-position temporal occupancy distribution",
+      "question": "Where does Earth spend more time in the lunar sky?",
+      "definition": "Time-weighted occupancy of Earth-center selenographic longitude and latitude during lunar libration, including nonuniform dwell near bounding extremes.",
+      "unit": "hours per angular bin",
+      "significance": "Makes long-term geometric averages more accurate.",
+      "dependencies": "Libration ephemeris, disk size, time interpolation",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Where Earth hangs in the sky most often",
+        "educator": "Compare Earth-motion heat map with simplified rectangle",
+        "planner": "Expose calculation, thresholds, timestamp, evidence and uncertainty"
+      },
+      "source": "Bryant (2009), IPN Progress Report 42-176, 176C.pdf, pp.11,13–15,30–33, Figs.9–10,31–32",
+      "caveats": "Earth's 18.6-year occupancy is not strictly uniform despite a simplified rectangle model."
+    },
+    {
+      "id": "earth.uniform-vs-ephemeris-earth-visibility-comparison",
+      "categoryId": "earth",
+      "name": "Uniform-vs-ephemeris Earth visibility comparison",
+      "question": "How different are estimated and simulated Earth-view percentages?",
+      "definition": "Contrast Bryant's rectangular uniform libration distribution with 2009–2028 JPL Horizons ephemeris-weighted Earth-disk visibility fractions.",
+      "unit": "% DTE; percentage-point difference",
+      "significance": "Validates site rankings and exposes approximation error.",
+      "dependencies": "Earth occupancy distribution, terrain horizon, site and mast height",
+      "role": "Validation",
+      "views": {
+        "enthusiast": "Predicted versus historically computed Earth-view share",
+        "educator": "Explain why a uniformly filled rectangle can differ from actual Earth motion",
+        "planner": "Expose calculation, thresholds, timestamp, evidence and uncertainty"
+      },
+      "source": "Bryant (2009), IPN Progress Report 42-176, 176C.pdf, pp.30–33,37–38, Table 6",
+      "caveats": "Bryant reports differences within ~5% for sampled cases; this is not a universal guarantee."
+    },
+    {
+      "id": "earth.high-ground-terrestrial-los-reflector-relay-opportunity",
+      "categoryId": "earth",
+      "name": "High-ground terrestrial-LOS reflector/relay opportunity",
+      "question": "Could a nearby lunar peak help maintain contact with Earth?",
+      "definition": "Geometric possibility of placing a fixed lunar-surface reflector or relay at a site with Earth LOS and line of sight to the target base; Bryant examines mountain peak opportunities (MA/LB).",
+      "unit": "LOS Boolean; % uptime; km",
+      "significance": "May mitigate DTE blackouts at near-polar sites.",
+      "dependencies": "Nearby topography, Earth libration, mutual line of sight, comm architecture",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Could a nearby mountain act as a communication bridge?",
+        "educator": "Trace Earth-to-high-ground-to-lander communication paths",
+        "planner": "Expose calculation, thresholds, timestamp, evidence and uncertainty"
+      },
+      "source": "Bryant (2009), IPN Progress Report 42-176, 176C.pdf, pp.28–30, Table 4 and discussion",
+      "caveats": "A proposed reflector is an architectural concept; geometric line of sight does not demonstrate operational relay bandwidth."
+    },
+    {
+      "id": "earth.earth-visibility-sensitivity-to-tower-height-three-disk-levels",
+      "categoryId": "earth",
+      "name": "Earth visibility sensitivity to tower height (three disk levels)",
+      "question": "How much would a higher communications tower help Earth visibility?",
+      "definition": "For each 0/50/100% Earth-disk criterion, recompute multiyear DTE visibility as observer tower height varies (Bryant Table 6 uses 2–3000 m).",
+      "unit": "tower m; three % DTE values",
+      "significance": "Supports trade-offs among mast height, power, engineering feasibility and actual visibility benefit.",
+      "dependencies": "Terrain horizon, Earth libration, site height",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Does a taller antenna let us see Earth more often?",
+        "educator": "Compare visibility lines at 2m/32m/128m etc",
+        "planner": "Expose calculation, thresholds, timestamp, evidence and uncertainty"
+      },
+      "source": "Bryant (2009), IPN Progress Report 42-176, 176C.pdf, pp.37–40, Table 6, Fig.38",
+      "caveats": "Effects may be small near the poles, where distance from lunar pole can dominate DTE visibility."
+    },
+    {
+      "id": "spatial.selenographic-latitude",
+      "categoryId": "spatial",
+      "name": "Selenographic latitude",
+      "question": "How far north or south is the site?",
+      "definition": "Angular location relative to lunar equator.",
+      "unit": "degrees",
+      "significance": "Determines polar Sun/Earth behavior and site location.",
+      "dependencies": "Lunar frame",
+      "role": "Input",
+      "views": {
+        "enthusiast": "How far north or south is the site",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant 2009",
+      "caveats": null
+    },
+    {
+      "id": "spatial.selenographic-longitude",
+      "categoryId": "spatial",
+      "name": "Selenographic longitude",
+      "question": "Which direction around the Moon?",
+      "definition": "Angular location east/west according to declared longitude convention.",
+      "unit": "degrees",
+      "significance": "Determines near/far-side relation and local sky geometry.",
+      "dependencies": "Lunar frame",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Which direction around the Moon",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant 2009",
+      "caveats": "Normalize 0–360 vs ±180, east/west conventions"
+    },
+    {
+      "id": "spatial.site-elevation-above-datum",
+      "categoryId": "spatial",
+      "name": "Site elevation above datum",
+      "question": "How high is the site?",
+      "definition": "Terrain height relative to stated lunar radius/datum.",
+      "unit": "m",
+      "significance": "Affects horizon occlusion and potential landing hazards.",
+      "dependencies": "DEM, vertical datum",
+      "role": "Input",
+      "views": {
+        "enthusiast": "How high is the site",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant 2009",
+      "caveats": null
+    },
+    {
+      "id": "spatial.planetographic-reference-frame",
+      "categoryId": "spatial",
+      "name": "Planetographic reference frame",
+      "question": "Are we measuring the same place?",
+      "definition": "MOON_ME vs principal-axis frame; ellipsoid/sphere assumptions and epoch.",
+      "unit": "Frame ID",
+      "significance": "Avoids mapping/ephemeris misalignment.",
+      "dependencies": "DEM, SPICE kernels",
+      "role": "Metadata",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "NASA PGDA / JPL Horizons",
+      "caveats": null
+    },
+    {
+      "id": "spatial.map-projection-grid",
+      "categoryId": "spatial",
+      "name": "Map projection & grid",
+      "question": "How is lunar ground shown in 2D?",
+      "definition": "South polar stereographic or other projection; grid spacing and orientation.",
+      "unit": "Projection / m per pixel",
+      "significance": "Correct distances and overlay alignment.",
+      "dependencies": "Coordinates / raster",
+      "role": "Metadata",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA PGDA",
+      "caveats": null
+    },
+    {
+      "id": "spatial.distance-to-pole",
+      "categoryId": "spatial",
+      "name": "Distance to pole",
+      "question": "How close is the site to the South Pole?",
+      "definition": "Geodesic distance from south geographic pole.",
+      "unit": "km",
+      "significance": "Roughly relates to solar/Earth horizon geometry.",
+      "dependencies": "Lat, lunar shape",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant 2009",
+      "caveats": null
+    },
+    {
+      "id": "spatial.nearside-farside-orientation",
+      "categoryId": "spatial",
+      "name": "Nearside/farside orientation",
+      "question": "Does terrain face Earth?",
+      "definition": "Site angular relationship to Earth-facing hemisphere.",
+      "unit": "deg / category",
+      "significance": "First-order DTE potential.",
+      "dependencies": "Longitude, libration",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Does terrain face Earth",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant 2009",
+      "caveats": null
+    },
+    {
+      "id": "spatial.named-region-landmark-proximity",
+      "categoryId": "spatial",
+      "name": "Named region & landmark proximity",
+      "question": "What landscape surrounds the point?",
+      "definition": "Association with Shackleton, de Gerlache, Nobile, Malapert, etc.",
+      "unit": "name; km",
+      "significance": "Human geographical understanding, science context.",
+      "dependencies": "IAU gazetteer, coordinates",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "What landscape surrounds the point",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "LPI South Pole Atlas",
+      "caveats": null
+    },
+    {
+      "id": "spatial.landing-site-area-footprint",
+      "categoryId": "spatial",
+      "name": "Landing site area/footprint",
+      "question": "Are we comparing points or areas?",
+      "definition": "Candidate polygon plus uncertain touch-down dispersion/landing ellipse.",
+      "unit": "km²; m / axes",
+      "significance": "Avoids point solutions misleading site safety.",
+      "dependencies": "Navigation covariance, mapping",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA Site Selection",
+      "caveats": null
+    },
+    {
+      "id": "spatial.nearby-infrastructures-exclusion-zones",
+      "categoryId": "spatial",
+      "name": "Nearby infrastructures & exclusion zones",
+      "question": "What existing hardware lies nearby?",
+      "definition": "Landing pads, relays, heritage sites, activity and keep-out zones.",
+      "unit": "m; polygons",
+      "significance": "Affects operations and heritage preservation.",
+      "dependencies": "Mission manifests, maps",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "Engineering synthesis",
+      "caveats": null
+    },
+    {
+      "id": "terrain.terrain-elevation-model-dem",
+      "categoryId": "terrain",
+      "name": "Terrain elevation model (DEM)",
+      "question": "How tall is surrounding terrain?",
+      "definition": "Raster of 3D surface elevation.",
+      "unit": "m; m/pixel",
+      "significance": "Basis for visibility, slope, hazards and route assessment.",
+      "dependencies": "LOLA / stereo models",
+      "role": "Input",
+      "views": {
+        "enthusiast": "How tall is surrounding terrain",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant 2009 / NASA PGDA",
+      "caveats": null
+    },
+    {
+      "id": "terrain.local-slope-magnitude",
+      "categoryId": "terrain",
+      "name": "Local slope magnitude",
+      "question": "How steep is the landing patch?",
+      "definition": "Gradient over explicitly stated baseline/window.",
+      "unit": "deg; % grade",
+      "significance": "Landing-gear tilt, approach, rover/crew movement.",
+      "dependencies": "DEM scale",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA Site Selection",
+      "caveats": "Slope depends strongly on window size"
+    },
+    {
+      "id": "terrain.slope-aspect",
+      "categoryId": "terrain",
+      "name": "Slope aspect",
+      "question": "Which way does the slope face?",
+      "definition": "Downslope compass bearing.",
+      "unit": "deg",
+      "significance": "Sun exposure, panel placement, stability, traverses.",
+      "dependencies": "Slope map",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Engineering synthesis",
+      "caveats": null
+    },
+    {
+      "id": "terrain.micro-roughness-relief",
+      "categoryId": "terrain",
+      "name": "Micro-roughness / relief",
+      "question": "How uneven is it at lander scale?",
+      "definition": "Local height variation across footprint or wheel scale.",
+      "unit": "m RMS / m",
+      "significance": "Footpad stability, rover motion, instrument deployment.",
+      "dependencies": "High-resolution DEM; imagery",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA Site Selection",
+      "caveats": null
+    },
+    {
+      "id": "terrain.boulder-size-and-abundance",
+      "categoryId": "terrain",
+      "name": "Boulder size and abundance",
+      "question": "Will rocks obstruct landing or driving?",
+      "definition": "Size distribution and areal density of resolvable blocks.",
+      "unit": "m; count/km²; % area",
+      "significance": "Collision, tip and mobility hazards.",
+      "dependencies": "High-resolution images; shadows",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA Site Selection",
+      "caveats": null
+    },
+    {
+      "id": "terrain.crater-size-and-abundance",
+      "categoryId": "terrain",
+      "name": "Crater size and abundance",
+      "question": "Are dangerous depressions nearby?",
+      "definition": "Crater diameters, depths, counts and distribution.",
+      "unit": "m; count/km²",
+      "significance": "Landing hazard, science geology, traverse obstacles.",
+      "dependencies": "Imagery, DEM",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA Site Selection",
+      "caveats": null
+    },
+    {
+      "id": "terrain.obstacle-free-landing-area",
+      "categoryId": "terrain",
+      "name": "Obstacle-free landing area",
+      "question": "Is there enough safe clear space?",
+      "definition": "Contiguous acceptable region within touchdown dispersion.",
+      "unit": "m² / % area",
+      "significance": "Converts scattered hazards to mission-level landing viability.",
+      "dependencies": "Slope, boulder, crater, footprint",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA Site Selection",
+      "caveats": null
+    },
+    {
+      "id": "terrain.horizon-elevation-profile-mask",
+      "categoryId": "terrain",
+      "name": "Horizon elevation profile / mask",
+      "question": "What blocks the sky in every direction?",
+      "definition": "Maximum terrain angular elevation as a function of azimuth from observer.",
+      "unit": "deg versus deg",
+      "significance": "Critical connection between DEM and Sun/Earth visibility.",
+      "dependencies": "DEM, observer coordinates, height",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Hills blocking the sky",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant 2009",
+      "caveats": null
+    },
+    {
+      "id": "terrain.horizon-azimuth-far-field-occlusion",
+      "categoryId": "terrain",
+      "name": "Horizon azimuth & far-field occlusion",
+      "question": "Which distant ridge blocks what?",
+      "definition": "Blocking feature bearing, angular height and range.",
+      "unit": "deg; km",
+      "significance": "Explains why nearby topography may not be sole obstruction.",
+      "dependencies": "DEM, ray cast",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Which distant ridge blocks what",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Bryant 2009",
+      "caveats": null
+    },
+    {
+      "id": "terrain.vertical-clearance-edge-drop",
+      "categoryId": "terrain",
+      "name": "Vertical clearance / edge drop",
+      "question": "Are there dangerous drop-offs?",
+      "definition": "Cliff/rim proximity and step heights around operating zone.",
+      "unit": "m; m offset",
+      "significance": "Footing, rover safety, site infrastructure.",
+      "dependencies": "High-res DEM",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Engineering synthesis",
+      "caveats": null
+    },
+    {
+      "id": "terrain.terrain-visibility-from-spacecraft",
+      "categoryId": "terrain",
+      "name": "Terrain visibility from spacecraft",
+      "question": "Can guidance sensors identify the terrain?",
+      "definition": "Visual/altimetric observability and landmark contrast at approach angles.",
+      "unit": "score; pixels; deg",
+      "significance": "Supports terrain-relative navigation and hazard avoidance.",
+      "dependencies": "Lighting, imaging resolution, approach",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "Engineering synthesis",
+      "caveats": null
+    },
+    {
+      "id": "terrain.surface-material-blockiness",
+      "categoryId": "terrain",
+      "name": "Surface material blockiness",
+      "question": "Is the substrate consolidated or loose?",
+      "definition": "Rock exposures versus fragmented regolith distribution.",
+      "unit": "fraction / class",
+      "significance": "Bearing capacity, sampling feasibility.",
+      "dependencies": "Imagery, spectral, in situ",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "LRO / lunar science",
+      "caveats": null
+    },
+    {
+      "id": "regolith.regolith-thickness",
+      "categoryId": "regolith",
+      "name": "Regolith thickness",
+      "question": "How deep is unconsolidated soil?",
+      "definition": "Depth to competent bedrock or strongly consolidated layer.",
+      "unit": "cm / m",
+      "significance": "Drilling, anchoring, trafficability.",
+      "dependencies": "Remote estimates / in situ",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Lunar science",
+      "caveats": "Often weakly constrained remotely"
+    },
+    {
+      "id": "regolith.particle-size-distribution",
+      "categoryId": "regolith",
+      "name": "Particle-size distribution",
+      "question": "How fine or coarse is the soil?",
+      "definition": "Fraction of grains by diameter.",
+      "unit": "µm / mm; %",
+      "significance": "Wear, dust, excavation and sampling.",
+      "dependencies": "Spectral/in situ measurements",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "Lunar science",
+      "caveats": null
+    },
+    {
+      "id": "regolith.bulk-density-porosity",
+      "categoryId": "regolith",
+      "name": "Bulk density / porosity",
+      "question": "How compact is the regolith?",
+      "definition": "Mass per volume and void fraction.",
+      "unit": "kg/m³; %",
+      "significance": "Thermal behavior, penetration, load support.",
+      "dependencies": "Composition, compaction",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "Lunar science",
+      "caveats": null
+    },
+    {
+      "id": "regolith.cohesion-and-internal-friction",
+      "categoryId": "regolith",
+      "name": "Cohesion and internal friction",
+      "question": "Will soil resist slipping/sinking?",
+      "definition": "Mohr-Coulomb strength parameters.",
+      "unit": "kPa; deg",
+      "significance": "Wheel traction, slope stability, footpad sinkage.",
+      "dependencies": "Grain, density, compaction",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "Engineering synthesis",
+      "caveats": null
+    },
+    {
+      "id": "regolith.bearing-capacity-and-expected-sinkage",
+      "categoryId": "regolith",
+      "name": "Bearing capacity and expected sinkage",
+      "question": "Will wheels or legs sink?",
+      "definition": "Supportable pressure and modeled penetration.",
+      "unit": "kPa; cm",
+      "significance": "Surface mobility and platform stability.",
+      "dependencies": "Soil strength, load",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Engineering synthesis",
+      "caveats": null
+    },
+    {
+      "id": "regolith.soil-abrasiveness-dust-adhesion",
+      "categoryId": "regolith",
+      "name": "Soil abrasiveness / dust adhesion",
+      "question": "Will regolith jam equipment?",
+      "definition": "Particle sharpness, charging and tendency to adhere to surfaces.",
+      "unit": "Index / class",
+      "significance": "Reliability of joints, seals, optics.",
+      "dependencies": "Particle properties, environment",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "Lunar science",
+      "caveats": null
+    },
+    {
+      "id": "regolith.electrostatic-charging-dust-lofting",
+      "categoryId": "regolith",
+      "name": "Electrostatic charging / dust lofting",
+      "question": "Could dust move or cling?",
+      "definition": "Surface potential and mobilization under UV/plasma environment.",
+      "unit": "V; particle flux",
+      "significance": "Optics, solar arrays, electrical components.",
+      "dependencies": "Sunlight, plasma, grain size",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "NASA Weather on Moon",
+      "caveats": null
+    },
+    {
+      "id": "regolith.local-magnetic-anomalies",
+      "categoryId": "regolith",
+      "name": "Local magnetic anomalies",
+      "question": "Is there a magnetic shield or science target?",
+      "definition": "Crustal magnetic field strength/direction.",
+      "unit": "nT",
+      "significance": "Science and possible plasma/radiation interactions.",
+      "dependencies": "Magnetic maps",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "Lunar science",
+      "caveats": null
+    },
+    {
+      "id": "regolith.surface-dielectric-rf-properties",
+      "categoryId": "regolith",
+      "name": "Surface dielectric / RF properties",
+      "question": "How does soil affect radar and communication?",
+      "definition": "Permittivity and loss tangent of regolith.",
+      "unit": "Relative ε, tanδ",
+      "significance": "Radar sounding and multipath modeling.",
+      "dependencies": "Composition, porosity, ice",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "NASA Surface Propagation",
+      "caveats": null
+    },
+    {
+      "id": "regolith.lunar-seismic-moonquake-environment",
+      "categoryId": "regolith",
+      "name": "Lunar seismic / moonquake environment",
+      "question": "Could vibration affect systems?",
+      "definition": "Estimated local/remote seismic activity and acceleration.",
+      "unit": "m/s²; events/yr",
+      "significance": "Geotechnical design, seismometer science.",
+      "dependencies": "Stress, impact, historical",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "Lunar science",
+      "caveats": "Low spatial predictability"
+    },
+    {
+      "id": "regolith.surface-temperature-time-series",
+      "categoryId": "regolith",
+      "name": "Surface temperature time series",
+      "question": "How hot or cold is the ground?",
+      "definition": "Thermal model or measured regolith surface temperature versus time.",
+      "unit": "K / °C",
+      "significance": "Touchdown, equipment and thermal design.",
+      "dependencies": "Illumination, thermophysical properties, topography",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "LRO Diviner / NASA South Pole",
+      "caveats": null
+    },
+    {
+      "id": "regolith.minimum-maximum-surface-temperature",
+      "categoryId": "regolith",
+      "name": "Minimum/maximum surface temperature",
+      "question": "What extremes must be survived?",
+      "definition": "Extrema of site thermal field over mission interval.",
+      "unit": "K / °C",
+      "significance": "Thermal survival constraints.",
+      "dependencies": "Surface thermal series",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "LRO Diviner",
+      "caveats": null
+    },
+    {
+      "id": "regolith.temperature-gradient-cycling-rate",
+      "categoryId": "regolith",
+      "name": "Temperature gradient / cycling rate",
+      "question": "How rapidly does temperature change?",
+      "definition": "Rate of heating/cooling and thermal-cycle amplitude.",
+      "unit": "K/h; K",
+      "significance": "Thermal fatigue, components, mechanisms.",
+      "dependencies": "Thermal time series",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Engineering synthesis",
+      "caveats": null
+    },
+    {
+      "id": "regolith.regolith-thermal-inertia",
+      "categoryId": "regolith",
+      "name": "Regolith thermal inertia",
+      "question": "How fast does soil heat/cool?",
+      "definition": "Thermal inertia sqrt(kρc) of lunar soil.",
+      "unit": "J m^-2 K^-1 s^-1/2",
+      "significance": "Affects predictions of darkness survival and PSR cold traps.",
+      "dependencies": "Density, conductivity, heat capacity",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "LRO Diviner",
+      "caveats": null
+    },
+    {
+      "id": "landing.touchdown-dispersion-ellipse",
+      "categoryId": "landing",
+      "name": "Touchdown dispersion & ellipse",
+      "question": "Where could the lander actually touch down?",
+      "definition": "Landing position probability region / covariance ellipse.",
+      "unit": "m; km²",
+      "significance": "Safety must hold across uncertainty region.",
+      "dependencies": "Navigation, propulsion, terrain",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA Site Selection",
+      "caveats": null
+    },
+    {
+      "id": "landing.terrain-relative-navigation-capability",
+      "categoryId": "landing",
+      "name": "Terrain-relative navigation capability",
+      "question": "Can sensors locate the safe patch?",
+      "definition": "Feature matching, DEM/image availability, sensor operating range.",
+      "unit": "m; confidence",
+      "significance": "Reduces dispersion and hazardous touchdown.",
+      "dependencies": "Imagery, lighting, sensors",
+      "role": "Constraint",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "NASA Site Selection",
+      "caveats": null
+    },
+    {
+      "id": "landing.hazard-detection-and-avoidance-envelope",
+      "categoryId": "landing",
+      "name": "Hazard detection and avoidance envelope",
+      "question": "Can the lander divert from obstacles?",
+      "definition": "Detection size, time-to-go, lateral divert budget.",
+      "unit": "m; s; m/s",
+      "significance": "Checks if hazards can be avoided during final descent.",
+      "dependencies": "Sensors, propulsion, descent geometry",
+      "role": "Constraint",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA Site Selection",
+      "caveats": null
+    },
+    {
+      "id": "landing.lander-slope-tilt-tolerance",
+      "categoryId": "landing",
+      "name": "Lander slope/tilt tolerance",
+      "question": "Can the landing legs settle safely?",
+      "definition": "Vehicle-specific maximum ground slope and allowable body tilt.",
+      "unit": "deg",
+      "significance": "Prevents tip, stuck mechanisms, inaccessible payloads.",
+      "dependencies": "Vehicle geometry, surface slope",
+      "role": "Constraint",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA OIG HLS report",
+      "caveats": "Vehicle-specific; never universal threshold"
+    },
+    {
+      "id": "landing.landing-footpad-bearing-pressure",
+      "categoryId": "landing",
+      "name": "Landing-footpad bearing pressure",
+      "question": "Will the ground support the lander?",
+      "definition": "Pressure on soil under footpads / sinkage prediction.",
+      "unit": "kPa; cm",
+      "significance": "Tip and settlement risk.",
+      "dependencies": "Mass, gravity, footpad size, regolith",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "Engineering synthesis",
+      "caveats": null
+    },
+    {
+      "id": "landing.plume-surface-interaction",
+      "categoryId": "landing",
+      "name": "Plume-surface interaction",
+      "question": "Will engine exhaust eject hazardous regolith?",
+      "definition": "Exhaust erosion, particle flux, crater formation and debris.",
+      "unit": "kg/m²/s; m; m/s",
+      "significance": "Threat to lander, assets and instruments.",
+      "dependencies": "Thrust, height, regolith",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "Engineering synthesis",
+      "caveats": null
+    },
+    {
+      "id": "landing.descent-sun-glare-and-visual-contrast",
+      "categoryId": "landing",
+      "name": "Descent Sun/glare and visual contrast",
+      "question": "Can the lander see through the lighting?",
+      "definition": "Camera saturation/shadows under landing lighting geometry.",
+      "unit": "deg; image SNR",
+      "significance": "Navigation and landing hazard detection.",
+      "dependencies": "Sun, approach azimuth, optics",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA Visual Experience",
+      "caveats": null
+    },
+    {
+      "id": "landing.descent-path-terrain-clearance",
+      "categoryId": "landing",
+      "name": "Descent-path terrain clearance",
+      "question": "Does the lander clear ridges on approach?",
+      "definition": "Closest margin between path/envelope and terrain.",
+      "unit": "m",
+      "significance": "Collision-free flight geometry.",
+      "dependencies": "Trajectory, DEM, dispersion",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "NASA HLS approach study",
+      "caveats": null
+    },
+    {
+      "id": "landing.landing-area-hazard-probability",
+      "categoryId": "landing",
+      "name": "Landing-area hazard probability",
+      "question": "How likely is an unsafe touchdown?",
+      "definition": "Integrated probability across hazards and touchdown distribution.",
+      "unit": "% / probability",
+      "significance": "Better than average slope or a single point.",
+      "dependencies": "All hazards, lander tolerance, ellipse",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Engineering synthesis",
+      "caveats": "Requires calibrated hazard model"
+    },
+    {
+      "id": "landing.post-landing-stability-and-egress",
+      "categoryId": "landing",
+      "name": "Post-landing stability and egress",
+      "question": "Can the payload deploy and leave safely?",
+      "definition": "Tilt, ground clearance, ramp angles, clearance zones, solar/antenna orientation.",
+      "unit": "deg; m; Boolean",
+      "significance": "Mission could fail after soft touchdown.",
+      "dependencies": "Slope, mass center, geometry",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA Site Selection",
+      "caveats": null
+    },
+    {
+      "id": "trajectory.earth-launch-window-availability",
+      "categoryId": "trajectory",
+      "name": "Earth launch-window availability",
+      "question": "When can a spacecraft start the journey?",
+      "definition": "Feasible launch periods given launcher, alignment, range and spacecraft.",
+      "unit": "UTC intervals",
+      "significance": "Site time does not equal Earth departure time.",
+      "dependencies": "Earth/Moon ephemeris, launcher",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "NASA Site Selection",
+      "caveats": null
+    },
+    {
+      "id": "trajectory.translunar-transfer-type-time",
+      "categoryId": "trajectory",
+      "name": "Translunar transfer type / time",
+      "question": "How long is the journey?",
+      "definition": "Direct, ballistic, low-energy, staging trajectory and transfer duration.",
+      "unit": "d; type",
+      "significance": "Changes arrival date, fuel and payload limits.",
+      "dependencies": "Launcher, mission design",
+      "role": "Constraint",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "Mission design synthesis",
+      "caveats": null
+    },
+    {
+      "id": "trajectory.arrival-orbit-geometry",
+      "categoryId": "trajectory",
+      "name": "Arrival orbit geometry",
+      "question": "From what orbit will descent begin?",
+      "definition": "LLO, NRHO, staging/transfer orbit, inclination, altitude.",
+      "unit": "km; deg; orbit class",
+      "significance": "Determines approach geometry and timing.",
+      "dependencies": "Transfer, target site",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "NASA HLS approach study",
+      "caveats": null
+    },
+    {
+      "id": "trajectory.orbital-phasing-descent-opportunities",
+      "categoryId": "trajectory",
+      "name": "Orbital phasing & descent opportunities",
+      "question": "How often can the craft attempt landing?",
+      "definition": "Discrete descent times from orbit to selected site.",
+      "unit": "UTC intervals",
+      "significance": "Couples site illumination/DTE to access.",
+      "dependencies": "Orbit, site rotation, descent",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "NASA HLS approach study",
+      "caveats": null
+    },
+    {
+      "id": "trajectory.approach-direction-azimuth",
+      "categoryId": "trajectory",
+      "name": "Approach direction / azimuth",
+      "question": "From what bearing does the lander arrive?",
+      "definition": "Horizontal trajectory heading at/near landing.",
+      "unit": "deg",
+      "significance": "Terrain clearance, glare, antenna geometry.",
+      "dependencies": "Orbit, guidance, site",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA HLS approach study",
+      "caveats": null
+    },
+    {
+      "id": "trajectory.delta-v-budget-reserve",
+      "categoryId": "trajectory",
+      "name": "Delta-v budget & reserve",
+      "question": "How much propellant is required?",
+      "definition": "Total velocity change for transfer, braking, divert, ascent, contingencies.",
+      "unit": "m/s",
+      "significance": "Mission mass feasibility and safety.",
+      "dependencies": "Trajectory, mass, propulsion",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "NASA HLS approach study",
+      "caveats": null
+    },
+    {
+      "id": "trajectory.descent-lighting-comm-continuity",
+      "categoryId": "trajectory",
+      "name": "Descent lighting & comm continuity",
+      "question": "Will navigation and Earth link hold during descent?",
+      "definition": "Intersected illumination and comm state along evolving descent path.",
+      "unit": "UTC window; % time",
+      "significance": "Safer powered descent / telemetry.",
+      "dependencies": "Trajectory, Sun/Earth, DEM",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA HLS approach study",
+      "caveats": null
+    },
+    {
+      "id": "trajectory.propellant-and-payload-mass-margin",
+      "categoryId": "trajectory",
+      "name": "Propellant and payload mass margin",
+      "question": "Can this vehicle reach the site with its cargo?",
+      "definition": "Available propellant and payload allowance against performance model.",
+      "unit": "kg; %",
+      "significance": "Feasibility of desired science payloads.",
+      "dependencies": "Delta-v, propulsion, trajectory",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "Mission design synthesis",
+      "caveats": null
+    },
+    {
+      "id": "trajectory.departure-ascent-rendezvous-timing",
+      "categoryId": "trajectory",
+      "name": "Departure/ascent/rendezvous timing",
+      "question": "Can crew/sample return from this site?",
+      "definition": "Surface departure and orbital rendezvous opportunities.",
+      "unit": "UTC; m/s",
+      "significance": "Relevant only to ascent/return architecture.",
+      "dependencies": "Staging orbit, surface operations",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "NASA Site Selection",
+      "caveats": null
+    },
+    {
+      "id": "trajectory.landing-abort-alternate-sites",
+      "categoryId": "trajectory",
+      "name": "Landing abort/alternate sites",
+      "question": "Where can mission divert on failure?",
+      "definition": "Alternative feasible landing polygons and fuel reserves.",
+      "unit": "km; m/s",
+      "significance": "Redundancy and survivability.",
+      "dependencies": "Trajectory, dispersion, alternate sites",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "Mission design synthesis",
+      "caveats": null
+    },
+    {
+      "id": "science.scientific-target-identification",
+      "categoryId": "science",
+      "name": "Scientific target identification",
+      "question": "What is worth investigating nearby?",
+      "definition": "Named geological/prospecting targets with prioritized hypotheses.",
+      "unit": "POIs / labels",
+      "significance": "Maps objectives to places.",
+      "dependencies": "Science program, geologic maps",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA Site Selection",
+      "caveats": null
+    },
+    {
+      "id": "science.distance-to-science-targets",
+      "categoryId": "science",
+      "name": "Distance to science targets",
+      "question": "How far is the desired target?",
+      "definition": "Path or straight-line distance, explicitly distinguished.",
+      "unit": "km",
+      "significance": "Science return vs travel time and energy.",
+      "dependencies": "POI coordinates, traverses",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA Site Selection",
+      "caveats": null
+    },
+    {
+      "id": "science.geologic-units-stratigraphy",
+      "categoryId": "science",
+      "name": "Geologic units / stratigraphy",
+      "question": "What rock history might be exposed?",
+      "definition": "Mapped formations, ejecta, bedrock units and context.",
+      "unit": "Class; age Ga",
+      "significance": "Moon history, sample interpretation.",
+      "dependencies": "Geologic maps, imagery",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Lunar science",
+      "caveats": null
+    },
+    {
+      "id": "science.rock-composition-spectral-minerals",
+      "categoryId": "science",
+      "name": "Rock composition / spectral minerals",
+      "question": "What materials occur at the site?",
+      "definition": "Remote-sensing mineral abundances and spectral signatures.",
+      "unit": "wt%; spectra",
+      "significance": "Science diversity and resource potential.",
+      "dependencies": "Orbital spectroscopy",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "LRO / PDS",
+      "caveats": null
+    },
+    {
+      "id": "science.geologic-age-crater-chronology",
+      "categoryId": "science",
+      "name": "Geologic age / crater chronology",
+      "question": "How old might a surface be?",
+      "definition": "Inferred formation/exposure age and uncertainty.",
+      "unit": "Ga / Ma",
+      "significance": "Geologic history and sample priorities.",
+      "dependencies": "Crater counts, sampling",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "Lunar science",
+      "caveats": "Age inference is model-dependent"
+    },
+    {
+      "id": "science.permanently-shadowed-region-psr-coverage",
+      "categoryId": "science",
+      "name": "Permanently shadowed region (PSR) coverage",
+      "question": "Where is sunlight persistently absent?",
+      "definition": "Terrain not directly solar illuminated across relevant seasonal cycles.",
+      "unit": "area km²; %",
+      "significance": "Cold traps, ice, extreme operations.",
+      "dependencies": "Terrain, long-term Sun geometry",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA South Pole Environment",
+      "caveats": "PSR does not guarantee ice"
+    },
+    {
+      "id": "science.psr-access-distance-and-difficulty",
+      "categoryId": "science",
+      "name": "PSR access distance and difficulty",
+      "question": "Can a rover reach a cold trap?",
+      "definition": "Path length, slopes, darkness and egress constraints to PSR.",
+      "unit": "km; h; difficulty",
+      "significance": "Balance science value with mobility/power.",
+      "dependencies": "PSR map, traversability, thermal",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA VIPER Operations",
+      "caveats": null
+    },
+    {
+      "id": "science.hydrogen-proxy-concentration",
+      "categoryId": "science",
+      "name": "Hydrogen proxy concentration",
+      "question": "Is water-rich material suggested?",
+      "definition": "Neutron suppression or other instrument proxy for hydrogen.",
+      "unit": "counts/s; proxy index",
+      "significance": "Promising volatile indicator; not direct ice quantity.",
+      "dependencies": "LEND/neutron data",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "LRO LEND",
+      "caveats": "Hydrogen detection ≠ confirmed water ice"
+    },
+    {
+      "id": "science.water-ice-abundance-estimate",
+      "categoryId": "science",
+      "name": "Water-ice abundance estimate",
+      "question": "How much ice may be present?",
+      "definition": "Estimated ice fraction with depth and uncertainty.",
+      "unit": "wt%; kg/m³",
+      "significance": "Resource prospecting; sample priority.",
+      "dependencies": "Neutron, spectroscopy, radar, in situ",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA South Pole Environment",
+      "caveats": "Often indirect and spatially heterogeneous"
+    },
+    {
+      "id": "science.ice-physical-state-and-depth",
+      "categoryId": "science",
+      "name": "Ice physical state and depth",
+      "question": "Is ice exposed, mixed or buried?",
+      "definition": "Surface frost vs mixed grains/lenses and depth of deposits.",
+      "unit": "cm / m; type",
+      "significance": "Sampling hardware and ISRU feasibility.",
+      "dependencies": "Thermal, spectral, sounding",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "Lunar science",
+      "caveats": null
+    },
+    {
+      "id": "science.cold-trap-thermal-stability",
+      "categoryId": "science",
+      "name": "Cold-trap thermal stability",
+      "question": "Could ice remain over geological time?",
+      "definition": "Temperature/time stability for volatile retention.",
+      "unit": "K; retention period",
+      "significance": "Distinguishes likely stable deposits from transient signatures.",
+      "dependencies": "Thermal model, volatile species",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "NASA South Pole Environment",
+      "caveats": null
+    },
+    {
+      "id": "science.other-volatiles-organics",
+      "categoryId": "science",
+      "name": "Other volatiles & organics",
+      "question": "What additional frozen species may occur?",
+      "definition": "Candidate CO2, CO, NH3, sulfur-bearing species etc.",
+      "unit": "species; wt%",
+      "significance": "Science value / potential chemistry.",
+      "dependencies": "Temperature, measurements",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "Lunar science",
+      "caveats": "Do not present candidate species as confirmed"
+    },
+    {
+      "id": "science.resource-extraction-feasibility",
+      "categoryId": "science",
+      "name": "Resource extraction feasibility",
+      "question": "Could resources be used in situ?",
+      "definition": "Excavation depth, energy, yield, processing constraints.",
+      "unit": "kg/day; Wh/kg",
+      "significance": "ISRU trade-offs beyond ice presence.",
+      "dependencies": "Regolith, ice, hardware, thermal",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "Engineering synthesis",
+      "caveats": null
+    },
+    {
+      "id": "science.science-diversity-score",
+      "categoryId": "science",
+      "name": "Science diversity score",
+      "question": "How many independent objectives can be met?",
+      "definition": "Objective-weighted count/coverage of nearby terrain and targets.",
+      "unit": "score / objectives",
+      "significance": "Prioritizes science return explicitly.",
+      "dependencies": "Science targets, traverses, instruments",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA Site Selection",
+      "caveats": "Values/weights must be disclosed"
+    },
+    {
+      "id": "science.instrument-deployment-suitability",
+      "categoryId": "science",
+      "name": "Instrument deployment suitability",
+      "question": "Can this particular experiment work here?",
+      "definition": "Geometry, stability, acoustic/EM isolation, illumination and line-of-sight needs.",
+      "unit": "Boolean / constraints",
+      "significance": "Determines whether payload science can be realized.",
+      "dependencies": "Payload, terrain, environment",
+      "role": "Constraint",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Engineering synthesis",
+      "caveats": null
+    },
+    {
+      "id": "logistics.activity-timeline-critical-path",
+      "categoryId": "logistics",
+      "name": "Activity timeline / critical path",
+      "question": "Can all tasks finish before conditions fail?",
+      "definition": "Sequenced deployment, science, transfers, comm/downlink events.",
+      "unit": "UTC; h",
+      "significance": "Turns resources into schedule feasibility.",
+      "dependencies": "Tasks, energy, communications",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA Site Selection",
+      "caveats": null
+    },
+    {
+      "id": "logistics.operational-mode-autonomy-rules",
+      "categoryId": "logistics",
+      "name": "Operational mode / autonomy rules",
+      "question": "What happens during comm blackout?",
+      "definition": "Surface autonomy, stored commands, safe-mode transitions.",
+      "unit": "modes; h",
+      "significance": "Determines allowable DTE gaps.",
+      "dependencies": "Comms, vehicle software",
+      "role": "Constraint",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA VIPER Operations",
+      "caveats": null
+    },
+    {
+      "id": "logistics.consumables-spares-reserves",
+      "categoryId": "logistics",
+      "name": "Consumables, spares & reserves",
+      "question": "What supplies can we afford to use?",
+      "definition": "Propellant, reactants, spare parts, crew life support and margins.",
+      "unit": "kg; d",
+      "significance": "Duration and contingency resilience.",
+      "dependencies": "Mission architecture",
+      "role": "Constraint",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "Engineering synthesis",
+      "caveats": null
+    },
+    {
+      "id": "logistics.command-telemetry-buffer",
+      "categoryId": "logistics",
+      "name": "Command/telemetry buffer",
+      "question": "Can data survive loss of contact?",
+      "definition": "Onboard storage and queued downlink/command capacity.",
+      "unit": "GB; h",
+      "significance": "Science retention over DTE blackout.",
+      "dependencies": "DTE windows, data rate",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Engineering synthesis",
+      "caveats": null
+    },
+    {
+      "id": "logistics.deployment-and-workspace-area",
+      "categoryId": "logistics",
+      "name": "Deployment and workspace area",
+      "question": "Is there room to place all equipment?",
+      "definition": "Flat footprint and clearances for antenna, arrays, instruments, rover.",
+      "unit": "m²",
+      "significance": "Hardware operating feasibility.",
+      "dependencies": "Terrain, payload footprint",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Engineering synthesis",
+      "caveats": null
+    },
+    {
+      "id": "logistics.anchor-structure-erectability",
+      "categoryId": "logistics",
+      "name": "Anchor/structure erectability",
+      "question": "Can masts, arrays, sensors be installed?",
+      "definition": "Local bearing, excavation, anchoring constraints.",
+      "unit": "Boolean; kPa",
+      "significance": "Observer-height tradeoffs must be buildable.",
+      "dependencies": "Regolith, slope, structure",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "Bryant 2009 / engineering",
+      "caveats": null
+    },
+    {
+      "id": "logistics.ground-station-schedules-downlink-priority",
+      "categoryId": "logistics",
+      "name": "Ground station schedules & downlink priority",
+      "question": "Will communications assets be booked?",
+      "definition": "Resource allocation and latency under competing missions.",
+      "unit": "UTC slots; priority",
+      "significance": "Avoids assuming Earth-visible means contact-ready.",
+      "dependencies": "DSN / commercial provider schedules",
+      "role": "Constraint",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "Engineering synthesis",
+      "caveats": null
+    },
+    {
+      "id": "logistics.nearby-landings-plume-exclusion",
+      "categoryId": "logistics",
+      "name": "Nearby landings / plume exclusion",
+      "question": "Could another spacecraft endanger assets?",
+      "definition": "Hazard buffer around simultaneous or later landing activity.",
+      "unit": "m; UTC",
+      "significance": "Avoids damage to infrastructure and historic sites.",
+      "dependencies": "Mission manifests, plume model",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "Engineering synthesis",
+      "caveats": null
+    },
+    {
+      "id": "logistics.operational-safety-margins-reserve-time",
+      "categoryId": "logistics",
+      "name": "Operational safety margins & reserve time",
+      "question": "How much slack is there?",
+      "definition": "Minimum buffers before darkness, comm loss, thermal/energy limits.",
+      "unit": "h; %",
+      "significance": "Robustness to delays and uncertainty.",
+      "dependencies": "Timelines, failure assumptions",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Engineering synthesis",
+      "caveats": null
+    },
+    {
+      "id": "logistics.site-infrastructure-reuse-potential",
+      "categoryId": "logistics",
+      "name": "Site infrastructure reuse potential",
+      "question": "Can future missions build on this site?",
+      "definition": "Co-location feasibility, reuse of relays/power pads/paths.",
+      "unit": "score; km",
+      "significance": "Sustained presence and campaign planning.",
+      "dependencies": "Assets, distance, durability",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "NASA Site Selection",
+      "caveats": null
+    },
+    {
+      "id": "rover.traversable-slope-cross-slope",
+      "categoryId": "rover",
+      "name": "Traversable slope / cross slope",
+      "question": "Can the rover climb or cross terrain?",
+      "definition": "Grade profile relative to vehicle drive, stability and traction limits.",
+      "unit": "deg",
+      "significance": "Route viability, risk of slip/tip.",
+      "dependencies": "DEM, rover, regolith",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA VIPER Operations",
+      "caveats": null
+    },
+    {
+      "id": "rover.route-obstacle-density",
+      "categoryId": "rover",
+      "name": "Route obstacle density",
+      "question": "How many rocks/craters block travel?",
+      "definition": "Impassable object frequency along a corridor.",
+      "unit": "count/km; %",
+      "significance": "Path planning and detours.",
+      "dependencies": "Imagery, rover size",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA VIPER Operations",
+      "caveats": null
+    },
+    {
+      "id": "rover.route-length-and-cumulative-ascent",
+      "categoryId": "rover",
+      "name": "Route length and cumulative ascent",
+      "question": "How much ground travel is needed?",
+      "definition": "Total route distance and positive elevation gain.",
+      "unit": "km; m",
+      "significance": "Time, energy, wheel wear.",
+      "dependencies": "Route, DEM",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Engineering synthesis",
+      "caveats": null
+    },
+    {
+      "id": "rover.travel-speed-slip",
+      "categoryId": "rover",
+      "name": "Travel speed & slip",
+      "question": "How quickly can rover progress?",
+      "definition": "Expected speed adjusted for slope/soil and navigation overhead.",
+      "unit": "m/h; % slip",
+      "significance": "Schedule and energy consumption.",
+      "dependencies": "Vehicle, soil, obstacles",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA VIPER Operations",
+      "caveats": null
+    },
+    {
+      "id": "rover.traverse-energy-consumption",
+      "categoryId": "rover",
+      "name": "Traverse energy consumption",
+      "question": "Can it make the round trip?",
+      "definition": "Mechanical/electrical energy per leg, including margins.",
+      "unit": "Wh / km; Wh",
+      "significance": "Limit science reach and return.",
+      "dependencies": "Route, slope, mass, soil",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "Engineering synthesis",
+      "caveats": null
+    },
+    {
+      "id": "rover.dynamic-sunlight-along-route",
+      "categoryId": "rover",
+      "name": "Dynamic sunlight along route",
+      "question": "Will the rover be illuminated while moving?",
+      "definition": "Time-specific illumination at each path point.",
+      "unit": "Sunlit Boolean vs time",
+      "significance": "Avoids moving into prolonged shadow.",
+      "dependencies": "Route, speed, Sun, DEM",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA VIPER Operations",
+      "caveats": null
+    },
+    {
+      "id": "rover.dynamic-communications-along-route",
+      "categoryId": "rover",
+      "name": "Dynamic communications along route",
+      "question": "Can controllers talk to a moving rover?",
+      "definition": "DTE/relay contact as function of path and time.",
+      "unit": "% time; intervals",
+      "significance": "Schedules command and telemetry.",
+      "dependencies": "Route, comm models",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA VIPER Operations",
+      "caveats": null
+    },
+    {
+      "id": "rover.safe-haven-waypoints",
+      "categoryId": "rover",
+      "name": "Safe-haven waypoints",
+      "question": "Where can rover hibernate and recharge?",
+      "definition": "Sites meeting sunlight, thermal and power survival thresholds.",
+      "unit": "waypoints; km; h",
+      "significance": "Surviving dark/blackout periods.",
+      "dependencies": "Illumination, energy, comm, routes",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA VIPER Operations",
+      "caveats": null
+    },
+    {
+      "id": "rover.route-temporal-feasibility-return-margin",
+      "categoryId": "rover",
+      "name": "Route temporal feasibility / return margin",
+      "question": "Can rover visit targets and escape in time?",
+      "definition": "Reachability of all waypoints subject to illumination/contact/energy.",
+      "unit": "Boolean; h margin",
+      "significance": "Operational go/no-go.",
+      "dependencies": "Routes, speeds, windows, margins",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA VIPER Operations",
+      "caveats": null
+    },
+    {
+      "id": "rover.localization-navigation-uncertainty",
+      "categoryId": "rover",
+      "name": "Localization / navigation uncertainty",
+      "question": "How precisely does rover know its position?",
+      "definition": "Position covariance as it traverses areas with poor landmarks.",
+      "unit": "m; covariance",
+      "significance": "Risk control and traverse confidence.",
+      "dependencies": "Sensors, terrain, lighting",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "Engineering synthesis",
+      "caveats": null
+    },
+    {
+      "id": "rover.visibility-visual-ergonomics",
+      "categoryId": "rover",
+      "name": "Visibility/visual ergonomics",
+      "question": "Can cameras/operators see hazards?",
+      "definition": "Shadows, glare and scene contrast from low Sun angles.",
+      "unit": "deg; image contrast",
+      "significance": "Driver safety and human perception.",
+      "dependencies": "Sun, terrain, camera",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA Visual Experience",
+      "caveats": null
+    },
+    {
+      "id": "rover.route-science-yield-vs-cost",
+      "categoryId": "rover",
+      "name": "Route science yield vs cost",
+      "question": "What science is achievable per resource?",
+      "definition": "Expected data/sample objectives weighted against distance, time and power.",
+      "unit": "score per Wh/h",
+      "significance": "Trade-off science and logistics.",
+      "dependencies": "Science targets, operational cost",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "Engineering synthesis",
+      "caveats": null
+    },
+    {
+      "id": "space-weather.solar-energetic-particle-sep-events",
+      "categoryId": "space-weather",
+      "name": "Solar energetic particle (SEP) events",
+      "question": "Could a solar eruption threaten spacecraft?",
+      "definition": "Forecast/probabilistic flux of high-energy solar particles.",
+      "unit": "particles/cm²/s/sr; dose",
+      "significance": "Electronics/crew radiation contingency.",
+      "dependencies": "Solar activity; shielding",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "NASA Weather on Moon",
+      "caveats": "Short-term prediction uncertain"
+    },
+    {
+      "id": "space-weather.galactic-cosmic-ray-exposure",
+      "categoryId": "space-weather",
+      "name": "Galactic cosmic-ray exposure",
+      "question": "What is baseline deep-space radiation?",
+      "definition": "Background energetic particle field and predicted dose.",
+      "unit": "mSv/day; Gy",
+      "significance": "Crew, instruments, long-duration systems.",
+      "dependencies": "Solar cycle, shielding",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "NASA Weather on Moon",
+      "caveats": null
+    },
+    {
+      "id": "space-weather.radiation-dose-behind-shielding",
+      "categoryId": "space-weather",
+      "name": "Radiation dose behind shielding",
+      "question": "How much radiation actually reaches hardware?",
+      "definition": "Dose equivalent or total ionizing dose after local shield.",
+      "unit": "mSv; Gy(Si)",
+      "significance": "Hardware lifetime and crew safety.",
+      "dependencies": "Particle flux, material, thickness",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "NASA Weather on Moon",
+      "caveats": null
+    },
+    {
+      "id": "space-weather.surface-plasma-solar-wind-environment",
+      "categoryId": "space-weather",
+      "name": "Surface plasma / solar-wind environment",
+      "question": "Will charged particles affect systems?",
+      "definition": "Ion/electron flux, charging and exposure around sunlight/shadow transitions.",
+      "unit": "cm^-2 s^-1; V",
+      "significance": "Electrical charging and materials.",
+      "dependencies": "Solar wind, magnetic anomalies",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "NASA Weather on Moon",
+      "caveats": null
+    },
+    {
+      "id": "space-weather.micrometeoroid-background-impact-flux",
+      "categoryId": "space-weather",
+      "name": "Micrometeoroid background impact flux",
+      "question": "How often do tiny impacts occur?",
+      "definition": "Poisson rate of impactors by size/energy range.",
+      "unit": "impacts/m²/year",
+      "significance": "Wear, puncture and exposure of equipment.",
+      "dependencies": "Meteoroid environment",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "NASA Weather on Moon",
+      "caveats": null
+    },
+    {
+      "id": "space-weather.predictable-meteor-stream-exposure",
+      "categoryId": "space-weather",
+      "name": "Predictable meteor-stream exposure",
+      "question": "Does Moon pass through elevated dust flux?",
+      "definition": "Potential flux enhancement during known meteoroid streams.",
+      "unit": "ratio / interval",
+      "significance": "Extra risk context; usually not site-ranking driver.",
+      "dependencies": "Orbital geometry, meteor streams",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "NASA Weather on Moon",
+      "caveats": "Weak operational predictability"
+    },
+    {
+      "id": "space-weather.known-asteroid-or-comet-lunar-impact-risk",
+      "categoryId": "space-weather",
+      "name": "Known asteroid or comet lunar impact risk",
+      "question": "Is a significant impact predicted nearby?",
+      "definition": "Probability/trajectory of known object intersecting Moon; uncertainty.",
+      "unit": "probability; UTC; km",
+      "significance": "Rare-event watch rather than routine site selection.",
+      "dependencies": "Orbital observations, uncertainties",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "JPL Horizons",
+      "caveats": "Do not display speculative impact dates as facts"
+    },
+    {
+      "id": "space-weather.recent-local-impact-detection-new-craters",
+      "categoryId": "space-weather",
+      "name": "Recent local impact detection / new craters",
+      "question": "Has terrain changed since imagery?",
+      "definition": "Observed new impacts and fresh ejecta near site.",
+      "unit": "UTC; m; km",
+      "significance": "Updates hazards and science context.",
+      "dependencies": "Repeat imaging, impact catalog",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "LRO / PDS",
+      "caveats": null
+    },
+    {
+      "id": "space-weather.eclipse-occultation-by-orbital-bodies",
+      "categoryId": "space-weather",
+      "name": "Eclipse/occultation by orbital bodies",
+      "question": "Will natural geometry interrupt links or power?",
+      "definition": "Predicted Sun/Earth occultations by Moon, Earth, spacecraft as appropriate.",
+      "unit": "UTC window",
+      "significance": "Interruptions and thermal effects.",
+      "dependencies": "Ephemeris, trajectory",
+      "role": "Derived",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "JPL Horizons / Bryant 2009",
+      "caveats": null
+    },
+    {
+      "id": "space-weather.radiation-impact-event-alert-confidence",
+      "categoryId": "space-weather",
+      "name": "Radiation/impact event alert confidence",
+      "question": "Can we trust a forecast?",
+      "definition": "Probability and alert-source/lead-time qualification.",
+      "unit": "% / confidence",
+      "significance": "Avoids false precision for unpredictable hazards.",
+      "dependencies": "Forecast data, model",
+      "role": "Metadata",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "Engineering synthesis",
+      "caveats": null
+    },
+    {
+      "id": "heritage.previous-landing-impact-locations",
+      "categoryId": "heritage",
+      "name": "Previous landing/impact locations",
+      "question": "What has visited this region?",
+      "definition": "Coordinates of earlier spacecraft landing, impact or attempted touchdown.",
+      "unit": "lat/lon; km",
+      "significance": "Context, safety lessons, heritage.",
+      "dependencies": "Mission archives",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA CLPS Landing Sites",
+      "caveats": null
+    },
+    {
+      "id": "heritage.mission-outcome-and-anomaly-history",
+      "categoryId": "heritage",
+      "name": "Mission outcome and anomaly history",
+      "question": "What went right or wrong nearby?",
+      "definition": "Landing success, tilt, power/comms losses and documented failure modes.",
+      "unit": "categories; dates",
+      "significance": "Engineering lessons, public storytelling.",
+      "dependencies": "Mission reports",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "NASA CLPS / OIG",
+      "caveats": "Nearby outcomes not statistically predictive of point risk"
+    },
+    {
+      "id": "heritage.prior-orbital-coverage-repeat-imagery",
+      "categoryId": "heritage",
+      "name": "Prior orbital coverage & repeat imagery",
+      "question": "How extensively has region been mapped?",
+      "definition": "Number, time and resolution of images/scans across candidate site.",
+      "unit": "scenes; m/px",
+      "significance": "Data confidence and historical changes.",
+      "dependencies": "LRO/PDS",
+      "role": "Metadata",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "LRO Products",
+      "caveats": null
+    },
+    {
+      "id": "heritage.prior-in-situ-chemistry-soil-observations",
+      "categoryId": "heritage",
+      "name": "Prior in situ chemistry/soil observations",
+      "question": "What direct measurements exist?",
+      "definition": "Nearby sample/sensor results with distances and uncertainty.",
+      "unit": "various; km",
+      "significance": "Local ground truth for remote proxies.",
+      "dependencies": "CLPS data, Apollo/sample archive",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Optional story / contextual layer",
+        "educator": "Show physical mechanism, diagram and definition; compare examples",
+        "planner": "Expose numeric value, assumptions, thresholds, source and time series"
+      },
+      "source": "PDS / CLPS",
+      "caveats": "Do not extrapolate without uncertainty"
+    },
+    {
+      "id": "heritage.documented-hazard-or-rover-traverse-events",
+      "categoryId": "heritage",
+      "name": "Documented hazard or rover traverse events",
+      "question": "What operational incidents are relevant?",
+      "definition": "Observed wheel slip, shadow traps, communications outages, etc.",
+      "unit": "event log",
+      "significance": "Practical mission design lessons.",
+      "dependencies": "Mission telemetry",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "VIPER / mission archives",
+      "caveats": null
+    },
+    {
+      "id": "heritage.nearby-active-planned-missions-interference",
+      "categoryId": "heritage",
+      "name": "Nearby active/planned missions & interference",
+      "question": "What else will be operating?",
+      "definition": "Potential overlapping assets, landing timelines, exclusion zones.",
+      "unit": "UTC; km",
+      "significance": "Coordination, radio coexistence, debris risk.",
+      "dependencies": "Mission manifests",
+      "role": "Input",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "NASA CLPS Landing Sites",
+      "caveats": "Planned dates can shift"
+    },
+    {
+      "id": "heritage.cultural-heritage-preservation-zones",
+      "categoryId": "heritage",
+      "name": "Cultural/heritage preservation zones",
+      "question": "Is the location protected or sensitive?",
+      "definition": "Historic hardware, contamination/buffer recommendations.",
+      "unit": "km; polygons",
+      "significance": "Preservation, site permissions and exclusion.",
+      "dependencies": "Heritage datasets / mission rules",
+      "role": "Constraint",
+      "views": {
+        "enthusiast": "Hidden unless requested",
+        "educator": "Specialist explainer when relevant",
+        "planner": "Expert drill-down; require mission/vehicle inputs"
+      },
+      "source": "Engineering synthesis",
+      "caveats": null
+    }
+  ]
+}

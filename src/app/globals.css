@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens. Dark-first (LOGS D-008). Chart colours follow the dataviz reference palette
+ * (dark steps): Earth = series blue, Sun = series orange. Status (RAG) colours are reserved for
+ * green/amber/red and always ship with an icon + label (LOGS D-024).
+ */
+:root {
+  --bg: #0b0d12;
+  --panel: #141821;
+  --panel-2: #1a1f2a;
+  --line: #262c38;
+  --grid: #2a303c;
+  --fg: #e8ebf1;
+  --muted: #9aa3b2;
+  --faint: #6b7383;
+  --accent: #7cc4ff;
+  --accent-ink: #06121f;
+  --sun: #d95926;
+  --earth: #3987e5;
+  --terrain: #5b6272;
+  --good: #0ca30c;
+  --warning: #fab219;
+  --critical: #d03b3b;
+  --warn: #ff9f5a;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-panel: var(--panel);
+  --color-panel-2: var(--panel-2);
+  --color-line: var(--line);
+  --color-grid: var(--grid);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-sun: var(--sun);
+  --color-earth: var(--earth);
+  --color-terrain: var(--terrain);
+  --color-good: var(--good);
+  --color-warning: var(--warning);
+  --color-critical: var(--critical);
+  --color-warn: var(--warn);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* OpenLayers controls in the dark theme */
+.ol-zoom button,
+.ol-rotate button,
+.ol-attribution button {
+  background: var(--panel-2) !important;
+  color: var(--fg) !important;
+}
+.ol-attribution {
+  background: rgba(11, 13, 18, 0.7) !important;
+  color: var(--muted);
+  font-size: 10px;
+}
+.ol-attribution a {
+  color: var(--muted);
+}

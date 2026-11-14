@@ -1,0 +1,985 @@
+{
+ "_readme": "Educator-view copy per metric (LOGS D-034). lead holds {value}, replaced by the computed display value. No numbers or facts beyond each metric's own definition/significance/notes plus qualitative physics. Regenerate context with scripts/export-metric-context.ts.",
+ "metrics": {
+  "overall.joint-sunlit-dte-window": {
+   "lead": "Over the whole mission, sunlight and a direct line of sight to Earth overlap for {value}.",
+   "explain": "A lander needs the Sun above the terrain for power and Earth above the horizon to radio home directly (DTE, direct-to-Earth). The two move independently, so a site can have plenty of each yet rarely both together.",
+   "readIt": "More overlap means more time to work and talk to Earth together; little or none forces the mission to alternate between charging and communicating."
+  },
+  "overall.longest-gap-without-simultaneous-sun-and-dte-visibility": {
+   "lead": "The longest stretch without sunlight and Earth contact at the same time is {value}.",
+   "explain": "Sunlight and Earth visibility follow separate rhythms: the Sun circles low around the horizon, while libration (the Moon's slight wobble as seen from Earth) nudges Earth up and down near the skyline. A gap lasts until both line up again.",
+   "readIt": "Shorter is better, because a long gap means a long wait before the lander can run real-time science with power and contact together."
+  },
+  "overall.feasible-operational-hours-total": {
+   "lead": "With your mission settings, the time when every operating condition is met adds up to {value}.",
+   "explain": "A moment counts only if the site is sunlit, Earth is in view, and at least one DSN (Deep Space Network) ground station can see the Moon as Earth rotates. Because every gate must be open at once, the total is often far smaller than sunlit time.",
+   "readIt": "Higher means more working time; even a sunny site can score low if contact falls at the wrong times."
+  },
+  "overall.mission-constraint-compatibility": {
+   "lead": "With your mission settings, checking the whole stay from touchdown to end of mission gives: {value}.",
+   "explain": "This asks whether the entire stay, with safety buffers added, meets every requirement. Like a chain breaking at its weakest link, one failed check anywhere makes the plan unworkable as set up.",
+   "readIt": "Passing every check means the plan is credible as configured; each failure points to a requirement to fix by changing the site, date or hardware."
+  },
+  "overall.comparison-against-site-alternatives": {
+   "lead": "Among the curated south-pole sites: {value}.",
+   "explain": "Polar sites differ in which directions their horizons are blocked: a ridge that hides the Sun may leave Earth clear, or the reverse. Putting metrics side by side with clear thresholds makes those trade-offs easy to see.",
+   "readIt": "A high rank is good, but look at the factors your mission cares about most, not just one list."
+  },
+  "overall.pareto-optimal-sites": {
+   "lead": "Compared with the other curated south-pole sites, this site is {value}.",
+   "explain": "A site is 'not dominated' if no other site is better in one way without being worse in another. This avoids squashing everything into one score with arbitrary weights, like shopping for a phone where none is cheaper, faster and longer-lasting all at once.",
+   "readIt": "Every site in this set is a reasonable choice; picking among them depends on which trade-off your mission prefers."
+  },
+  "overall.mission-weighted-suitability-index": {
+   "lead": "With your mission settings, this site scores {value} on the weighted suitability index.",
+   "explain": "After hard pass/fail gates, each criterion is rescaled to a common scale and blended using weights for sunlight, Earth view, both together, and gentle slope. The weights shown are examples; a real mission would set them from its own goals.",
+   "readIt": "Higher means a better fit to the stated priorities, but changing the weights can reorder sites, so treat it as a what-if tool rather than a verdict."
+  },
+  "overall.sensitivity-to-time-shift": {
+   "lead": "If the landing date moves: {value}.",
+   "explain": "At the pole the Sun skims along the horizon, so a small change in date can slide it behind or out from behind distant hills, switching whole stretches of light on or off. Re-running the analysis for nearby dates shows how fragile the schedule is.",
+   "readIt": "A small change means the plan tolerates delays; a large change means a slipped launch could turn a good window into a poor one."
+  },
+  "overall.sensitivity-to-position-shift": {
+   "lead": "If the touchdown point moves: {value}.",
+   "explain": "With the Sun so low, a short move sideways can carry a site into or out of a neighbouring ridge's shadow. Checking nearby grid points shows whether good lighting is a broad feature or a narrow lucky spot.",
+   "readIt": "A small change means landing accuracy matters less; a large change means the lander must touch down precisely to get the predicted conditions."
+  },
+  "overall.sensitivity-to-mast-height": {
+   "lead": "Raising the panel or antenna gives {value}.",
+   "explain": "Near the pole, surrounding terrain often blocks a Sun or Earth sitting just above the horizon. Lifting the observer is like standing on tiptoe to see over a fence: the higher you go, the more of the low sky clears the skyline.",
+   "readIt": "A larger gain per metre means a mast is worth considering; a tiny gain means the blocking terrain is too tall or too distant for height to help much."
+  },
+  "overall.risk-weighted-percentile-performance": {
+   "lead": "Across possible landing days in the year ahead, the spread of sunlit fraction is {value}.",
+   "explain": "Instead of one optimistic number, the mission is replayed for each possible landing day and the results are ranked. P5 is a bad-luck case (only 5 in 100 days do worse), P50 is the typical middle, and P95 is a good-luck case.",
+   "readIt": "Plan around the low percentile if the mission must survive bad timing; a wide spread means the landing date matters a lot."
+  },
+  "overall.constraint-failure-explanation": {
+   "lead": "With your mission settings, the main reason this plan does not work: {value}.",
+   "explain": "Each failed requirement becomes a plain-language reason with the time it breaks, comparing what the site delivers with what the hardware tolerates. It is like a teacher marking not just 'wrong' but which step went wrong.",
+   "readIt": "Use the reason to decide what to change: a site or date that eases the problem, or hardware that extends what the lander can tolerate."
+  },
+  "overall.opportunity-cost-science-gained": {
+   "lead": "This would show what science you give up, or gain, by choosing this site over others.",
+   "explain": "A site that is better for power or contact may sit farther from interesting targets, and vice versa. Weighing that requires your science goals and how much each is worth, so there is no neutral score from data alone.",
+   "readIt": "Once objectives are set, a higher value would mean more science within reach for each unit of power, contact or time given up."
+  },
+  "overall.evidence-maturity-analysis-confidence": {
+   "lead": "This analysis is built on: {value}.",
+   "explain": "Every input comes from orbit: terrain from the LOLA laser altimeter on LRO, which maps elevation by timing laser pulses, and Sun and Earth positions from JPL ephemerides (precise tables of where bodies are). Nothing has been measured on the ground at this spot, and rocks and craters smaller than a map pixel are not included.",
+   "readIt": "Treat results as a well-grounded screening estimate, not flight-ready numbers; finer maps or ground measurements would raise confidence."
+  },
+  "overall.joint-illumination-and-slope-qualifying-area": {
+   "lead": "Ground that is both gentle enough and sunlit enough covers {value}.",
+   "explain": "Each spot must pass two tests at once: a slope no steeper than the chosen limit and sunlight for at least the chosen share of the coming year. Sunny ridges are often steep and flat floors often shadowed, so many spots fail one test.",
+   "readIt": "More area means more choice of safe, sunny landing spots; zero means nothing in the region meets both tests at these thresholds."
+  },
+  "overall.qualifying-pixel-count-per-landing-area-grid-cell": {
+   "lead": "Grid squares holding enough ground that is both flat and sunny: {value}.",
+   "explain": "The region is divided into square cells, each one square kilometre, and the qualifying map pixels inside each are counted. This guards against being fooled by one lucky pixel, because a lander needs a cluster of good ground, not a single isolated spot.",
+   "readIt": "More qualifying cells means more distinct candidate landing zones; none means good ground is too scarce or scattered at these thresholds."
+  },
+  "overall.connectivity-fragmentation-of-qualifying-terrain": {
+   "lead": "Grouping touching pieces of qualifying ground gives {value}.",
+   "explain": "Good pixels only help if they join up into a patch big enough for a landing footprint and for a rover to drive across. A handful of good squares scattered across a chessboard is less useful than the same number packed into one solid block.",
+   "readIt": "Fewer, larger patches are better; many tiny patches mean the good ground is fragmented and harder to use."
+  },
+  "overall.illumination-slope-qualifying-area-resolution-sensitivity": {
+   "lead": "Calculated on two map grid sizes, the qualifying area comes out as {value}.",
+   "explain": "Coarse maps average over big squares, smoothing away small steep slopes and small shadows, so terrain can look safer or sunnier than it really is. Comparing two pixel sizes shows how much the answer depends on map detail.",
+   "readIt": "Similar values mean the result is robust; a big difference means the coarse map may give false confidence and finer data is needed."
+  },
+  "sun.sun-azimuth": {
+   "lead": "At landing, the Sun sits at an azimuth (compass direction) of {value}.",
+   "explain": "At the south pole the Sun does not climb high and set; it circles slowly around the horizon, once per lunar day-night cycle of about a month. Its direction tells you which way shadows fall and where to point panels.",
+   "readIt": "Use it to see which way panels should face and which nearby hills matter most, since terrain in that direction decides whether the site is lit."
+  },
+  "sun.sun-elevation": {
+   "lead": "At landing, the centre of the Sun sits {value} above the flat local horizontal.",
+   "explain": "Because the Moon's spin axis is only slightly tilted relative to the Sun, at the poles the Sun stays near the horizon. It lights the site only if it also clears the terrain horizon, the real skyline of hills and crater rims.",
+   "readIt": "Higher means steeper light and more clearance over the skyline; values near or below the terrain horizon mean long shadows or darkness."
+  },
+  "sun.sun-angular-diameter": {
+   "lead": "The Sun's apparent size and how much of it clears the terrain: {value}.",
+   "explain": "The Sun is not a point but a disk about half a degree wide, so when it skims a ridge it can be partly hidden, like a sunset halfway below the sea. Tracking the visible share avoids treating light as a simple on/off switch.",
+   "readIt": "A full disk delivers full sunlight; a partial disk means reduced power even though the site is technically lit."
+  },
+  "sun.instantaneous-terrain-shadow-state": {
+   "lead": "At the selected moment, the site is: {value}.",
+   "explain": "This checks whether enough of the Sun's disk peeks over the terrain horizon, counting both the site's own slopes and distant mountains. With the Sun so low at the pole, even far-off peaks can throw shadows across the site.",
+   "readIt": "A lit site means panels can generate power right now; a shadowed one means the lander is living on stored energy."
+  },
+  "sun.sunrise-sunset-crossings": {
+   "lead": "Switches between light and dark during the mission: {value}.",
+   "explain": "Here 'sunrise' means the Sun's disk climbing over the local skyline, not a flat horizon, so hills can create extra sunrises and sunsets as the Sun slides behind them and out again. The size of the Sun's disk is included, so its edge matters, not just its centre.",
+   "readIt": "Few crossings mean long, predictable light and dark periods; many crossings mean choppy lighting that complicates charging and scheduling."
+  },
+  "sun.illumination-time-series": {
+   "lead": "The lighting history for this mission is built from {value}.",
+   "explain": "Sun positions from NASA JPL Horizons are checked against the terrain skyline at regular time steps, producing a timeline of how much Sun is visible. It works like a time-lapse camera recording the lighting frame by frame.",
+   "readIt": "Read the timeline for when light arrives and fades; the overall pattern matters more than any single sample."
+  },
+  "sun.solar-availability-fraction": {
+   "lead": "The site counts as sunlit for {value} of the mission.",
+   "explain": "Each moment is labelled light or dark using a chosen rule for how much of the Sun's disk must show, and the light moments are added up. It measures time in sunlight, not how much power that sunlight produces.",
+   "readIt": "Higher means more time to charge and work, but the number depends on the light/dark rule and says nothing about how strong the light is."
+  },
+  "sun.full-vs-partial-solar-illumination": {
+   "lead": "Split by how much of the Sun shows, mission time breaks down as {value}.",
+   "explain": "Near the horizon the Sun is often partly behind terrain, so 'sunlit' could mean the whole disk, about half, or just a sliver. Reporting these levels separately, as the research papers do, makes clear which meaning of 'lit' is in use.",
+   "readIt": "A large partial share means lighting is marginal, so results are sensitive to which definition of daylight you choose."
+  },
+  "sun.longest-continuous-darkness": {
+   "lead": "The longest unbroken stretch without sunlight during the mission is {value}.",
+   "explain": "Darkness at the pole comes when the circling Sun drops behind terrain, and how long it stays hidden depends on how wide and tall the blocking hills are. Throughout that time all power must come from batteries, including heating to survive the cold.",
+   "readIt": "Shorter is better; this one number is often the toughest design driver, because the batteries must last the whole stretch."
+  },
+  "sun.total-dark-duration": {
+   "lead": "Adding up every dark period, the mission spends {value} without sunlight.",
+   "explain": "Unlike the longest single dark spell, this sums all dark periods, short and long. Think of it as the total time the lights are off during the trip, not just the longest outage.",
+   "readIt": "Lower means more time to generate power overall; compare it with the longest darkness to see whether darkness comes in one block or many short ones."
+  },
+  "sun.longest-continuous-sunlight": {
+   "lead": "The longest unbroken run of sunlight at this point is {value}.",
+   "explain": "As the Sun circles the horizon, the site stays lit while the Sun passes over low parts of the skyline; a tall ridge in its path ends the run. This applies to a single point, not a whole landing area.",
+   "readIt": "Longer runs allow longer uninterrupted science campaigns and fuller battery recharges."
+  },
+  "sun.illumination-seasonality-multiyear-average": {
+   "lead": "Averaged over several years, this site is {value}.",
+   "explain": "The Moon has faint seasons: its small axis tilt means the Sun rides slightly higher for part of the year and slightly lower for the rest, which at the pole can decide whether it clears a ridge. A long-term average smooths these swings out.",
+   "readIt": "Treat this as background; your specific dates can be much better or worse than the average, so use the date-specific numbers for planning."
+  },
+  "sun.solar-incidence-on-panel": {
+   "lead": "With your mission settings, sunlight strikes the panel {value}.",
+   "explain": "A panel catches the most light when sunlight hits it face-on, along its normal (the line pointing straight out of its surface). As the angle grows, the same sunlight spreads over more panel area, like a flashlight beam tilted onto a table; the cosine factor measures that loss.",
+   "readIt": "Smaller angles, with the cosine near 1, mean nearly full power; large angles mean much of the available sunlight is wasted."
+  },
+  "sun.surface-shadow-length-direction": {
+   "lead": "At landing: {value}.",
+   "explain": "With the Sun just above the horizon, shadows stretch very long, like evening shadows on Earth but nearly all the time. They point directly away from the Sun, and with no air to scatter light, shadowed ground is very dark.",
+   "readIt": "Longer shadows hide hazards from cameras and can fall across panels or driving routes, so they matter for traverses and equipment setup."
+  },
+  "sun.observer-or-panel-height": {
+   "lead": "This analysis assumes panels and instruments sit {value} above the local ground.",
+   "explain": "Sun and Earth visibility are checked from this height, because a higher viewpoint can see over nearby bumps and rims. With the Sun and Earth so close to the horizon at the pole, even a modest change in height can matter.",
+   "readIt": "A higher setting usually reveals more sunlight and Earth contact, but a real mast adds mass and engineering complexity."
+  },
+  "sun.mutual-artificial-shadowing": {
+   "lead": "This would show how much the lander, towers or other hardware shade each other's solar panels.",
+   "explain": "With the Sun so low, any tall object casts a long shadow across the ground, so a neighbouring module or tower can block a panel. Working this out needs the actual layout and heights of your hardware.",
+   "readIt": "Once a layout is provided, a lower shadowed share would mean better placement of arrays relative to other equipment."
+  },
+  "sun.solar-eclipse-intervals": {
+   "lead": "Earth eclipses of the Sun as seen from this site: {value}.",
+   "explain": "Occasionally Earth passes directly between the Sun and the Moon: from Earth we see a lunar eclipse, while from the Moon the Sun vanishes behind Earth. These blackouts come from orbital alignment, not terrain, so even a site with a clear skyline can go dark.",
+   "readIt": "Any eclipse means a short, predictable power interruption to plan for; none means terrain is the only source of darkness."
+  },
+  "sun.illumination-model-cadence": {
+   "lead": "Lighting is checked at these time steps: {value}.",
+   "explain": "The Sun's position is sampled at regular intervals, like frames in a film. A dark spell shorter than the gap between frames could slip through unseen, and the start and end of each event are only known to within one step.",
+   "readIt": "Shorter steps give sharper timing and catch brief shadows, at the cost of more computation."
+  },
+  "sun.solar-polar-latitude-envelope": {
+   "lead": "The Sun's north-south range over the Moon during this period: {value}.",
+   "explain": "Because the Moon's axis is only slightly tilted, the point directly beneath the Sun (the sub-solar point) never strays far from the equator. So, seen from the pole, the Sun's centre only rises or sinks a little around the horizon.",
+   "readIt": "A narrow range explains why polar sunlight is always low; at the pole it roughly sets the highest and lowest the Sun can appear."
+  },
+  "sun.solar-visible-disk-coefficient-f-t": {
+   "lead": "The visible share of the Sun's disk, on a scale from 0 to 1, is {value}.",
+   "explain": "f is the share of the Sun's disk not hidden by terrain: 0 is fully blocked, 1 fully visible, anything between a partly hidden Sun. It lets power and heating estimates scale smoothly instead of flipping on and off.",
+   "readIt": "Closer to 1 means more sunlight; values between 0 and 1 mean a ridge is clipping the Sun and only part of its energy arrives."
+  },
+  "sun.disk-weighted-annual-illumination-rate": {
+   "lead": "Giving partial Sun partial credit, this spot receives {value} of the year's possible sunlight.",
+   "explain": "Each time step contributes its visible-disk fraction, so a half-hidden Sun counts as half of a fully lit step, and everything is averaged over the year. That differs from simply sorting hours into lit or dark.",
+   "readIt": "Higher means more total sunlight exposure; it is a good exposure score but not the same as the share of time above a daylight threshold."
+  },
+  "sun.solar-disk-visibility-threshold-for-day-night": {
+   "lead": "This analysis assumes the following daylight rule: {value}.",
+   "explain": "Because the Sun can be partly hidden, someone must decide how much has to show before it counts as day. Published studies use three levels: any of the disk, half the disk, or the full disk.",
+   "readIt": "A stricter rule shortens daylight periods and lengthens dark ones, giving more cautious power planning."
+  },
+  "sun.continuous-solar-months-per-year-disk-threshold": {
+   "lead": "Lunar months per year in which the Sun never disappears: {value}.",
+   "explain": "A synodic month is one full lunar day-night cycle, about a month long. Only a spot with a low, clear skyline in every direction can keep the Sun in view all the way round the horizon for a whole cycle; elsewhere a ridge eventually blocks it.",
+   "readIt": "Higher means more months of uninterrupted power; zero means every month includes at least one dark spell."
+  },
+  "sun.total-dark-days-during-polar-winter-synodic-month": {
+   "lead": "During the darkest lunar month of the year, dark periods add up to {value}.",
+   "explain": "In lunar winter the Sun rides at its lowest, so more of the skyline blocks it and dark periods grow. Summing all darkness across that roughly month-long cycle gives a worst-case picture for energy storage.",
+   "readIt": "Lower is better; a high value means batteries and heaters face their hardest test that month."
+  },
+  "sun.winter-month-longest-uninterrupted-darkness": {
+   "lead": "The longest single dark spell in the worst winter month is {value}.",
+   "explain": "In lunar winter the Sun stays at its lowest, so a blocking ridge can hide it for much of its trip around the horizon. That one unbroken shadow, not the total, is what a battery must outlast without recharging.",
+   "readIt": "Shorter is better; if it exceeds how long the hardware can survive on stored energy, a winter mission here needs a different power plan."
+  },
+  "sun.uniform-vs-ephemeris-solar-illumination-comparison": {
+   "lead": "Long-term sunlight from the Sun's actual path compared with a simplified estimate: {value}.",
+   "explain": "The shortcut assumes the Sun spends equal time everywhere within its allowed band of sky; the full method follows its real path from JPL Horizons. The real Sun lingers in some positions more than others, so the two can disagree.",
+   "readIt": "A small gap, in percentage points (pp), means the shortcut is trustworthy here; a large gap means only the full calculation should be used."
+  },
+  "sun.sun-position-temporal-occupancy-distribution": {
+   "lead": "Where the Sun spends the most time in this site's sky: {value}.",
+   "explain": "The Sun does not move evenly through its range; it lingers near the top and bottom of its slow up-and-down swing, the way a pendulum slows at each end. Here az is azimuth (compass direction) and el is elevation above the horizontal.",
+   "readIt": "If the favourite positions face a clear skyline the site benefits; if they sit behind terrain, the site is darker than an even-spread guess suggests."
+  },
+  "sun.time-resolved-absorbed-surface-solar-flux": {
+   "lead": "Direct solar energy soaked up by the ground here comes to {value}.",
+   "explain": "It depends on how much of the Sun shows, how bright the ground is (albedo, the share of light reflected away), the angle of sunlight on the slope, and the Sun's distance. A low Sun meets most ground at a grazing angle, spreading light thin.",
+   "readIt": "Higher means warmer ground and more energy arriving; low values point to a cold environment that hardware must be heated against."
+  },
+  "sun.sun-moon-distance-correction-to-irradiance": {
+   "lead": "Adjusting sunlight strength for the Sun's distance on this date gives {value}.",
+   "explain": "Sunlight spreads out as it travels, so its strength falls with the square of the distance from the Sun. The Earth-Moon system drifts slightly closer to and farther from the Sun through the year; an AU (astronomical unit) is the average Earth-Sun distance.",
+   "readIt": "Closer means slightly stronger sunlight, but this is a small refinement compared with shadows and angles."
+  },
+  "sun.surface-versus-elevated-solar-visibility-profile": {
+   "lead": "Sunlit time at ground level compared with a raised viewpoint: {value}.",
+   "explain": "From the ground, nearby rocks, rims and ridges can block a low Sun; lifting a panel lets it peek over some of them. Comparing the two timelines shows how much those obstacles cost.",
+   "readIt": "A big difference means raising panels pays off; a small one means the blocking terrain is too large for modest height to help."
+  },
+  "sun.fraction-of-candidate-landing-area-illuminated-at-time-t": {
+   "lead": "Across the candidate landing area: {value}.",
+   "explain": "Neighbouring spots can face very different skylines, so at any moment part of the area is lit while other parts are shadowed. Mapping the lit share shows how much usable ground exists right now, rather than assuming the whole area behaves like one point.",
+   "readIt": "Higher means more of the zone is lit at that instant, though the share keeps changing as shadows sweep across the ground."
+  },
+  "sun.candidate-area-illumination-episode-windows": {
+   "lead": "Periods when a large share of the landing area is lit: {value}.",
+   "explain": "As the Sun circles the horizon, light sweeps across the region, brightening some patches before others and leaving them the same way. An episode runs from when patches light up until they fall dark again.",
+   "readIt": "Longer and more frequent episodes give more chances to land and deploy equipment across the region."
+  },
+  "sun.shadow-gap-bridging-sustained-operation-window": {
+   "lead": "With your mission settings, the dark-period survival tally is: {value}.",
+   "explain": "A short shadow between sunlit episodes need not end a mission if stored energy and heating last until the Sun returns. Each dark gap is compared with how long the lander can survive on battery, like a hiker crossing a dry stretch on the water in their bottle.",
+   "readIt": "More gaps bridged means longer sustained operations; any gap that cannot be bridged marks a likely shutdown at that point."
+  },
+  "sun.area-above-chosen-annual-illumination-threshold": {
+   "lead": "Terrain in the region that meets the yearly sunlight target: {value}.",
+   "explain": "Each map pixel's year-long illumination rate is compared with a chosen cutoff and the passing area is added up. Raising the cutoff shrinks the area, because fewer spots are well placed to stay lit that much.",
+   "readIt": "More area means more sunny options; watch how quickly it shrinks as the target rises."
+  },
+  "sun.radiative-view-factors": {
+   "lead": "This site's openness to the sky: {value}.",
+   "explain": "Hardware sheds heat by radiating it to cold space and trades heat with surrounding terrain. The more sky a spot sees, the more freely it cools; a deep crater floor sees mostly walls, one reason permanently shadowed regions (PSRs) behave differently.",
+   "readIt": "Close to 1 means an open plain with nearly the whole sky in view; lower means terrain fills part of the view."
+  },
+  "sun.solar-irradiance-at-site-panel": {
+   "lead": "With your mission settings, the sunlight power arriving on the array is {value}.",
+   "explain": "This combines the Sun's distance, how much of its disk is visible, the angle at which light meets the panel, and any shadowing. The Moon has no atmosphere to dim sunlight on the way down, so a well-aimed, unshadowed panel gets the full strength.",
+   "readIt": "Higher means more energy available to turn into electricity; it drops quickly when the Sun is partly hidden or strikes at a slant."
+  },
+  "sun.solar-array-generating-power": {
+   "lead": "With your mission settings, the solar array produces {value}.",
+   "explain": "Panels convert only part of the incoming sunlight into electricity, and wiring and electronics take a further cut. The average includes dark periods, while the peak shows the best moments.",
+   "readIt": "Compare the average with your power demand: if it is lower, the mission spends more energy than it makes over time."
+  },
+  "sun.battery-charge-energy-reserve": {
+   "lead": "With your mission settings, the battery's low point is: {value}.",
+   "explain": "The battery fills when panels make more power than the lander uses and drains during darkness or heavy activity. As with a bank account, what matters is the lowest balance, because hitting empty means the lander cannot keep itself alive.",
+   "readIt": "A comfortable minimum charge means margin to spare; reaching empty means the plan fails as currently configured."
+  },
+  "sun.maximum-survivable-darkness": {
+   "lead": "With your mission settings, the lander can survive darkness for about {value}.",
+   "explain": "In the dark the lander runs only heaters and essentials from its battery, so stored energy divided by that minimum draw gives how long it can wait for the Sun. For scale, NASA's VIPER rover was designed for about 50 hours of shadow.",
+   "readIt": "If the site's longest darkness is longer, the mission needs a bigger battery, a lower survival load, or a different site or date."
+  },
+  "sun.duty-cycle-power-load": {
+   "lead": "This analysis assumes a power demand of {value}.",
+   "explain": "Instruments, motors, computers and radios all draw power, and the total changes as the lander switches between busy operations and a quiet survival mode. The energy budget weighs this demand against what the array and battery can supply.",
+   "readIt": "Higher loads let the lander do more but drain the battery faster, shortening how long it can work or survive in darkness."
+  },
+  "sun.heater-power-survival-mode": {
+   "lead": "This analysis assumes the lander needs {value} just to stay alive.",
+   "explain": "Without sunlight the lunar surface becomes extremely cold, and with no air to hold warmth, equipment loses heat by radiating it to space. Heaters keep electronics and batteries from damage, and this baseline load often decides how long a lander lasts through darkness.",
+   "readIt": "Lower survival power stretches battery life in the dark, but usually demands better insulation or tougher hardware."
+  },
+  "sun.peak-power-deficit-minimum-energy-margin": {
+   "lead": "With your mission settings, the worst-case energy balance is: {value}.",
+   "explain": "This tracks supply against demand across the whole mission and finds the point where the energy buffer is at its lowest. Wh (watt-hours) measure energy: one watt used for one hour.",
+   "readIt": "A positive margin means the plan works with energy to spare; a shortfall shows roughly how much extra stored or generated energy would be needed."
+  },
+  "sun.array-orientation-and-tracking-limits": {
+   "lead": "This analysis assumes the following solar array setup: {value}.",
+   "explain": "At the pole the Sun is always low, so a panel lying flat would catch light at a grazing angle. Standing panels upright and turning them to follow the Sun around the horizon keeps light hitting them nearly face-on.",
+   "readIt": "Sun-tracking panels collect far more energy in low light, but add motors, mass and moving parts that can fail."
+  },
+  "sun.dust-fouling-degradation-over-time": {
+   "lead": "This would estimate how much solar panel output drops over time as dust settles and materials age.",
+   "explain": "Dust kicked up by a landing rocket's plume can coat panels and block light, while materials slowly wear. How much builds up depends on the specific hardware and its exposure, so no site-level dataset can predict it.",
+   "readIt": "If modelled, a higher loss would mean shrinking power over the mission, calling for larger arrays or ways to keep panels clean."
+  },
+  "earth.earth-azimuth": {
+   "lead": "At landing, Earth sits at a compass bearing of {value} as seen from the site.",
+   "explain": "Azimuth is compass direction, measured clockwise from north. Because the Moon keeps one face toward Earth, Earth stays in roughly the same part of the lunar sky, so this bearing tells you where to point an antenna.",
+   "readIt": "Compare it with the terrain skyline: high ground in that direction can hide Earth even when it is above a flat horizon."
+  },
+  "earth.earth-elevation": {
+   "lead": "At landing, the center of Earth sits at an elevation of {value} relative to a flat horizon.",
+   "explain": "Elevation is the angle above (positive) or below (negative) a level horizon. At the pole, Earth hovers close to the horizon, so the Moon's small wobble is enough to lift it into view or drop it out of sight.",
+   "readIt": "Positive means above a flat horizon, though Earth must still clear local hills; negative means below the horizon entirely."
+  },
+  "earth.libration-of-earth-in-lunar-sky": {
+   "lead": "Over the analysis period: {value}.",
+   "explain": "Libration is the Moon's slight wobble as seen from Earth, caused by its tilted, slightly oval orbit. The sub-Earth point (the spot directly beneath Earth) shifts back and forth, so from a polar site Earth bobs near the horizon, rising and setting on a roughly monthly rhythm.",
+   "readIt": "A wider wobble range means Earth swings farther across the sky, which explains why communication periods at the pole come and go."
+  },
+  "earth.earth-angular-diameter-disk-visibility": {
+   "lead": "Earth's apparent size and the share of its disk clearing the terrain at landing: {value}.",
+   "explain": "From the Moon, Earth looks like a sizable disk, not a point of light. Near a ridge line, part of it can be hidden while the rest peeks over, like the Sun half-set behind a hill.",
+   "readIt": "The angle gives Earth's apparent size, and the percentage tells you how much of it is in view, from 0% (fully hidden) to 100% (fully clear)."
+  },
+  "earth.dte-geometric-line-of-sight": {
+   "lead": "Is there an unblocked straight path from the site to Earth? {value}.",
+   "explain": "Direct-to-Earth (DTE) radio travels in straight lines, and the Moon has no atmosphere to bend signals around obstacles, so any hill or crater rim in the way blocks them.",
+   "readIt": "A yes is necessary for live radio contact but not enough on its own, because antennas, signal strength and ground stations must also cooperate."
+  },
+  "earth.dte-visibility-intervals": {
+   "lead": "Counting each separate stretch when Earth is in view, this site gets {value} during the mission.",
+   "explain": "As Earth wobbles near the polar horizon, it slips behind terrain and re-emerges, so visibility comes in distinct windows with start and end times. They come from dated NASA JPL Horizons positions checked against the LOLA terrain skyline.",
+   "readIt": "More and longer windows make it easier to schedule ground contacts and rover activities; few windows mean most work happens without Earth contact."
+  },
+  "earth.total-dte-visibility-fraction": {
+   "lead": "Earth is geometrically in view for {value} of the mission time.",
+   "explain": "At each moment, the analysis checks whether enough of Earth's disk clears the terrain horizon, then adds up the share of time that passes, like asking what fraction of the school day a window has a view of a distant tower.",
+   "readIt": "Higher means more chances to talk to Earth, a handy way to compare sites, though it depends on how much of the disk must show."
+  },
+  "earth.longest-dte-blackout": {
+   "lead": "The longest unbroken stretch with no Earth in view is {value}.",
+   "explain": "When the Moon's wobble carries Earth below the horizon or behind a ridge, it can stay hidden for a long time because the lunar sky changes slowly; one lunar day-night cycle lasts about a month. During a blackout, the spacecraft cannot hear directly from mission control.",
+   "readIt": "Longer blackouts demand more onboard autonomy and more data storage to hold results until Earth returns."
+  },
+  "earth.dte-visibility-ground-station-availability": {
+   "lead": "Time when Earth is in view and a ground station can also see the Moon: {value}.",
+   "explain": "Seeing Earth is only half the link: Earth's daily spin carries each ground antenna in and out of view of the Moon. A Deep Space Network (DSN) complex at Goldstone, Canberra or Madrid counts when the Moon is at least 10 degrees above its horizon.",
+   "readIt": "Higher means more real talk time; it can never exceed the time Earth itself is in view."
+  },
+  "earth.earth-elevation-margin-horizon-clearance": {
+   "lead": "Earth's clearance above the terrain skyline in its direction is {value}.",
+   "explain": "This is the angular gap between Earth and the ridge line behind it. Elevation maps (DEMs, or digital elevation models) carry small errors, so a radio ray that barely clears a ridge on the map might actually be clipped.",
+   "readIt": "Positive values mean Earth is above the skyline, with bigger margins being safer; negative values mean Earth is hidden behind terrain by that many degrees."
+  },
+  "earth.antenna-field-of-view-and-tracking": {
+   "lead": "To track Earth during its visible periods: {value}.",
+   "explain": "A dish antenna can only aim within a limited range, set by its gimbal (motorized pivot mount) and beam width. Because Earth drifts slowly in the lunar sky, the patch of azimuth (compass direction) and elevation (height) to cover can be small.",
+   "readIt": "A smaller range is easier on hardware, but if the antenna cannot reach it, contact fails even with Earth in line of sight."
+  },
+  "earth.rf-link-margin-received-signal": {
+   "lead": "With your mission settings, the received signal strength works out to {value}.",
+   "explain": "Radio signals spread out and weaken over the Earth-Moon distance, and a receiver can only decode them if they stand out above background noise. Pr/N0 compares received power with noise; decibels (dB) are a logarithmic scale where each extra 10 means ten times stronger.",
+   "readIt": "Higher values mean a clearer signal with room to spare, but only while Earth is actually in view."
+  },
+  "earth.data-rate-downlink-volume": {
+   "lead": "With your mission settings, the link supports {value}.",
+   "explain": "Data rate is how fast bits flow, like the width of a pipe, and total volume is that rate multiplied by how long the pipe stays open during contact windows. Stronger signals allow faster rates, while more contact time adds up to more data.",
+   "readIt": "Higher means more science images and telemetry sent home, but the total depends as much on how long Earth stays in view as on the speed."
+  },
+  "earth.radio-multipath-terrain-scattering": {
+   "lead": "As a rough risk indicator: {value}.",
+   "explain": "When Earth sits very low, radio waves skim the ground and can bounce off nearby terrain, arriving by several paths at once, which is called multipath, like an echo that blurs speech. This is only a geometric stand-in; a full model would need the radio properties of the lunar surface.",
+   "readIt": "A larger share of grazing time means more risk of a noisy, degraded link at low elevations."
+  },
+  "earth.relay-satellite-visibility": {
+   "lead": "This would show when a lunar orbiting relay satellite is in view, which could fill the gaps when Earth is hidden.",
+   "explain": "A relay orbiter passes over the pole and forwards signals between the surface and Earth, a bit like a cell tower in the sky. Working out its contact windows needs a specific relay and its orbit, and none is assumed in this analysis.",
+   "readIt": "If available, more relay contact time would extend operations beyond the direct-to-Earth windows."
+  },
+  "earth.relay-infrastructure-availability": {
+   "lead": "This would tell us whether a working relay service is actually operating and allocated to this mission.",
+   "explain": "A relay passing overhead is not the same as being allowed to use it: operators control its status, channels, protocols and schedule. That depends on which relay services a mission contracts, so it cannot be computed from terrain and orbits.",
+   "readIt": "A confirmed service turns potential coverage into a commitment the mission can plan around."
+  },
+  "earth.two-way-light-time-and-latency": {
+   "lead": "A message sent to Earth and answered straight back takes {value}.",
+   "explain": "Radio waves travel at the speed of light, and the Earth-Moon distance changes slightly through the Moon's orbit, so the delay varies a little. Add processing time and controllers can never react instantly, like a video call with a lag.",
+   "readIt": "Longer delays make hands-on remote driving harder and push the spacecraft to handle quick decisions by itself."
+  },
+  "earth.contact-concurrency-with-sunlight": {
+   "lead": "Time when the site has both sunlight and Earth in view: {value}.",
+   "explain": "Solar panels need the Sun and direct radio needs Earth, but at the pole they move independently: the Sun circles low around the horizon over about a month, while Earth bobs in one part of the sky.",
+   "readIt": "Higher means more time at full capability; little overlap means the mission must store energy or data to bridge the gaps."
+  },
+  "earth.earth-disk-visibility-criterion-any-half-full": {
+   "lead": "The Earth-visibility rule applied in this analysis is: {value}.",
+   "explain": "Earth is a disk, not a point, so near a ridge part of it can be hidden while the rest shows. Planners must choose a rule, any sliver, at least half, or the whole disk, and that choice changes every visibility number.",
+   "readIt": "A stricter rule gives smaller, more cautious visibility figures, while a looser one gives bigger figures that may include marginal moments."
+  },
+  "earth.multiyear-dte-fraction-for-0-50-100-earth-disk": {
+   "lead": "Averaged over several years, the share of time Earth is visible at each disk threshold is {value}.",
+   "explain": "Earth's wobble differs from month to month, so averaging over years gives a fairer long-term picture than one mission. The three values use stricter and stricter rules: any part, half, then the whole disk.",
+   "readIt": "Higher is better; full-disk is always smallest, and a big spread means Earth often hovers right at the skyline."
+  },
+  "earth.earth-position-temporal-occupancy-distribution": {
+   "lead": "The part of the sky where Earth lingers longest: {value}.",
+   "explain": "Earth's wobble behaves like a pendulum: it moves fastest through the middle of its swing and slows near the ends, so it dwells longer near its extremes. Counting hours per patch of azimuth (compass direction) and elevation (height) shows where it really spends time.",
+   "readIt": "If Earth's favourite patch sits above the terrain skyline, contact is reliable; if it sits below or behind a ridge, long blackouts are likely."
+  },
+  "earth.uniform-vs-ephemeris-earth-visibility-comparison": {
+   "lead": "Earth visibility from real dated positions compared with a simple evenly-spread estimate: {value}.",
+   "explain": "The shortcut assumes Earth spends equal time everywhere in its wobble range; the realistic method follows NASA JPL Horizons ephemerides (tables of where bodies are at each moment). Because Earth lingers near the edges of its wobble, the two can disagree.",
+   "readIt": "A small gap means the shortcut is trustworthy for this site; a large gap means site rankings should lean on the ephemeris value."
+  },
+  "earth.high-ground-terrestrial-los-reflector-relay-opportunity": {
+   "lead": "For a possible relay or reflector on nearby high ground: {value}.",
+   "explain": "A peak sees over ridges that block lower ground, like climbing a hill for phone signal. Equipment there could pass signals between Earth and the base if it sees both; a 10 m mast at the highest point in the analysis grid is assumed.",
+   "readIt": "The ideal point sees Earth often and is also visible from the site; without that second link it cannot bridge blackouts."
+  },
+  "earth.earth-visibility-sensitivity-to-tower-height-three-disk-levels": {
+   "lead": "Earth visibility by mast height, for any, selected and full disk: {value}.",
+   "explain": "Raising an antenna lifts it above nearby bumps, lowering its skyline so Earth can be seen over obstacles more often, like standing on tiptoe in a crowd. Distant high terrain, however, barely changes with a few extra meters of height.",
+   "readIt": "If percentages climb quickly with height, a mast is worth it; if they barely change, the extra mass, power and engineering buy little."
+  },
+  "spatial.selenographic-latitude": {
+   "lead": "The site lies at a lunar latitude of {value}.",
+   "explain": "Selenographic latitude works like latitude on Earth: the angle north (positive) or south (negative) of the Moon's equator. Because the Moon's spin axis is only slightly tilted relative to the Sun, sites this close to the pole see the Sun and Earth skimming the horizon.",
+   "readIt": "Values closer to the pole mean the Sun and Earth stay lower in the sky, bringing long shadows and making local terrain more important."
+  },
+  "spatial.selenographic-longitude": {
+   "lead": "The site lies at a lunar longitude of {value}.",
+   "explain": "Selenographic longitude measures east or west around the Moon, with zero pointing toward Earth on average. Near the pole, it tells you which side of the pole the site sits on, shifting where Earth and the Sun appear.",
+   "readIt": "Longitudes near zero lie on the Earth-facing side and favour Earth contact, while those farther from zero lean toward the far side, where Earth is hidden more often."
+  },
+  "spatial.site-elevation-above-datum": {
+   "lead": "The site stands {value}.",
+   "explain": "The Moon has no sea level, so heights are measured against a reference sphere of fixed radius, called a datum. Higher ground can see past more of the surrounding terrain, like a lookout tower.",
+   "readIt": "Higher sites usually have a lower skyline and better Sun and Earth visibility, while low ground is more often shadowed, though rugged high terrain can bring its own landing hazards."
+  },
+  "spatial.planetographic-reference-frame": {
+   "lead": "All positions here use one shared coordinate frame: {value}.",
+   "explain": "A reference frame is the agreed grid of latitude and longitude used to label places on the Moon. If the terrain maps and the Sun and Earth position data used different frames, the same coordinates could point to slightly different spots, like two maps drawn from different starting lines.",
+   "readIt": "A matching frame means terrain and sky calculations line up; a mismatch would quietly shift every result."
+  },
+  "spatial.map-projection-grid": {
+   "lead": "The terrain is mapped using {value}.",
+   "explain": "A map projection flattens the curved lunar surface onto a 2D grid, and polar maps often use a stereographic view centred on the pole. Each pixel covers a fixed patch of ground, so the grid spacing sets the smallest feature the map can show.",
+   "readIt": "Fewer meters per pixel means finer detail and more accurate distances and overlays, at the cost of much larger data files."
+  },
+  "spatial.distance-to-pole": {
+   "lead": "The site is {value} from the lunar south pole.",
+   "explain": "This is the great-circle distance, the shortest path along the Moon's curved surface, measured on the reference sphere used by the LOLA elevation maps. Near the pole, changing this distance changes how high the Sun and Earth climb in the sky.",
+   "readIt": "Closer to the pole generally means the Sun and Earth stay lower on the horizon, but it is only a rough guide because local terrain matters as much."
+  },
+  "spatial.nearside-farside-orientation": {
+   "lead": "Relative to Earth, this site is on the {value}.",
+   "explain": "The Moon keeps one face toward Earth, so near-side sites can potentially see Earth while sites deep on the far side never can. At the pole the boundary blurs because libration (the Moon's slight wobble as seen from Earth) tips Earth in and out of view.",
+   "readIt": "The near side is a good first sign for direct-to-Earth contact, but terrain can still block Earth, as the Earth-view share shows."
+  },
+  "spatial.named-region-landmark-proximity": {
+   "lead": "The nearest named landmark is {value}.",
+   "explain": "The south polar region is mapped by its named craters and mountains, such as Shackleton, de Gerlache, Nobile and Malapert. Knowing the neighbours helps people picture the setting and connects the site to the science context of those features.",
+   "readIt": "A nearby landmark gives geographic and scientific context, but distance and direction matter: a site on a crater rim behaves very differently from one on its floor."
+  },
+  "spatial.landing-site-area-footprint": {
+   "lead": "This analysis assumes a landing area of {value}.",
+   "explain": "A lander cannot touch down on an exact point; small guidance errors scatter its touchdown within an area, often called a landing ellipse. Checking the whole area, not just its centre, avoids a misleading result from one lucky spot.",
+   "readIt": "A larger area is more realistic for less precise landers but makes it harder to find ground that is safe everywhere inside it."
+  },
+  "spatial.nearby-infrastructures-exclusion-zones": {
+   "lead": "Other hardware or curated sites near this one: {value}.",
+   "explain": "Missions need to keep track of landing pads, relays, heritage sites and keep-out zones so that operations do not interfere and historic places are preserved. This check compares the site with the other locations in the app's curated list.",
+   "readIt": "No neighbours means fewer coordination constraints, while nearby sites may offer shared infrastructure but also bring keep-out limits."
+  },
+  "terrain.terrain-elevation-model-dem": {
+   "lead": "Terrain heights come from {value}.",
+   "explain": "A digital elevation model (DEM) is a grid where every pixel stores a ground height, built here from LRO's LOLA laser altimeter, which timed laser pulses bouncing off the surface. It is the foundation for slopes, hazards and the terrain skyline used in Sun and Earth visibility.",
+   "readIt": "Finer pixels reveal smaller hills and hazards, while coarser data can miss features that matter to a lander."
+  },
+  "terrain.local-slope-magnitude": {
+   "lead": "The ground at the site tilts {value}.",
+   "explain": "Slope is how steep the ground is, measured as the angle from level across a stated distance called the baseline. A longer baseline averages out small bumps, so the same spot can look gentler or steeper depending on scale.",
+   "readIt": "Lower is safer for landing legs, rovers and crew; steeper ground raises the risk of tipping and makes driving harder."
+  },
+  "terrain.slope-aspect": {
+   "lead": "Which way the ground tilts downhill: {value}.",
+   "explain": "Aspect is the compass direction a slope faces as you look downhill. Near the pole the Sun stays low and circles the horizon, so a slope tilted toward the Sun catches more light, much like a sunny hillside on Earth.",
+   "readIt": "A slope facing the Sun's direction helps solar panels, while one facing away sits in longer shadow, and the effect grows on steeper slopes."
+  },
+  "terrain.micro-roughness-relief": {
+   "lead": "The local terrain shows {value}.",
+   "explain": "Relief is the height difference between the highest and lowest ground nearby, a simple measure of how bumpy the landscape is. These elevation maps are too coarse to see metre-scale bumps, which would need high-resolution LROC NAC camera images.",
+   "readIt": "Larger relief means more rugged ground that is harder for footpads, rovers and instruments, while small relief suggests smoother terrain but does not rule out rocks."
+  },
+  "terrain.boulder-size-and-abundance": {
+   "lead": "This would show how many rocks of each size lie around the site and how much ground they cover.",
+   "explain": "Boulders can tip a lander or block a rover, but most are smaller than the elevation map's pixels. Counting them requires mapping from high-resolution LROC NAC images, and no ready-made polar boulder map exists at landing-hazard scale.",
+   "readIt": "If available, fewer and smaller boulders would mean lower risk of collisions and tipping."
+  },
+  "terrain.crater-size-and-abundance": {
+   "lead": "This would show the sizes, depths and numbers of craters around the site.",
+   "explain": "Impacts pepper the Moon with craters of every size, and small ones can trap a rover or tilt a lander. Mapping them needs a metre-scale crater catalogue from LROC NAC images, because the named-feature list only includes large craters.",
+   "readIt": "If available, fewer and shallower craters would mean safer landing and easier traverses, though craters also hold geological interest."
+  },
+  "terrain.obstacle-free-landing-area": {
+   "lead": "Within the assumed landing area, {value}.",
+   "explain": "Rather than judging only the centre point, this checks the whole touchdown zone and asks how much of it is gentle enough to land on. It uses slope from the elevation maps only, so rocks and small craters are not included.",
+   "readIt": "Higher percentages mean more room for a safe touchdown even if the lander drifts off target; low values point to a risky site."
+  },
+  "terrain.horizon-elevation-profile-mask": {
+   "lead": "The terrain skyline around the site: {value}.",
+   "explain": "Imagine standing at the site and turning in a full circle, noting how high the hills rise above level in each direction; that is the horizon mask. Built from LOLA elevation maps, it decides when the low polar Sun and Earth are hidden or in view.",
+   "readIt": "Lower angles mean open sky with more sunlight and Earth contact; high horizons where the Sun or Earth appear mean more shadow and blackouts."
+  },
+  "terrain.horizon-azimuth-far-field-occlusion": {
+   "lead": "What forms the skyline in a key direction: {value}.",
+   "explain": "The skyline in any direction can be set by a nearby bump or a far-off mountain tall enough to rise above the curved horizon. Masks here are traced out to 200 km, including the Moon's curvature, which hides distant low ground.",
+   "readIt": "A nearby blocker might be avoided by moving or raising equipment slightly, while a distant one shapes the sky over a wide area and is harder to escape."
+  },
+  "terrain.vertical-clearance-edge-drop": {
+   "lead": "Nearby drop-off check: {value}.",
+   "explain": "This looks for cliffs, crater rims and steps around the operating area by finding how far the ground falls below the site within a short distance. It is like checking for a stairwell before walking around a dark room.",
+   "readIt": "Larger drops mean more danger for footing, rovers and equipment placed near edges, while small values suggest gentler surroundings."
+  },
+  "terrain.terrain-visibility-from-spacecraft": {
+   "lead": "With your mission settings, conditions for the lander's cameras on approach are: {value}.",
+   "explain": "Landers use terrain-relative navigation, matching camera views of the ground to stored maps to work out where they are. Low sunlight casts long shadows that make hills and craters stand out, while darkness or flat lighting leaves little to match.",
+   "readIt": "Good contrast helps the lander navigate and avoid hazards, while dark or washed-out scenes make guidance harder."
+  },
+  "terrain.surface-material-blockiness": {
+   "lead": "This would tell us whether the ground is solid exposed rock or loose broken soil, called regolith.",
+   "explain": "Regolith is the blanket of dust and rubble made by countless impacts, and its firmness affects whether landing legs sink and how easily samples can be collected. Measuring it needs rock-abundance maps, and Diviner's rock-abundance data does not cover polar latitudes reliably.",
+   "readIt": "If available, it would reveal the trade-off between firm, rocky footing and loose material that is easier to sample."
+  },
+  "regolith.regolith-thickness": {
+   "lead": "Across the Moon's older highlands, the loose soil layer is typically {value} deep, a Moon-wide value rather than a site measurement.",
+   "explain": "Regolith (the loose, dusty soil covering the Moon) builds up as meteorite impacts smash bedrock into rubble and keep stirring it. Older surfaces have been battered longer, so their soil blankets are thicker.",
+   "readIt": "Thicker soil gives more room to dig, drill and anchor, but means more loose material for wheels and footpads to handle."
+  },
+  "regolith.particle-size-distribution": {
+   "lead": "Across the Moon, the typical median soil grain size is {value}, a Moon-wide value rather than one measured here.",
+   "explain": "Impacts grind rock into fragments, and with no wind or water to round them, lunar grains stay sharp and glassy. A noticeable share is ultra-fine powder, which is why the soil acts like clingy dust.",
+   "readIt": "Finer soil means more dust that wears joints and coats surfaces; coarser soil is gentler on hardware but harder to sample evenly."
+  },
+  "regolith.bulk-density-porosity": {
+   "lead": "Across the Moon, the upper soil typically has an in-place density of {value}, a Moon-wide average rather than a site measurement.",
+   "explain": "Bulk density is the mass packed into a volume, gaps included; porosity is the share of that volume that is empty gaps. Lunar soil is fluffier at the top and more compact deeper down, like sand pressed by its own weight.",
+   "readIt": "Higher density means firmer ground that supports loads and carries heat better; lower means looser, more insulating soil."
+  },
+  "regolith.cohesion-and-internal-friction": {
+   "lead": "Across the Moon, the typical cohesion of the upper soil is {value}, a Moon-wide reference rather than a site measurement.",
+   "explain": "Cohesion is how strongly grains stick together unloaded; internal friction is how much they resist sliding past each other when squeezed. Sharp, interlocking lunar grains grip well, as jagged gravel piles steeper than smooth marbles.",
+   "readIt": "Higher values mean soil holds its shape under wheels, footpads and slopes; lower values mean more slipping and sinking."
+  },
+  "regolith.bearing-capacity-and-expected-sinkage": {
+   "lead": "With your mission settings, the estimate is: {value}.",
+   "explain": "Bearing capacity is the most pressure the ground can take before giving way and letting a foot or wheel sink. The app compares your lander's pressure with a reference capacity for typical lunar soil from the Lunar Sourcebook.",
+   "readIt": "The further your footpad pressure sits below the soil's capacity, the less sinking to expect; pressure near the limit risks settling or tilting."
+  },
+  "regolith.soil-abrasiveness-dust-adhesion": {
+   "lead": "This would tell us how likely the local dust is to scratch, stick to and jam moving parts, seals and lenses.",
+   "explain": "Lunar dust is known to be abrasive and sticky, since no wind or water rounds off its sharp, glassy grains. But no cited, quantitative index exists for this site, so the app leaves it blank rather than invent one.",
+   "readIt": "Without a site value, treat dust as a general hazard for every joint, seal and optic."
+  },
+  "regolith.electrostatic-charging-dust-lofting": {
+   "lead": "During your mission at this site, the app finds {value}.",
+   "explain": "Sunlight knocks electrons off lit ground, while shadowed ground collects charge from the solar wind (charged particles streaming from the Sun). Where light meets shadow, as when the Sun skims the horizon, neighbouring patches charge differently and fine dust can hop or cling, like paper bits jumping to a rubbed balloon.",
+   "readIt": "More hours in these conditions mean more chance of dust coating solar panels, optics and electronics."
+  },
+  "regolith.local-magnetic-anomalies": {
+   "lead": "This would tell us whether the local crust holds magnetic patches worth studying or able to affect incoming charged particles.",
+   "explain": "The Moon has no global magnetic field today, but some rocks keep frozen-in magnetism from the past, measured from orbit in nanotesla (a tiny unit of magnetic strength). The Lunar Prospector and Kaguya maps are not yet loaded.",
+   "readIt": "Once available, stronger values would mean a more interesting science target."
+  },
+  "regolith.surface-dielectric-rf-properties": {
+   "lead": "Across the Moon, typical radio properties for average-density soil are {value}, a Moon-wide estimate rather than a site measurement.",
+   "explain": "Permittivity is how strongly a material slows and stores a radio wave; the loss tangent is how much energy it soaks up. Both rise as soil packs tighter, so the app derives them from typical density using Lunar Sourcebook formulas; ice or composition would change them.",
+   "readIt": "Higher permittivity means stronger ground echoes for radar and radio; a higher loss tangent means signals fade faster in the soil."
+  },
+  "regolith.lunar-seismic-moonquake-environment": {
+   "lead": "Across the Moon, Apollo seismometers recorded a deep-moonquake count of {value}, a Moon-wide record rather than a site value.",
+   "explain": "Most recorded moonquakes start deep inside the Moon, triggered by tides (stretching from Earth's gravity as the Moon orbits), so they repeat on a roughly monthly rhythm. Shallow quakes are far rarer, and meteorite impacts also shake the ground.",
+   "readIt": "More shaking matters for sensitive instruments and structures, but is a bonus for seismic science."
+  },
+  "regolith.surface-temperature-time-series": {
+   "lead": "For this site over your mission window: {value}.",
+   "explain": "With no atmosphere to hold heat, ground temperature tracks the sunlight hitting its slope almost instantly, warming when lit and plunging in shadow. This simple model ignores heat stored in the soil, so its lows are colder than real nights; K is kelvin, where zero is absolute zero.",
+   "readIt": "A wider range means tougher thermal design; treat the lowest model values as a pessimistic floor."
+  },
+  "regolith.minimum-maximum-surface-temperature": {
+   "lead": "For this site, the temperature extremes are {value}.",
+   "explain": "At the south pole the Sun never climbs high, so even summer light arrives at a shallow angle, and winter brings little or none to some ground. These values come from LRO Diviner, an orbiter that measures heat glowing off the surface, season by season.",
+   "readIt": "The spread is what hardware must survive; a colder minimum means more heater power, a lower maximum helps anything that must stay frozen."
+  },
+  "regolith.temperature-gradient-cycling-rate": {
+   "lead": "This site's ground temperature can change quickly during your mission: {value}.",
+   "explain": "Without air to soften the change, ground heats or cools fast when sunlight arrives or a shadow passes. At the pole the Sun circles low, so long shadows from hills and crater rims keep sweeping the surface.",
+   "readIt": "Faster rates mean more stress on materials and electronics as they expand and shrink, like cold glass cracking under hot water."
+  },
+  "regolith.regolith-thermal-inertia": {
+   "lead": "Across the Moon, the typical thermal inertia of the topmost soil is {value}, a Moon-wide LRO Diviner average rather than a site value.",
+   "explain": "Thermal inertia is how stubbornly a material resists changing temperature, combining heat conduction, density and heat storage. Fluffy lunar soil has low thermal inertia, like a foam cup, so it heats and cools quickly.",
+   "readIt": "Higher values keep ground warm longer into darkness; lower values mean faster cooling and colder cold traps."
+  },
+  "landing.touchdown-dispersion-ellipse": {
+   "lead": "This analysis assumes the lander could touch down anywhere within a {value} of the target point.",
+   "explain": "Small errors in navigation, engine performance and timing add up, so touchdown is really a cloud of possible points, often drawn as an ellipse (a stretched circle). Like throwing darts, you plan for everywhere they might land, not just the bullseye.",
+   "readIt": "A smaller radius lets you aim for tighter safe patches; a larger one means the whole wider area must be safe."
+  },
+  "landing.terrain-relative-navigation-capability": {
+   "lead": "With your mission settings, the app's verdict is: {value}.",
+   "explain": "Terrain-relative navigation means the lander's cameras match the ground below to stored elevation maps and images, like spotting landmarks from a plane window, to pin down its position. Cameras need light and recognisable features, so landing-time lighting matters.",
+   "readIt": "Feasible means a likely smaller touchdown uncertainty; not feasible means relying on less precise methods and wider safety margins."
+  },
+  "landing.hazard-detection-and-avoidance-envelope": {
+   "lead": "This would tell us whether the lander can spot obstacles during final descent and steer around them in time.",
+   "explain": "Detection relies on onboard sensors scanning the ground; avoidance needs enough time and spare thrust to shift sideways before touchdown. Both depend on the vehicle, so enter them from your lander's specification.",
+   "readIt": "Once entered, earlier detection and a bigger divert budget mean more freedom to dodge hazards, at a cost in sensors and propellant."
+  },
+  "landing.lander-slope-tilt-tolerance": {
+   "lead": "This analysis assumes your lander can safely settle on ground sloping up to {value}.",
+   "explain": "On a slope, a lander loads its downhill legs more; too steep and it can tip, jam mechanisms or strand payloads. Its design, such as how widely the legs spread, sets the limit, just as a wide-based table is harder to knock over.",
+   "readIt": "Higher tolerance opens more terrain to landing but usually needs a wider, heavier leg design."
+  },
+  "landing.landing-footpad-bearing-pressure": {
+   "lead": "With your mission settings, the pressure your lander's footpads put on the soil is {value}.",
+   "explain": "Pressure is weight spread over area: the lander's mass times the Moon's gravity, divided by total footpad area. The Moon's weaker gravity helps, and broad footpads spread the load the way snowshoes stop you sinking into snow.",
+   "readIt": "Lower pressure means less sinking and settling; bigger footpads or a lighter lander bring it down."
+  },
+  "landing.plume-surface-interaction": {
+   "lead": "This would tell us how much soil the landing engine's exhaust would blast away and whether flying debris could cause harm.",
+   "explain": "A plume (the jet of hot gas from a landing engine) scours loose regolith, digging a shallow crater and spraying grains; with no air to slow them, particles fly far and fast, like sandblasting. This needs engine and plume modelling for your vehicle.",
+   "readIt": "Once modelled, more erosion and faster debris mean greater threat to the lander, instruments and nearby assets."
+  },
+  "landing.descent-sun-glare-and-visual-contrast": {
+   "lead": "With your mission settings, the lighting geometry during descent is: {value}.",
+   "explain": "With no atmosphere to scatter light, lunar shadows are pitch black and sunlit ground is dazzling, so cameras can be blinded by glare or lose detail in shadow. The angle between the Sun and the flight direction decides whether cameras look into the light.",
+   "readIt": "A small angle means flying toward the Sun and risking glare; a larger angle keeps the Sun out of the cameras' view."
+  },
+  "landing.descent-path-terrain-clearance": {
+   "lead": "With your mission settings, along the approach path: {value}.",
+   "explain": "On the way down, the lander passes over terrain on its approach side, where hills or crater rims could block a low path. The app measures how steeply that land rises using LRO LOLA laser-altimeter elevation maps, like checking for tall buildings under a plane's final approach.",
+   "readIt": "A lower angle means an open approach; a higher one means ridges the descent must stay above."
+  },
+  "landing.landing-area-hazard-probability": {
+   "lead": "With your mission settings, around this site: {value}.",
+   "explain": "Since the lander could touch down anywhere in its uncertainty zone, the app checks the whole surrounding area, not one point, for ground steeper than your lander can handle. It sees slope only at elevation-map scale, so small boulders and craters are not counted.",
+   "readIt": "A lower percentage means a random touchdown is more likely to be safe; higher means more chance of a too-steep patch."
+  },
+  "landing.post-landing-stability-and-egress": {
+   "lead": "With your mission settings, the after-touchdown verdict is: {value}.",
+   "explain": "A soft landing is not the finish line: at too great a tilt, ramps get too steep, solar panels and antennas point the wrong way and payloads struggle to roll off. The app compares local slope with your lander's tolerance.",
+   "readIt": "A slope well inside tolerance leaves margin for deployment; one near or past the limit could doom the mission after a safe landing."
+  },
+  "trajectory.earth-launch-window-availability": {
+   "lead": "This would tell us when, back on Earth, a rocket could launch to reach this site at the chosen time.",
+   "explain": "Launch windows depend on lining up the launch site with the Moon, plus rocket capability, range rules and the spacecraft. A good time at the landing site is not automatically a convenient launch date, so this needs your launch vehicle and transfer design.",
+   "readIt": "Once entered, more and longer windows mean more chances to launch on schedule."
+  },
+  "trajectory.translunar-transfer-type-time": {
+   "lead": "This would tell us how long the Earth-to-Moon trip takes and what kind of path the spacecraft follows.",
+   "explain": "A direct path is quicker but costs more fuel, while phasing loops or low-energy routes save fuel but take longer, like a slow scenic road versus a fast toll highway. It is a mission design choice the app cannot assume.",
+   "readIt": "Shorter transfers arrive sooner but burn more propellant; longer ones can free mass for payload."
+  },
+  "trajectory.arrival-orbit-geometry": {
+   "lead": "This would tell us which orbit around the Moon the lander begins its descent from.",
+   "explain": "A lander might start from a low polar orbit close to the surface or from an NRHO (near-rectilinear halo orbit, a long, stretched loop swinging far from the Moon). The orbit's tilt and height shape the approach direction and timing.",
+   "readIt": "Once chosen, the orbit sets how often and from which direction the lander can reach this site."
+  },
+  "trajectory.orbital-phasing-descent-opportunities": {
+   "lead": "This would tell us how often an orbiting spacecraft is positioned to start a descent to this site.",
+   "explain": "An orbiting craft only lines up with a site at certain moments, as its orbit and the Moon's slow turning bring the site within reach, like waiting for your stop on a circular bus route. Computing those times needs the arrival orbit.",
+   "readIt": "Once available, more frequent opportunities give flexibility to wait for good lighting and Earth contact."
+  },
+  "trajectory.approach-direction-azimuth": {
+   "lead": "This analysis assumes the lander flies in on a compass heading of {value}.",
+   "explain": "Azimuth is the compass direction of travel, measured in degrees clockwise from north. The arrival direction decides which hills the lander passes over, where the Sun sits relative to its cameras and how its antennas face Earth.",
+   "readIt": "No heading is best in general; a good one keeps the Sun out of the cameras and avoids high terrain."
+  },
+  "trajectory.delta-v-budget-reserve": {
+   "lead": "This would tell us how much total speed change, and so propellant, the mission needs to land here with a reserve.",
+   "explain": "Delta-v (the total change in velocity a spacecraft must make) adds up every burn: transfer, braking, diverting, any ascent and contingencies. Converting it to propellant needs vehicle mass and propulsion data, which the app does not have.",
+   "readIt": "Once entered, a bigger reserve means more safety margin, but extra propellant takes mass from payload."
+  },
+  "trajectory.descent-lighting-comm-continuity": {
+   "lead": "With your mission settings, the descent lighting and Earth-link check reads: {value}.",
+   "explain": "Cameras need sunlight to guide the landing, and engineers want a direct radio link to watch telemetry (live spacecraft data) as it happens. At the south pole Earth sits very low on the horizon, so hills can hide it even when the Sun is up.",
+   "readIt": "Best is a lit site with Earth in view; a hidden Earth means data must be stored or relayed."
+  },
+  "trajectory.propellant-and-payload-mass-margin": {
+   "lead": "This would tell us whether your lander can reach this site with enough propellant while carrying its intended cargo.",
+   "explain": "Every kilogram of fuel needed to get somewhere is a kilogram that cannot be cargo, so planners balance propellant and payload against vehicle performance. That needs vehicle mass and propulsion data.",
+   "readIt": "Once entered, a positive margin means room to spare; a negative one means cutting payload or picking an easier site."
+  },
+  "trajectory.departure-ascent-rendezvous-timing": {
+   "lead": "This would tell us when a crew could lift off from this site and meet a spacecraft in orbit for the trip home.",
+   "explain": "To rendezvous (meet up in orbit), the ascending vehicle must launch as the orbiting craft passes the right spot, like timing a jump onto a moving merry-go-round. It applies only to crewed ascent missions and needs the orbit design.",
+   "readIt": "Once available, more frequent liftoff chances mean a safer, more flexible return."
+  },
+  "trajectory.landing-abort-alternate-sites": {
+   "lead": "For this site, the backup-landing search finds: {value}.",
+   "explain": "If something goes wrong during descent, a lander may need to divert to another safe spot within reach of its remaining fuel. The app checks its curated list of candidate south-pole sites for usable alternates.",
+   "readIt": "Nearby alternates add redundancy and survivability; none means full commitment to this one site."
+  },
+  "science.scientific-target-identification": {
+   "lead": "Notable features near this site include {value}.",
+   "explain": "Scientists pick sites by the questions they can answer nearby, using craters, mountains and permanently shadowed regions (areas that never see sunlight, stay extremely cold and may trap ice). The app lists named catalogue features so each objective ties to a real place.",
+   "readIt": "More named targets means more science options, and a closer PSR means easier cold-trap exploration."
+  },
+  "science.distance-to-science-targets": {
+   "lead": "Measured from this site: {value}.",
+   "explain": "Distance decides whether a rover can reach a target and return with enough power and time to spare. A straight-line distance is the shortest possible; a real driving route around craters and steep slopes is usually longer.",
+   "readIt": "Shorter distances mean quicker, cheaper trips and repeat visits; longer ones extend reach at a cost in time and energy."
+  },
+  "science.geologic-units-stratigraphy": {
+   "lead": "This would tell us which rock formations and layers lie at the site and what Moon history they record.",
+   "explain": "Like pages in a book, rock layers stack over time, with ejecta (material thrown out of craters) blanketing older surfaces. The USGS Unified Geologic Map of the Moon, which outlines these units, is not yet loaded.",
+   "readIt": "Once available, more distinct units nearby means richer samples for reconstructing lunar history."
+  },
+  "science.rock-composition-spectral-minerals": {
+   "lead": "This would tell us which minerals and rock types make up the surface around the site.",
+   "explain": "Orbiting instruments identify minerals by the pattern of light they reflect, since each has its own spectral fingerprint. Near the pole the Sun is low and shadows are long, so these orbital maps are unreliable there and have not been loaded.",
+   "readIt": "Once available, a wider variety of materials would mean more science diversity and potential resources."
+  },
+  "science.geologic-age-crater-chronology": {
+   "lead": "This would tell us roughly how old the surface at this site is.",
+   "explain": "Older surfaces have faced impacts longer, so they collect more craters, like pavement gathering more raindrop spots the longer it rains. Estimating an age needs crater counts for the local surface unit, which the app lacks.",
+   "readIt": "Once available, an older age points to material recording early lunar history, and the uncertainty matters as much as the number."
+  },
+  "science.permanently-shadowed-region-psr-coverage": {
+   "lead": "Around this site, the permanent-shadow check finds {value}.",
+   "explain": "With the Sun always low at the pole, deep crater floors and ground behind ridges can stay dark for very long periods, becoming extremely cold traps where ice may collect. The app simulates one year, but true PSRs are defined over an 18.6-year cycle, so this slightly over-counts.",
+   "readIt": "More shadowed area means more potential ice targets, but those spots are dark and frigid to work in."
+  },
+  "science.psr-access-distance-and-difficulty": {
+   "lead": "With your mission settings, reaching the nearest cold trap means {value}.",
+   "explain": "A rover heading into a cold trap must cover the distance, handle slopes, then work in darkness with no sunlight for its solar panels. The app converts distance into drive time and energy using your rover settings; Wh (watt-hours) measures energy, like battery capacity.",
+   "readIt": "Shorter drives and less energy mean easier cold-trap science; larger values eat into power, time and margins."
+  },
+  "science.hydrogen-proxy-concentration": {
+   "lead": "This would tell us whether orbital instruments see hints of hydrogen, a possible sign of water-rich material, near the site.",
+   "explain": "Cosmic rays knock neutrons out of the surface, and hydrogen soaks up their energy, so fewer escaping neutrons hints at more hydrogen, possibly in ice. It is a clue, not an ice measurement; the LEND and Lunar Prospector neutron maps are not yet loaded.",
+   "readIt": "Once available, stronger neutron suppression means more hydrogen, but not how much ice or in what form."
+  },
+  "science.water-ice-abundance-estimate": {
+   "lead": "This would tell us how much water ice might be mixed into the soil here, and at what depths.",
+   "explain": "Ice survives only in extremely cold places like permanently shadowed craters, and orbital estimates of its amount rely on indirect signals and models. There is no direct measurement at this site, and orbital estimates are too coarse to trust here.",
+   "readIt": "Once available, a higher ice fraction means a stronger resource prospect, though the uncertainty matters as much as the estimate."
+  },
+  "science.ice-physical-state-and-depth": {
+   "lead": "This would tell us whether any ice is surface frost, grains mixed into the soil, or buried layers.",
+   "explain": "The form of ice matters as much as the amount: surface frost could be scraped up, while buried lenses (pockets of ice) need digging or drilling. Finding out requires instruments on the ground or radar sounding (radio waves bounced into the subsurface).",
+   "readIt": "Once available, shallow or exposed ice is easier to sample; deep ice needs heavier hardware."
+  },
+  "science.cold-trap-thermal-stability": {
+   "lead": "For this site, the cold-trap check reports {value}.",
+   "explain": "Ice that gets too warm slowly turns straight into vapour and drifts away, so it lasts only where even the maximum temperature stays very low. The site itself is usually sunlit, so the best cold traps lie in nearby shadowed regions.",
+   "readIt": "A colder maximum means ice survives longer, and a closer PSR means those cold traps are easier to reach."
+  },
+  "science.other-volatiles-organics": {
+   "lead": "This would tell us which frozen substances besides water, such as carbon dioxide, carbon monoxide or ammonia, might be trapped here.",
+   "explain": "Volatiles (substances that turn into gas easily) can freeze out in the coldest shadowed spots, where they carry science value and hints of interesting chemistry. Identifying them needs measurements made on the surface.",
+   "readIt": "Once available, a richer mix of species would raise the site's science value."
+  },
+  "science.resource-extraction-feasibility": {
+   "lead": "This would tell us whether local ice or other materials could be dug up and turned into useful supplies, and at what energy cost.",
+   "explain": "Finding ice is only step one: ISRU (in-situ resource utilisation, making supplies from local materials) also depends on digging depth, energy needed and yield. Estimating that needs ice abundance and extraction hardware assumptions.",
+   "readIt": "Once available, higher yield for less energy means a more practical resource site."
+  },
+  "science.science-diversity-score": {
+   "lead": "Around this site, the science variety count is {value}.",
+   "explain": "A site near many kinds of features, such as craters, mountains and shadowed regions, lets one mission tackle several independent science questions. The app counts how many distinct feature types lie nearby.",
+   "readIt": "A higher count means more objectives from one landing, though a low count can still suit a single-goal mission."
+  },
+  "science.instrument-deployment-suitability": {
+   "lead": "With your mission settings, the deployment check gives: {value}.",
+   "explain": "Instruments need a stable, fairly level base, the right lighting for power and sometimes a clear line of sight to Earth or the sky. The app checks local slope and sunlight against your mission settings.",
+   "readIt": "Suitable means the basic conditions are met; unsuitable flags a problem, like steep ground or darkness, to solve first."
+  },
+  "logistics.activity-timeline-critical-path": {
+   "lead": "With your mission settings, the schedule check for this site and date gives: {value}.",
+   "explain": "A mission is a chain of tasks: setting up equipment, doing science, moving supplies and sending data home. Some steps need sunlight and an Earth link at once, so the planner lines up those windows like a timetable.",
+   "readIt": "A longer shared window leaves room to finish every task; none means splitting tasks up or reconsidering the date."
+  },
+  "logistics.operational-mode-autonomy-rules": {
+   "lead": "Communication outlook for this site and date: {value}.",
+   "explain": "When Earth drops below the local horizon, controllers cannot send commands, so the lander must follow stored instructions and switch to a protective safe mode if something goes wrong. Think of a house-sitter who must cope alone until the owners can be reached again.",
+   "readIt": "Shorter required autonomy keeps the mission simple; long blackouts demand smarter onboard software and sturdier safe modes."
+  },
+  "logistics.consumables-spares-reserves": {
+   "lead": "This would show how much propellant, power reactants, spare parts and life-support supplies a mission can use while keeping a safety reserve.",
+   "explain": "A mission carries a fixed stock of supplies, and its reserve decides how long it lasts and how well it copes with surprises. It depends on the mission's own design, not on site data.",
+   "readIt": "Bigger reserves would mean a longer, more resilient mission, but every extra kilogram must be launched and landed."
+  },
+  "logistics.command-telemetry-buffer": {
+   "lead": "With your mission settings, the onboard data storage needed at this site is {value}.",
+   "explain": "While Earth is out of view, instruments keep collecting data that must be saved onboard until the link returns, like recording a show while you are away. The estimate multiplies the assumed data rate by the length of the longest blackout.",
+   "readIt": "A larger figure means carrying more memory or discarding data; a smaller one means science easily survives blackouts."
+  },
+  "logistics.deployment-and-workspace-area": {
+   "lead": "Flat working room around this site: {value}.",
+   "explain": "Antennas, solar arrays, instruments and rovers all need level ground with clearance around them, much like pitching a tent on flat ground. The area is measured from LRO LOLA laser-altimeter elevation maps by counting ground that is gentle enough.",
+   "readIt": "More gentle area gives more freedom to lay out equipment; a small area forces a cramped or compromised layout."
+  },
+  "logistics.anchor-structure-erectability": {
+   "lead": "This would tell us whether the ground can firmly hold masts, solar arrays and sensors once they are dug in or anchored.",
+   "explain": "Raising equipment higher can catch more sunlight or a better view of Earth, but a tall structure needs soil strong enough to carry its weight and resist tipping. That requires soil-strength measurements at the site, which are not yet available.",
+   "readIt": "Firmer ground would allow taller structures, while weak soil would limit how high equipment can safely stand."
+  },
+  "logistics.ground-station-schedules-downlink-priority": {
+   "lead": "Ground-station coverage for this mission: {value}.",
+   "explain": "The DSN (NASA's Deep Space Network of giant radio dishes) must have the Moon above its horizon to talk to a lander. This counts only that geometry; real dish time is scheduled and shared with other missions, so seeing the Moon does not mean a dish is booked.",
+   "readIt": "A higher share means more chances to book contact, but treat it as an upper limit, not a guarantee."
+  },
+  "logistics.nearby-landings-plume-exclusion": {
+   "lead": "Nearby landing activity check: {value}.",
+   "explain": "A landing rocket blasts dust and small rocks sideways at high speed, and with no air to slow them they can travel a long way. Keeping a buffer around other landings protects working equipment and historic sites from this spray.",
+   "readIt": "No nearby landings means little plume risk; a close neighbour would call for coordinated timing or a wider separation."
+  },
+  "logistics.operational-safety-margins-reserve-time": {
+   "lead": "Time buffer at this site and date: {value}.",
+   "explain": "Near the south pole the Sun skims the horizon, so hills and crater rims can bring darkness, cold and power loss. The margin is the slack before the first such limit, like leaving early for a train in case of delays, worked out from NASA JPL Horizons Sun positions and LRO terrain.",
+   "readIt": "More slack lets the mission absorb delays; a thin margin leaves little room for anything to go wrong."
+  },
+  "logistics.site-infrastructure-reuse-potential": {
+   "lead": "Infrastructure reuse outlook for this site: {value}.",
+   "explain": "Later missions save effort if they can share earlier relays, power pads or cleared paths, much as a new town grows faster beside an existing road. This looks for previous landings close enough to build on.",
+   "readIt": "Nearby earlier hardware raises reuse potential for a long campaign, while a fresh site offers a clean start but nothing to share."
+  },
+  "rover.traversable-slope-cross-slope": {
+   "lead": "Drivable terrain around this site: {value}.",
+   "explain": "A rover can slip or tip over on steep ground, especially when driving sideways across a slope. The limit used here is the slope capability of NASA's VIPER rover, and slopes come from LRO LOLA elevation maps.",
+   "readIt": "A higher share of gentle ground means freedom to drive almost anywhere; a low share means routes must detour around steep patches."
+  },
+  "rover.route-obstacle-density": {
+   "lead": "This would count how often rocks and craters too large to cross block a rover's path.",
+   "explain": "Even gentle terrain can be scattered with boulders and small craters that force detours, like furniture in a dark room. Measuring this needs boulder and crater maps detailed to the metre scale, which are not yet included.",
+   "readIt": "Fewer obstacles per kilometre would mean straighter, faster routes; more would mean longer detours and more planning."
+  },
+  "rover.route-length-and-cumulative-ascent": {
+   "lead": "Distance from this site to the nearest permanently shadowed region: {value}.",
+   "explain": "A PSR (permanently shadowed region, a crater floor sunlight never reaches) is the rover target used here. This is a straight-line distance, so a real route winding around hills and climbing slopes will be longer, costing more time, energy and wheel wear.",
+   "readIt": "Shorter is easier, but treat the figure as a minimum rather than the actual drive."
+  },
+  "rover.travel-speed-slip": {
+   "lead": "With your mission settings, the rover speed and one-way drive time are {value}.",
+   "explain": "Rovers pause often to check for hazards and plan the next stretch, and loose soil or slopes make wheels slip. Dividing the distance by the assumed speed turns a map distance into a schedule.",
+   "readIt": "A faster speed shortens the trip and saves energy, but if slip or navigation pauses are worse than assumed, the drive takes longer."
+  },
+  "rover.traverse-energy-consumption": {
+   "lead": "With your mission settings, the estimated energy for the drive there and back is {value}.",
+   "explain": "Driving uses electricity for motors, heaters and computers, and the cost grows with distance and climbing. Like a phone on a long day out, the rover must keep enough charge to get home, so the round trip plus margin sets how far science can reach.",
+   "readIt": "Lower energy fits comfortably in the rover's budget; higher energy limits range or demands recharging stops."
+  },
+  "rover.dynamic-sunlight-along-route": {
+   "lead": "Sunlight around this site during the mission: {value}.",
+   "explain": "At the south pole the Sun circles low near the horizon, so shadows from hills and crater rims sweep across the ground and a spot lit now may be dark later. Sun positions from NASA JPL Horizons are combined with LRO terrain to track lighting over time.",
+   "readIt": "A higher percentage means a solar-powered rover is less likely to drive into long shadow; a lower one means drives must be timed carefully."
+  },
+  "rover.dynamic-communications-along-route": {
+   "lead": "Earth visibility around this site: {value}.",
+   "explain": "To be commanded directly, a moving rover needs Earth above its local horizon, and at the south pole Earth hangs low, so nearby hills can block it. DTE (direct-to-Earth radio contact) is checked across the area using JPL Horizons Earth positions and LRO terrain.",
+   "readIt": "A higher percentage means more chances to command and hear from the rover; a low one means long drives without direct contact unless a relay is used."
+  },
+  "rover.safe-haven-waypoints": {
+   "lead": "Nearest safe spot to rest and recharge: {value}.",
+   "explain": "A rover caught in darkness can run out of power and get dangerously cold, so planners look for nearby spots that are both gently sloped and well lit, like a refuge hut for mountain climbers. The search uses LRO terrain and computed lighting.",
+   "readIt": "A closer, sunnier haven is a safer fallback; a distant or dim one leaves the rover more exposed during dark or blackout periods."
+  },
+  "rover.route-temporal-feasibility-return-margin": {
+   "lead": "With your mission settings, the round-trip timing check gives: {value}.",
+   "explain": "This combines drive time, energy and lighting into one go/no-go question: can the rover reach its target and get back before darkness or other limits close in? It is like checking that a hike there and back fits before nightfall.",
+   "readIt": "A comfortable return margin means the traverse works; no margin means shortening the route, driving faster or picking another date."
+  },
+  "rover.localization-navigation-uncertainty": {
+   "lead": "This would show how precisely a rover knows where it is while driving through areas with few recognisable landmarks.",
+   "explain": "A rover estimates its position by tracking what its cameras see and how far its wheels turn, and small errors add up where landmarks are scarce or hidden in shadow. It is not shown because it depends on the rover's own sensors and software.",
+   "readIt": "Smaller uncertainty would mean safer, more confident driving; larger uncertainty means wider safety buffers around hazards."
+  },
+  "rover.visibility-visual-ergonomics": {
+   "lead": "Lighting for cameras and drivers at this site and date: {value}.",
+   "explain": "With the Sun barely above the horizon, even a small rock casts a very long shadow, and with no air to scatter light, shadows are pitch black beside dazzling sunlit ground. That harsh contrast and glare make hazards hard for cameras and operators to spot.",
+   "readIt": "A higher Sun means shorter shadows and easier viewing; a lower Sun means longer shadows that can hide or exaggerate hazards."
+  },
+  "rover.route-science-yield-vs-cost": {
+   "lead": "This would rate how much science a route delivers for the distance, time and power it costs.",
+   "explain": "Planners weigh each target's scientific value against the effort to reach it, like choosing which museum rooms to visit with only an afternoon. It needs agreed science objectives and their relative importance, which this tool does not have yet.",
+   "readIt": "A higher score would mean more science per unit of effort, helping choose between a nearby modest target and a distant valuable one."
+  },
+  "space-weather.solar-energetic-particle-sep-events": {
+   "lead": "Across the Moon, the radiation dose from a large solar particle event is typically {value}.",
+   "explain": "A solar eruption can hurl energetic protons (charged particles) at the Moon, and with no atmosphere or global magnetic field they reach the surface directly. These values assume average shielding; most events are far weaker.",
+   "readIt": "It is the same for every site, so it does not rank locations; it tells planners how much shelter a strong solar storm demands."
+  },
+  "space-weather.galactic-cosmic-ray-exposure": {
+   "lead": "Across the Moon, the highest cosmic-ray dose rate measured from lunar orbit is {value}.",
+   "explain": "Galactic cosmic rays (fast particles from outside the solar system) arrive steadily from every direction, unblocked by air or magnetic field. LRO's CRaTER instrument measured this in orbit during a quiet-Sun period; on the surface the Moon blocks half the sky, roughly halving the dose.",
+   "readIt": "It does not rank sites; it is a baseline that adds up over time and shapes shielding for crews and electronics."
+  },
+  "space-weather.radiation-dose-behind-shielding": {
+   "lead": "This would estimate how much radiation actually reaches electronics or crew after passing through the spacecraft's shielding.",
+   "explain": "Shielding material absorbs part of the incoming radiation, a bit like sunscreen blocking some sunlight. The result depends on the shield's material and thickness, which come from the mission design rather than from site data.",
+   "readIt": "A lower dose behind shielding would mean longer hardware life and safer crews, at the cost of heavier shielding."
+  },
+  "space-weather.surface-plasma-solar-wind-environment": {
+   "lead": "Across the Moon, the solar wind delivers a proton flux of typically {value}.",
+   "explain": "The solar wind is a constant stream of charged particles from the Sun that strikes the unprotected lunar surface directly. Sunlit ground stays close to neutral, but shadowed ground can charge to strongly negative voltages, so equipment moving between light and shadow can build up static charge.",
+   "readIt": "This Moon-wide value does not rank sites; it guides grounding and material choices, especially near sunlight-shadow boundaries."
+  },
+  "space-weather.micrometeoroid-background-impact-flux": {
+   "lead": "Across the Moon, the measured impact rate for meteoroids in the size range studied is {value}.",
+   "explain": "With no atmosphere to burn them up, meteoroids hit the Moon at very high speed, and NASA estimates how often by counting the brief flashes of light they make on impact.",
+   "readIt": "A tiny rate per square metre per year means a strike on any one lander is very unlikely; it is the same everywhere, so it shapes protective design rather than site choice."
+  },
+  "space-weather.predictable-meteor-stream-exposure": {
+   "lead": "This would show whether the Moon passes through a known meteor stream during the mission, briefly raising the impact rate.",
+   "explain": "Just as Earth gets meteor showers when it crosses a comet's dust trail, the Moon crosses the same streams and briefly receives extra impacts. These forecasts are not yet loaded into this tool.",
+   "readIt": "A higher ratio would mean more impacts during that interval, mainly useful for timing sensitive activities rather than choosing a site."
+  },
+  "space-weather.known-asteroid-or-comet-lunar-impact-risk": {
+   "lead": "This would show whether any catalogued asteroid or comet is predicted to strike the Moon near the site.",
+   "explain": "Astronomers track asteroids and comets and can calculate whether a path might meet the Moon, though every prediction carries uncertainty. This is a rare-event watch, and no lunar-impact assessment feed is connected yet.",
+   "readIt": "A meaningful probability near the site would be a reason for caution, but it is not a routine factor in choosing a site."
+  },
+  "space-weather.recent-local-impact-detection-new-craters": {
+   "lead": "Across the Moon, before-and-after orbital imaging has revealed {value} formed during the period studied.",
+   "explain": "LROC (the cameras on NASA's Lunar Reconnaissance Orbiter) photographed the same places years apart, and comparing image pairs exposes fresh craters and ejecta (material thrown out by an impact), showing the surface is still changing.",
+   "readIt": "This is a Moon-wide count, not a site result; a higher rate means maps age faster and fresh imagery matters more before landing."
+  },
+  "space-weather.eclipse-occultation-by-orbital-bodies": {
+   "lead": "Eclipse check for this site and mission window: {value}.",
+   "explain": "When Earth passes between the Sun and the Moon, its shadow cuts off sunlight to solar panels and lets equipment cool quickly. Using Sun and Earth positions from NASA JPL Horizons, the tool looks for such interruptions during the mission.",
+   "readIt": "No eclipses means no power cuts from this cause; an eclipse adds a dark, cold spell the mission must be built to survive."
+  },
+  "space-weather.radiation-impact-event-alert-confidence": {
+   "lead": "This would show how far to trust a space-weather or impact warning, including how much advance notice it gives.",
+   "explain": "Solar storms and impacts are hard to predict, so a warning comes with a probability and a lead time, much like a weather forecast. Without a live space-weather forecast feed, the tool avoids pretending to know more than it does.",
+   "readIt": "Higher confidence and longer lead time would let controllers act early; low confidence means planning for surprises."
+  },
+  "heritage.previous-landing-impact-locations": {
+   "lead": "Earlier spacecraft landings or impacts near this site: {value}.",
+   "explain": "Knowing where spacecraft have landed, crashed or attempted to touch down provides context, safety lessons and history. The tool checks this site against a curated list of past landing and impact coordinates.",
+   "readIt": "Nearby past visits add heritage and lessons but may call for keeping a respectful distance; none means unvisited ground."
+  },
+  "heritage.mission-outcome-and-anomaly-history": {
+   "lead": "Recorded outcomes of earlier missions near this site: {value}.",
+   "explain": "Past landings teach practical lessons: whether a lander tipped, lost power or lost contact, and why. These records help engineers avoid repeating mistakes and give students real stories to connect with the site.",
+   "readIt": "Successes nearby build confidence and anomalies flag hazards worth studying; no entry means there is no local track record to learn from."
+  },
+  "heritage.prior-orbital-coverage-repeat-imagery": {
+   "lead": "Orbital mapping of this site: {value}.",
+   "explain": "Before landing, planners rely on maps made from orbit, such as LOLA (a laser that measures surface height), LROC (cameras) and Diviner (which measures surface temperature). Repeated passes over the years build confidence and reveal changes.",
+   "readIt": "More frequent and sharper coverage means more trustworthy maps; thin coverage means more uncertainty about what is really on the ground."
+  },
+  "heritage.prior-in-situ-chemistry-soil-observations": {
+   "lead": "Direct ground measurements of soil or chemistry near this site: {value}.",
+   "explain": "Orbital instruments infer what the surface is made of from a distance, so samples or sensor readings taken on the ground act as ground truth that checks those clues, like tasting a dish instead of judging it from a photo.",
+   "readIt": "Nearby measurements raise confidence in the maps; none means predictions for this site rest entirely on remote data."
+  },
+  "heritage.documented-hazard-or-rover-traverse-events": {
+   "lead": "Documented operational incidents near this site: {value}.",
+   "explain": "Real missions log surprises such as wheels slipping in soft soil, rovers trapped in shadow, or communication outages. These logs offer practical lessons that models alone can miss.",
+   "readIt": "Recorded incidents nearby are warnings worth designing around; none recorded may simply mean no one has operated there yet."
+  },
+  "heritage.nearby-active-planned-missions-interference": {
+   "lead": "Other active or planned missions operating near this site: {value}.",
+   "explain": "Spacecraft working close together must coordinate landing times, respect each other's exclusion zones, avoid radio interference and stay clear of landing debris, a bit like neighbours sharing a driveway and a Wi-Fi channel.",
+   "readIt": "No neighbours means simpler planning; nearby missions add coordination work but may also offer chances to cooperate."
+  },
+  "heritage.cultural-heritage-preservation-zones": {
+   "lead": "Heritage protection status for this site: {value}.",
+   "explain": "Historic hardware on the Moon is treated much like an archaeological site, and NASA's 2011 guidance asks new landers to touch down at least 2 km away so exhaust does not damage or contaminate it. This tool applies that guidance as a general courtesy buffer.",
+   "readIt": "A site well clear of any buffer needs no special care; one inside it would need a different landing point or extra permissions."
+  }
+ }
+}

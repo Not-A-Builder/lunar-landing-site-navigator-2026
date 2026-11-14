@@ -1,0 +1,6 @@
+node_modules
+.next
+src/data/metrics-catalog.json
+data/source
+public/data
+*.md

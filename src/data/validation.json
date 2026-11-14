@@ -1,0 +1,286 @@
+{
+ "generatedAt": "2026-11-14T05:50:53.486Z",
+ "note": "Share of time any part of the Sun/Earth disk is above the terrain horizon at ground level. Ours: 2026–2029 from JPL Horizons + LOLA LDEM_75S_120M. LOLA: avgvisib_75s_120m_201608 (Mazarico et al. 2011 method).",
+ "sites": [
+  {
+   "id": "peak-near-cabeus-b",
+   "name": "Peak near Cabeus B",
+   "oursSun": 0.5011,
+   "lolaSun": 0.4904,
+   "oursEarth": 0.3671,
+   "lolaEarth": 0.376
+  },
+  {
+   "id": "haworth",
+   "name": "Haworth",
+   "oursSun": 0.3241,
+   "lolaSun": 0.3217,
+   "oursEarth": 0.3038,
+   "lolaEarth": 0.302
+  },
+  {
+   "id": "malapert-massif",
+   "name": "Malapert Massif",
+   "oursSun": 0.3389,
+   "lolaSun": 0.4298,
+   "oursEarth": 0.4096,
+   "lolaEarth": 0.4899
+  },
+  {
+   "id": "mons-mouton-plateau",
+   "name": "Mons Mouton Plateau",
+   "oursSun": 0.2612,
+   "lolaSun": 0.2596,
+   "oursEarth": 0.7319,
+   "lolaEarth": 0.7244
+  },
+  {
+   "id": "mons-mouton",
+   "name": "Mons Mouton",
+   "oursSun": 0.1447,
+   "lolaSun": 0.1385,
+   "oursEarth": 0.6382,
+   "lolaEarth": 0.6331
+  },
+  {
+   "id": "nobile-rim-1",
+   "name": "Nobile Rim 1",
+   "oursSun": 0.1447,
+   "lolaSun": 0.1385,
+   "oursEarth": 0.6382,
+   "lolaEarth": 0.6331
+  },
+  {
+   "id": "nobile-rim-2",
+   "name": "Nobile Rim 2",
+   "oursSun": 0.3572,
+   "lolaSun": 0.3536,
+   "oursEarth": 0.6491,
+   "lolaEarth": 0.6398
+  },
+  {
+   "id": "de-gerlache-rim-2",
+   "name": "de Gerlache Rim 2",
+   "oursSun": 0.3536,
+   "lolaSun": 0.3534,
+   "oursEarth": 0.6075,
+   "lolaEarth": 0.6064
+  },
+  {
+   "id": "im-1-odysseus",
+   "name": "IM-1 Odysseus",
+   "oursSun": 0.3942,
+   "lolaSun": 0.3761,
+   "oursEarth": 1,
+   "lolaEarth": 1
+  },
+  {
+   "id": "im-2-athena",
+   "name": "IM-2 Athena",
+   "oursSun": 0.4661,
+   "lolaSun": 0.4684,
+   "oursEarth": 0.942,
+   "lolaEarth": 0.9307
+  },
+  {
+   "id": "griffin-mission-one",
+   "name": "Griffin Mission One (Moon Base II) - target Nobile Crater",
+   "oursSun": 0.3533,
+   "lolaSun": 0.3567,
+   "oursEarth": 0.2961,
+   "lolaEarth": 0.2961
+  },
+  {
+   "id": "im-4",
+   "name": "IM-4 - target Mons Mouton",
+   "oursSun": 0.3349,
+   "lolaSun": 0.3393,
+   "oursEarth": 0.625,
+   "lolaEarth": 0.6209
+  },
+  {
+   "id": "blue-moon-mk1-endurance",
+   "name": "Blue Moon MK1 'Endurance' (Moon Base I) - Shackleton Connecting Ridge",
+   "oursSun": 0.431,
+   "lolaSun": 0.4242,
+   "oursEarth": 0.5792,
+   "lolaEarth": 0.5773
+  },
+  {
+   "id": "viper-on-blue-moon-mk1-2",
+   "name": "VIPER on Blue Moon MK1 #2 - target Mons Mouton",
+   "oursSun": 0.3349,
+   "lolaSun": 0.3393,
+   "oursEarth": 0.625,
+   "lolaEarth": 0.6209
+  },
+  {
+   "id": "chang-e-7",
+   "name": "Chang'e 7 - target Shackleton crater rim region",
+   "oursSun": 0,
+   "lolaSun": 0,
+   "oursEarth": 0,
+   "lolaEarth": 0
+  },
+  {
+   "id": "feature-shackleton-crater",
+   "name": "Shackleton crater",
+   "oursSun": 0,
+   "lolaSun": 0,
+   "oursEarth": 0,
+   "lolaEarth": 0
+  },
+  {
+   "id": "feature-de-gerlache-crater",
+   "name": "de Gerlache crater",
+   "oursSun": 0,
+   "lolaSun": 0,
+   "oursEarth": 0,
+   "lolaEarth": 0
+  },
+  {
+   "id": "feature-haworth-crater",
+   "name": "Haworth crater",
+   "oursSun": 0,
+   "lolaSun": 0,
+   "oursEarth": 0.0612,
+   "lolaEarth": 0.0616
+  },
+  {
+   "id": "feature-nobile-crater",
+   "name": "Nobile crater",
+   "oursSun": 0.3533,
+   "lolaSun": 0.3567,
+   "oursEarth": 0.2961,
+   "lolaEarth": 0.2961
+  },
+  {
+   "id": "feature-malapert-crater",
+   "name": "Malapert crater",
+   "oursSun": 0.1241,
+   "lolaSun": 0.1228,
+   "oursEarth": 0.5299,
+   "lolaEarth": 0.5282
+  },
+  {
+   "id": "feature-mons-malapert",
+   "name": "Mons Malapert (Malapert Massif)",
+   "oursSun": 0.4319,
+   "lolaSun": 0.4284,
+   "oursEarth": 1,
+   "lolaEarth": 1
+  },
+  {
+   "id": "feature-cabeus-crater",
+   "name": "Cabeus crater",
+   "oursSun": 0,
+   "lolaSun": 0,
+   "oursEarth": 0,
+   "lolaEarth": 0
+  },
+  {
+   "id": "feature-cabeus-b-crater",
+   "name": "Cabeus B crater",
+   "oursSun": 0.107,
+   "lolaSun": 0.1078,
+   "oursEarth": 0.434,
+   "lolaEarth": 0.4266
+  },
+  {
+   "id": "feature-faustini-crater",
+   "name": "Faustini crater",
+   "oursSun": 0,
+   "lolaSun": 0,
+   "oursEarth": 0.0239,
+   "lolaEarth": 0.0204
+  },
+  {
+   "id": "feature-shoemaker-crater",
+   "name": "Shoemaker crater",
+   "oursSun": 0,
+   "lolaSun": 0,
+   "oursEarth": 0.2571,
+   "lolaEarth": 0.257
+  },
+  {
+   "id": "feature-sverdrup-crater",
+   "name": "Sverdrup crater",
+   "oursSun": 0,
+   "lolaSun": 0,
+   "oursEarth": 0.0848,
+   "lolaEarth": 0.0555
+  },
+  {
+   "id": "feature-slater-crater",
+   "name": "Slater crater",
+   "oursSun": 0,
+   "lolaSun": 0,
+   "oursEarth": 0.2459,
+   "lolaEarth": 0.2287
+  },
+  {
+   "id": "feature-amundsen-crater",
+   "name": "Amundsen crater",
+   "oursSun": 0.1525,
+   "lolaSun": 0.1538,
+   "oursEarth": 0.1308,
+   "lolaEarth": 0.1723
+  },
+  {
+   "id": "feature-scott-crater",
+   "name": "Scott crater",
+   "oursSun": 0.2956,
+   "lolaSun": 0.3083,
+   "oursEarth": 0.5816,
+   "lolaEarth": 0.5996
+  },
+  {
+   "id": "feature-mons-mouton",
+   "name": "Mons Mouton (formerly Leibnitz Beta)",
+   "oursSun": 0.3349,
+   "lolaSun": 0.3393,
+   "oursEarth": 0.625,
+   "lolaEarth": 0.6209
+  },
+  {
+   "id": "feature-kocher-crater",
+   "name": "Kocher crater",
+   "oursSun": 0,
+   "lolaSun": 0,
+   "oursEarth": 0,
+   "lolaEarth": 0
+  },
+  {
+   "id": "feature-mons-kocher",
+   "name": "Mons Kocher",
+   "oursSun": 0.1262,
+   "lolaSun": 0.1316,
+   "oursEarth": 0.2358,
+   "lolaEarth": 0.2294
+  },
+  {
+   "id": "feature-mons-cabeus",
+   "name": "Mons Cabeus",
+   "oursSun": 0.5069,
+   "lolaSun": 0.5056,
+   "oursEarth": 1,
+   "lolaEarth": 1
+  },
+  {
+   "id": "feature-henson-crater",
+   "name": "Henson crater",
+   "oursSun": 0.016,
+   "lolaSun": 0.0132,
+   "oursEarth": 0,
+   "lolaEarth": 0
+  },
+  {
+   "id": "feature-shackleton-de-gerlache-connecting-ridge",
+   "name": "Shackleton - de Gerlache Connecting Ridge",
+   "oursSun": 0.431,
+   "lolaSun": 0.4242,
+   "oursEarth": 0.5792,
+   "lolaEarth": 0.5773
+  }
+ ]
+}
