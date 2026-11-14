@@ -11,7 +11,7 @@ import { parseCoordString } from "@/lib/coords";
 import { fmtLat, fmtLon } from "@/lib/metrics/format";
 import { MAX_COMPARE } from "@/lib/config";
 import { usePersona } from "@/lib/persona";
-import { customScenarioId, parseScenarios, type Scenario, serialiseScenarios } from "@/lib/scenarios";
+import { customScenarioId, isComplete, parseScenarios, type Scenario, serialiseScenarios } from "@/lib/scenarios";
 import { useNowMinute } from "@/lib/use-now";
 import { GROUP_LABELS, getSite, hasCoordinates, isPolar, onPolarMap, sites, type Site, type SiteGroup } from "@/lib/sites";
 import { DateField, TimeField } from "./DateTimePickers";
@@ -38,6 +38,7 @@ const PEEK = 0.58;
 function formFromScenario(sc: Scenario): { siteId: string | null; coords: string; picked: number | null } {
   const t = sc.t ? Date.parse(sc.t) : NaN;
   const picked = Number.isFinite(t) ? t : null;
+  if (!sc.siteId) return { siteId: null, coords: "", picked }; // partial: time only (D-074)
   if (!sc.siteId.startsWith("custom:")) return { siteId: sc.siteId, coords: "", picked };
   const [la, lo] = sc.siteId.slice(7).split(",").map(Number);
   return { siteId: null, coords: coordText(la, lo), picked };
@@ -59,16 +60,25 @@ export function SiteSelection() {
   // Scenarios added for comparison (D-066). The form below fills either a new slot after them
   // (`editing` null) or re-edits one of them (`editing` = its index; its URL entry is then stale
   // until the form is committed back).
-  const queue = useMemo(() => parseScenarios(params.get("s")), [params]);
+  // Slots may be partial (a time but no site yet); they stay until removed with × (D-074).
+  const queue = useMemo(() => parseScenarios(params.get("s"), { allowPartial: true }), [params]);
   // A link with every slot filled has no free slot, so it opens the last scenario for editing.
   const [initial] = useState(() => {
-    const q = parseScenarios(params.get("s"));
+    const q = parseScenarios(params.get("s"), { allowPartial: true });
     return q.length >= MAX_COMPARE ? { index: q.length - 1, form: formFromScenario(q[q.length - 1]) } : null;
   });
   const [editing, setEditing] = useState<number | null>(initial?.index ?? null);
   const activeIndex = editing ?? queue.length;
   const comparing = queue.length + (editing === null ? 1 : 0) > 1;
   const asideRef = useRef<HTMLElement>(null);
+  // Bar animation (D-076): `barIntro` while it slides in after the first "Select another scenario";
+  // `barExit` holds a snapshot of the bar while it animates out after all but one scenario are removed.
+  const [barIntro, setBarIntro] = useState(false);
+  const [barExit, setBarExit] = useState<React.ComponentProps<typeof ScenarioBar> | null>(null);
+  const barTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (barTimer.current) clearTimeout(barTimer.current);
+  }, []);
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<SortId>(DEFAULT_SORT);
   const [groups, setGroups] = useState<Set<SiteGroup>>(() => new Set(ALL_GROUPS)) // every list on by default (D-052);
@@ -165,8 +175,17 @@ export function SiteSelection() {
   const current: Scenario | null = selectedSite || customPoint
     ? { siteId: selectedSite ? selectedSite.id : customScenarioId(customPoint!.lat, customPoint!.lon), t: when !== null ? new Date(when).toISOString() : "" }
     : null;
-  // Room for one more slot after the form's scenario is saved.
-  const canAddMore = (editing === null ? queue.length + 1 : queue.length) < MAX_COMPARE;
+  // The form as a scenario, partial (time only) until a site is picked.
+  const draft: Scenario = current ?? { siteId: "", t: when !== null ? new Date(when).toISOString() : "" };
+  /** The slot list with the form's scenario saved into its slot, partial or not (D-074). */
+  const committed = (): Scenario[] => (editing === null ? [...queue, draft] : queue.map((sc, k) => (k === editing ? draft : sc)));
+  const slots = committed();
+  // "Select another scenario" goes to an unfinished slot first, else opens a new one if there is room.
+  const nextPartial = slots.findIndex((sc, k) => k !== activeIndex && !isComplete(sc));
+  const canAddMore = nextPartial >= 0 || slots.length < MAX_COMPARE;
+  // Compare needs at least two complete scenarios; partial ones (including the form's) are left out.
+  const completeCount = slots.filter(isComplete).length;
+  const canStart = comparing ? completeCount >= 2 : valid;
   const setQueue = (next: Scenario[]) => router.replace(next.length ? `/?s=${serialiseScenarios(next)}` : "/", { scroll: false });
   /** Applies a new slot list + edit target. With a single scenario left the bar goes away: it lives in the form. */
   const apply = (next: Scenario[], nextEditing: number | null) => {
@@ -174,14 +193,20 @@ export function SiteSelection() {
       next = [];
       nextEditing = null;
     }
+    const nextComparing = next.length + (nextEditing === null ? 1 : 0) > 1;
+    if (barTimer.current) clearTimeout(barTimer.current);
+    if (comparing && !nextComparing) {
+      // Leaving comparison: keep the bar as it is now on screen while it animates out.
+      setBarIntro(false);
+      setBarExit({ ...barProps, phase: "out" });
+      barTimer.current = setTimeout(() => setBarExit(null), 720);
+    } else if (!comparing && nextComparing) {
+      setBarExit(null);
+      setBarIntro(true);
+      barTimer.current = setTimeout(() => setBarIntro(false), 900);
+    }
     setEditing(nextEditing);
     setQueue(next);
-  };
-  /** The slot list with the form's scenario saved into its slot (unchanged if no site is picked). */
-  const committed = (): Scenario[] => {
-    if (!current) return queue;
-    if (editing === null) return [...queue, current];
-    return queue.map((sc, k) => (k === editing ? current : sc));
   };
 
   const resetForm = () => {
@@ -200,30 +225,35 @@ export function SiteSelection() {
     setPicked(f.picked);
   };
 
-  // Parks this site + time as the next scenario and starts an empty form for the one after.
+  // Saves this site + time, then moves to the first unfinished slot, or a new empty one.
   const addAnother = () => {
     if (!current) {
       setCoordsTouched(true);
       return;
     }
     if (!canAddMore) return;
-    apply(committed(), null);
-    resetForm();
+    if (nextPartial >= 0) {
+      loadIntoForm(slots[nextPartial]);
+      apply(slots, nextPartial);
+    } else {
+      apply(slots, null);
+      resetForm();
+    }
     asideRef.current?.scrollTo({ top: 0 });
     window.scrollTo({ top: 0 });
   };
   const startComparison = () => {
-    if (!current) {
+    if (!canStart) {
       setCoordsTouched(true);
       return;
     }
-    router.push(`/compare?s=${serialiseScenarios(committed())}`);
+    router.push(`/compare?s=${serialiseScenarios(slots.filter(isComplete))}`);
   };
-  // Pencil on a saved card: save the form into its own slot, then load that scenario into the form.
+  // Pencil on a saved card: save the form into its own slot (even with no site yet: only × removes a
+  // scenario), then load that scenario into the form.
   const editQueued = (i: number) => {
-    const next = committed();
-    loadIntoForm(next[i]);
-    apply(next, i);
+    loadIntoForm(slots[i]);
+    apply(slots, i);
   };
   // × on a saved card drops it. × on the active card discards the form and opens the last remaining
   // scenario for editing. With a single scenario left the page is the plain picker again.
@@ -239,6 +269,17 @@ export function SiteSelection() {
     apply(next, next.length - 1);
   };
 
+
+  const barProps: React.ComponentProps<typeof ScenarioBar> = {
+    queue,
+    activeIndex,
+    editing: editing !== null && isComplete(queue[editing] ?? draft),
+    onEdit: editQueued,
+    current,
+    draftWhen: when,
+    onRemoveQueued: removeQueued,
+    onRemoveCurrent: removeCurrent,
+  };
 
   const hoveredSite = hovered ? getSite(hovered) : null;
   const mapProps = {
@@ -283,18 +324,7 @@ export function SiteSelection() {
 
   return (
     <div className="flex flex-col lg:h-[calc(100vh-65px)]">
-    {comparing && (
-      <ScenarioBar
-        queue={queue}
-        activeIndex={activeIndex}
-        editing={editing !== null}
-        onEdit={editQueued}
-        current={current}
-        draftWhen={when}
-        onRemoveQueued={removeQueued}
-        onRemoveCurrent={removeCurrent}
-      />
-    )}
+    {comparing ? <ScenarioBar {...barProps} phase={barIntro ? "in" : null} /> : barExit && <ScenarioBar {...barExit} />}
     <div className="mx-auto grid w-full max-w-[1600px] gap-6 px-4 py-5 lg:min-h-0 lg:flex-1 lg:grid-cols-[460px_1fr]">
       <aside ref={asideRef} className="flex min-h-0 flex-col overflow-y-auto">
         {/* 1 · Date & time selection */}
@@ -414,7 +444,7 @@ export function SiteSelection() {
           <ScrollThumb target={listRef} />
           </div>
           {enthusiast && (
-            <p className="mt-2 text-xs text-faint">
+            <p className="mt-3.5 text-xs text-faint">
               {customPoint ? (
                 <>
                   Point dropped at <span className="num">{coordText(customPoint.lat, customPoint.lon)}</span>.{" "}
@@ -430,8 +460,9 @@ export function SiteSelection() {
         <button
           type="button"
           onClick={comparing ? startComparison : explore}
-          disabled={!valid}
-          className={`inline-flex h-11 w-full shrink-0 items-center justify-center gap-2 rounded-sm bg-primary cursor-pointer font-medium text-primary-ink transition-opacity disabled:cursor-not-allowed disabled:opacity-35 ${valid ? "cta-shimmer" : ""}`}
+          disabled={!canStart}
+          title={comparing && !canStart ? "Pick a site for at least two scenarios to compare them" : undefined}
+          className={`inline-flex h-11 w-full shrink-0 items-center justify-center gap-2 rounded-sm bg-primary cursor-pointer font-medium text-primary-ink transition-opacity disabled:cursor-not-allowed disabled:opacity-35 ${canStart ? "cta-shimmer" : ""}`}
         >
           {comparing ? "Start comparison now" : "Explore Site Details"} <ArrowRight size={18} aria-hidden />
         </button>

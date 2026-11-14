@@ -3,7 +3,7 @@
 import { Moon, Sun } from "@phosphor-icons/react";
 import { setTheme, useTheme } from "@/lib/theme";
 
-/** Switches between the light (default) and dark themes. */
+/** Switches between the dark (default on every load) and light themes for this visit. */
 export function ThemeToggle() {
   const theme = useTheme();
   const next = theme === "dark" ? "light" : "dark";

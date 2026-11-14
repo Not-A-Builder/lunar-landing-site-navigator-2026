@@ -2,12 +2,19 @@ import { MAX_COMPARE } from "@/lib/config";
 import { fmtLat, fmtLon } from "@/lib/metrics/format";
 import { getSite, hasCoordinates, type Site } from "@/lib/sites";
 
-/** A scenario is one site at one landing time. URL: ?s=siteId@ISO,custom:lat,lon@ISO */
+/**
+ * A scenario is one site at one landing time. URL: ?s=siteId@ISO,custom:lat,lon@ISO
+ * While a comparison is being built on the selection page a scenario can be partial: a landing time
+ * with no site yet (`siteId` ""; URL `@ISO`). Compare only ever receives complete ones (D-074).
+ */
 export type Scenario = { siteId: string; t: string };
+
+export const isComplete = (sc: Scenario) => sc.siteId !== "";
 
 export const SCENARIO_LETTERS = ["A", "B", "C", "D"];
 
-export function parseScenarios(s: string | null): Scenario[] {
+/** @param allowPartial keep scenarios without a site (selection page only) */
+export function parseScenarios(s: string | null, { allowPartial = false } = {}): Scenario[] {
   if (!s) return [];
   return s
     .split(/,(?![-\d.]+@)/)
@@ -17,7 +24,7 @@ export function parseScenarios(s: string | null): Scenario[] {
       const t = at >= 0 ? decodeURIComponent(part.slice(at + 1)) : "";
       return { siteId, t };
     })
-    .filter((x) => x.siteId)
+    .filter((x) => allowPartial || x.siteId)
     .slice(0, MAX_COMPARE);
 }
 

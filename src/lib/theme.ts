@@ -1,11 +1,11 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { THEME_KEY } from "./theme-script";
 
 /**
- * Light / dark theme (LOGS D-040). Light is the default. The choice lives on <html data-theme> and in
- * localStorage; an inline script in the root layout applies it before first paint (no flash).
+ * Light / dark theme (LOGS D-040). Every page load starts dark: the root layout renders
+ * <html data-theme="dark"> (D-072). The header toggle switches theme for the rest of the visit; the
+ * choice is not saved, so the next load is dark again.
  */
 export type Theme = "light" | "dark";
 
@@ -18,16 +18,11 @@ function subscribe(onChange: () => void) {
 }
 
 export function useTheme(): Theme {
-  return useSyncExternalStore(subscribe, read, () => "light");
+  return useSyncExternalStore(subscribe, read, () => "dark");
 }
 
 export function setTheme(t: Theme) {
   document.documentElement.setAttribute("data-theme", t);
-  try {
-    localStorage.setItem(THEME_KEY, t);
-  } catch {
-    /* storage blocked: the choice lasts for this page view */
-  }
 }
 
 /** Current value of a CSS colour token, e.g. cssVar("--accent"). */

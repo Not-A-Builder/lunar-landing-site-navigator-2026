@@ -3,7 +3,6 @@ import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 import { AppHeader } from "@/components/AppHeader";
 import { PersonaHydrator } from "@/components/PersonaToggle";
 import { SITE_TITLE } from "@/lib/config";
-import { THEME_SCRIPT } from "@/lib/theme-script";
 import "./globals.css";
 
 const plexSans = IBM_Plex_Sans({ variable: "--font-plex-sans", subsets: ["latin"], weight: ["400", "500", "600"] });
@@ -17,11 +16,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" data-theme="light" suppressHydrationWarning className={`${plexSans.variable} ${plexMono.variable} h-full antialiased`}>
-      <head>
-        {/* Applies the saved theme before first paint (light is the default). */}
-        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
-      </head>
+    <html lang="en" data-theme="dark" suppressHydrationWarning className={`${plexSans.variable} ${plexMono.variable} h-full antialiased`}>
+      {/* Every load starts in the dark theme, rendered on the server so there is no flash (D-072). */}
       <body className="flex min-h-full flex-col">
         <PersonaHydrator />
         <AppHeader />

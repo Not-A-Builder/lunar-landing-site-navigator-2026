@@ -1,18 +1,28 @@
 "use client";
 
-import { PencilSimple, X } from "@phosphor-icons/react";
+import { X } from "@phosphor-icons/react";
 import { MAX_COMPARE } from "@/lib/config";
 import { fmtUTC } from "@/lib/metrics/format";
-import { resolveScenarioSite, SCENARIO_LETTERS, type Scenario } from "@/lib/scenarios";
+import { isComplete, resolveScenarioSite, SCENARIO_LETTERS, type Scenario } from "@/lib/scenarios";
+
+/** "Scenario A", "Scenario B · selecting now", …: one style in every state (saved, active, empty). */
+const LABEL = "text-xs font-semibold uppercase tracking-wider text-faint";
+
+/** Stagger index for the enter/exit animation (globals.css `.bar-card`). */
+const stagger = (i: number) => ({ "--i": i, "--n": MAX_COMPARE }) as React.CSSProperties;
 
 /**
  * Sticky bar under the app header while a comparison is being built on the selection page (D-066).
- * One card per scenario slot: saved ones (pencil to edit, × to remove), the one the form below is
+ * One card per scenario slot: saved ones (click the card to edit, × to remove), the one the form below is
  * filling or editing (highlighted), and empty ones still available (long-dash outline).
+ *
+ * `phase` "in": the bar slides down, then the cards fade in from the left one by one. "out": the
+ * reverse, cards first (last one first), then the bar folds up; the bar is inert meanwhile (D-076).
  */
 export function ScenarioBar({
-  queue, activeIndex, editing, current, draftWhen, onEdit, onRemoveQueued, onRemoveCurrent,
+  queue, activeIndex, editing, current, draftWhen, onEdit, onRemoveQueued, onRemoveCurrent, phase = null,
 }: {
+  phase?: "in" | "out" | null;
   queue: Scenario[];
   /** Slot the form is filling: an index into `queue` while editing, else `queue.length`. */
   activeIndex: number;
@@ -27,21 +37,30 @@ export function ScenarioBar({
   onRemoveCurrent: () => void;
 }) {
   return (
-    <div className="sticky top-[65px] z-20 shrink-0 border-b border-line bg-bg/90 backdrop-blur">
+    <div inert={phase === "out"} className={`sticky top-[65px] z-20 grid shrink-0 grid-rows-[1fr] ${phase === "in" ? "bar-in" : phase === "out" ? "bar-out" : ""}`}>
+      <div className="min-h-0 overflow-hidden border-b border-line bg-bg/90 backdrop-blur">
       <ol aria-label="Scenarios to compare" className="mx-auto grid max-w-[1600px] grid-cols-3 gap-3 px-4 py-3">
         {Array.from({ length: MAX_COMPARE }, (_, i) => {
           const L = SCENARIO_LETTERS[i];
           if (i !== activeIndex && i < queue.length) {
             const sc = queue[i];
             return (
-              <Card key={i} label={`Scenario ${L}`} onEdit={() => onEdit(i)} onRemove={() => onRemoveQueued(i)} letter={L}>
-                <Lines name={resolveScenarioSite(sc.siteId)?.name ?? "Unknown site"} when={sc.t ? Date.parse(sc.t) : null} />
+              <Card key={i} i={i} label={`Scenario ${L}`} onEdit={() => onEdit(i)} onRemove={() => onRemoveQueued(i)} letter={L}>
+                {isComplete(sc) ? (
+                  <Lines name={resolveScenarioSite(sc.siteId)?.name ?? "Unknown site"} when={sc.t ? Date.parse(sc.t) : null} />
+                ) : (
+                  // Partial: a landing time, no site yet. Kept until removed with × (D-074).
+                  <>
+                    <div className="truncate text-sm text-muted">Site not picked yet</div>
+                    <div className="num truncate text-xs text-muted">{fmtUTC(sc.t ? Date.parse(sc.t) : null)}</div>
+                  </>
+                )}
               </Card>
             );
           }
           if (i === activeIndex) {
             return (
-              <Card key={i} active label={`Scenario ${L} · ${editing ? "editing" : "selecting now"}`} onRemove={onRemoveCurrent} letter={L}>
+              <Card key={i} i={i} active label={`Scenario ${L} · ${editing ? "editing" : "selecting now"}`} onRemove={onRemoveCurrent} letter={L}>
                 {current ? (
                   <Lines name={resolveScenarioSite(current.siteId)?.name ?? "Unknown site"} when={draftWhen} />
                 ) : (
@@ -54,42 +73,63 @@ export function ScenarioBar({
             );
           }
           return (
-            <li key={i} className="relative flex min-h-[76px] flex-col justify-center rounded-sm px-3 py-2 text-faint">
+            <li key={i} style={stagger(i)} className="bar-card relative flex min-h-[76px] flex-col justify-center rounded-sm px-3 py-2 text-faint">
               {/* Long dashes and gaps (CSS `dashed` can't set them) so a free slot reads differently from a card (D-071). */}
               <svg className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden>
-                <rect x="0.5" y="0.5" rx="2" fill="none" stroke="var(--faint)" strokeOpacity={0.7} strokeDasharray="12 8" style={{ width: "calc(100% - 1px)", height: "calc(100% - 1px)" }} />
+                <rect x="0.5" y="0.5" rx="2" fill="none" stroke="var(--faint)" strokeOpacity={0.4} strokeDasharray="12 8" style={{ width: "calc(100% - 1px)", height: "calc(100% - 1px)" }} />
               </svg>
-              <span className="text-xs font-semibold uppercase tracking-wider">Scenario {L}</span>
+              <span className={LABEL}>Scenario {L}</span>
               <span className="text-sm">Not added yet</span>
             </li>
           );
         })}
       </ol>
+      </div>
     </div>
   );
 }
 
 function Card({
-  label, letter, active = false, onEdit, onRemove, children,
-}: { label: string; letter: string; active?: boolean; onEdit?: () => void; onRemove: () => void; children: React.ReactNode }) {
-  const iconBtn = "shrink-0 cursor-pointer rounded-sm p-1 text-muted hover:bg-panel-2 hover:text-fg";
+  i, label, letter, active = false, onEdit, onRemove, children,
+}: { i: number; label: string; letter: string; active?: boolean; onEdit?: () => void; onRemove: () => void; children: React.ReactNode }) {
+  // A saved card is clickable as a whole to edit it (D-075); × stops the click from reaching the card.
+  const editable = onEdit
+    ? {
+        role: "button",
+        tabIndex: 0,
+        "aria-label": `Edit scenario ${letter}`,
+        title: "Edit date, time and site",
+        onClick: onEdit,
+        onKeyDown: (e: React.KeyboardEvent) => {
+          if (e.target !== e.currentTarget || (e.key !== "Enter" && e.key !== " ")) return;
+          e.preventDefault();
+          onEdit();
+        },
+      }
+    : {};
   return (
     <li
+      {...editable}
       aria-current={active ? "step" : undefined}
-      className={`flex min-h-[76px] min-w-0 flex-col justify-center rounded-sm border bg-panel px-3 py-2 ${active ? "border-primary ring-1 ring-inset ring-primary" : "border-line"}`}
+      style={stagger(i)}
+      className={`bar-card flex min-h-[76px] min-w-0 flex-col justify-center rounded-sm border bg-panel px-3 py-2 outline-none ${
+        active ? "border-primary ring-1 ring-inset ring-primary" : "border-line"
+      } ${onEdit ? "cursor-pointer transition-colors hover:border-muted hover:bg-panel-2 focus-visible:border-fg" : ""}`}
     >
       <div className="flex items-center justify-between gap-2">
-        <span className={`text-xs font-semibold uppercase tracking-wider ${active ? "text-fg" : "text-faint"}`}>{label}</span>
-        <div className="-m-1 flex items-center gap-0.5">
-          {onEdit && (
-            <button type="button" onClick={onEdit} aria-label={`Edit scenario ${letter}`} title="Edit date, time and site" className={iconBtn}>
-              <PencilSimple size={16} />
-            </button>
-          )}
-          <button type="button" onClick={onRemove} aria-label={`Remove scenario ${letter}`} title="Remove" className={iconBtn}>
-            <X size={16} />
-          </button>
-        </div>
+        <span className={LABEL}>{label}</span>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onRemove();
+          }}
+          aria-label={`Remove scenario ${letter}`}
+          title="Remove"
+          className="-m-1 shrink-0 cursor-pointer rounded-sm p-1 text-muted hover:bg-line hover:text-fg"
+        >
+          <X size={16} />
+        </button>
       </div>
       {children}
     </li>

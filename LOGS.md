@@ -512,3 +512,35 @@ Decision: the flat whole-Moon map draws the equator (0° latitude) and the prime
 ## D-071 · 2026-11-14 · Long-dash outline for empty scenario slots
 Status: confirmed (owner request, 2026-11-14)
 Decision: an empty ("Not added yet") slot in the comparison bar is outlined with long dashes and long gaps (12 px dash, 8 px gap, `--faint` at 70%, drawn as an SVG rect because CSS `dashed` can't set dash length). This makes it easy to tell apart from the solid-outlined card being filled. Showing the scenario cards in the opposite theme was tried in the same change and reverted at the owner's request ("looks bad"). Cards keep the page theme.
+
+## D-072 · 2026-11-14 · Every load starts in the dark theme
+Status: confirmed (owner request, 2026-11-14; changes the D-040 default)
+Decision: the app always loads in the dark theme. The root layout renders `<html data-theme="dark">` on the server, so the first paint is dark with no flash and no script. A saved choice and the device's light/dark setting are no longer read. The header toggle still switches to light for the rest of the visit, but the choice is not saved, so a reload or new visit starts dark again. The inline theme script (`src/lib/theme-script.ts`) and the `lsn-theme` localStorage key are retired.
+
+## D-073 · 2026-11-14 · Fainter outline for empty scenario slots
+Status: confirmed (owner request, 2026-11-14; refines D-071)
+Decision: the long-dash outline of a "Not added yet" slot drops from 70% to 40% opacity of `--faint`, so it recedes further behind the scenario cards. Dash and gap lengths are unchanged (12 / 8 px).
+
+## D-074 · 2026-11-14 · Unfinished scenarios are kept until removed
+Status: confirmed (owner request, 2026-11-14; changes D-067)
+Decision:
+- Switching to another scenario no longer drops the one being filled when it has no site yet. It is saved as a partial scenario (landing time, no site; URL entry `@ISO`) and its card reads "Site not picked yet" with its time. Only × removes a scenario.
+- "Select another scenario to compare" first goes to an unfinished slot if there is one, and only opens a new slot when every other slot has a site.
+- "Start comparison now" is enabled once at least two scenarios have a site (it no longer also needs the form's own site). Partial scenarios are left out of the comparison. Compare never receives partial entries (`parseScenarios` drops them unless called with `allowPartial`).
+- An unfinished slot reopened for editing is labelled "selecting now", not "editing".
+- The "Scenario N" label (with "· selecting now" / "· editing") uses one style in every state: faint, small caps, semibold.
+
+## D-075 · 2026-11-14 · Click a scenario card to edit it
+Status: confirmed (owner request, 2026-11-14; replaces the D-067 pencil)
+Decision: the pencil button is removed. Clicking anywhere on a saved scenario card (or Enter/Space when it has focus) opens it for editing, with a pointer cursor and a hover border. The × stays and does not trigger editing. The card being filled and the empty slots are not clickable.
+
+## D-076 · 2026-11-14 · Comparison bar animates in and out
+Status: confirmed (owner requests, 2026-11-14)
+Decision:
+- **In:** the first "Select another scenario to compare" (when the bar appears) slides the bar down: its row grows from 0 to full height over 300 ms, so the page below moves down smoothly. Then the three cards fade in one by one from 12 px to the left (360 ms each, 110 ms apart, starting at 220 ms). The whole sequence takes about 0.8 s.
+- **Out:** when all but one scenario are removed (the bar goes away), the reverse plays: cards fade out to the left, last one first (220 ms each, 80 ms apart), then the bar folds up (280 ms). A snapshot of the bar stays on screen, inert, until it finishes.
+- Only these two transitions animate. Cards changing state, and opening the page from a shared `?s=` link, don't. With "reduce motion" switched on, nothing animates.
+
+## D-077 · 2026-11-14 · More space above the map-click hint
+Status: confirmed (owner request, 2026-11-14)
+Decision: in the enthusiast view, the gap between the site list and "Or click anywhere on the map to drop a point." grows from 8 px to 14 px (`mt-3.5`).
