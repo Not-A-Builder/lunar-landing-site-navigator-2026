@@ -4,6 +4,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { DEFAULT_ASSUMPTIONS, type Assumptions } from "./assumptions";
 import type { BandKey, BandOverride, BandOverrides } from "./bands";
+import type { Persona } from "./persona";
 
 type State = {
   a: Assumptions;
@@ -54,3 +55,16 @@ export const useAssumptions = create<State>()(
     },
   ),
 );
+
+const NO_BAND_OVERRIDES: BandOverrides = {};
+
+/**
+ * The assumptions and rating bands that results are computed with for a persona (D-117). Enthusiasts
+ * can't see or change them (D-114), so they always get the defaults; the other personas get what this
+ * browser saved. The returned objects keep their identity between renders, so analyses don't re-run.
+ */
+export function useEffectiveAssumptions(persona: Persona): { a: Assumptions; bands: BandOverrides } {
+  const a = useAssumptions((s) => s.a);
+  const bands = useAssumptions((s) => s.bands);
+  return persona === "enthusiast" ? { a: DEFAULT_ASSUMPTIONS, bands: NO_BAND_OVERRIDES } : { a, bands };
+}

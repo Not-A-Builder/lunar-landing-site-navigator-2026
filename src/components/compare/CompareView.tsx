@@ -10,7 +10,7 @@ import { CustomCoordForm } from "@/components/CustomCoordForm";
 import { InfoTip } from "@/components/InfoTip";
 import { NumText } from "@/components/Num";
 import { RAG_META, RagBadge } from "@/components/RagBadge";
-import { useAssumptions } from "@/lib/assumptions-store";
+import { useEffectiveAssumptions } from "@/lib/assumptions-store";
 import { MAX_COMPARE } from "@/lib/config";
 import { CONST } from "@/lib/engine/constants";
 import { greatCircleKm } from "@/lib/engine/geometry";
@@ -35,8 +35,9 @@ const scenarioId = (sc: Scenario) => `${sc.siteId}|${sc.t}`;
 
 /** Runs the analysis for one scenario and reports it upward under its scenario id. */
 function Runner({ id, sc, nowHour, onResult }: { id: string; sc: Scenario; nowHour: number | null; onResult: (id: string, a: Analysis) => void }) {
-  const a = useAssumptions((s) => s.a);
-  const bandOverrides = useAssumptions((s) => s.bands);
+  // Enthusiasts always compare with the default assumptions and bands (D-117).
+  const persona = usePersona((s) => s.persona);
+  const { a, bands: bandOverrides } = useEffectiveAssumptions(persona);
   const r = useMemo(() => resolveSite(sc.siteId), [sc.siteId]);
   const key = useMemo(() => (r ? (r.site ? { siteId: r.site.id } : { lat: r.lat, lon: r.lon }) : null), [r]);
   const t = sc.t ? Date.parse(sc.t) : nowHour;

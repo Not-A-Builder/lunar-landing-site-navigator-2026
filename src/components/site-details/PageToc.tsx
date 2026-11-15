@@ -1,9 +1,26 @@
 "use client";
 
 import { CaretRight } from "@phosphor-icons/react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export type TocItem = { id: string; label: string; children?: TocItem[] };
+
+/** Height of the sticky app header (`h-16` in AppHeader). */
+const APP_HEADER_PX = 64;
+/** Breathing room between whatever is pinned at the top and the section a contents click lands on. */
+const GAP_PX = 16;
+
+/**
+ * Where the reading line sits: just below the app header and, when it is pinned, the site timeline bar
+ * (D-099). A contents click puts its target's top here, and the scroll tracking picks the last entry whose
+ * top has reached it, so the two always agree (D-116).
+ */
+function readingLine() {
+  let top = APP_HEADER_PX;
+  const bar = document.querySelector<HTMLElement>("[data-sticky-bar]")?.getBoundingClientRect();
+  if (bar && bar.top <= APP_HEADER_PX + 0.5 && bar.bottom > APP_HEADER_PX) top = Math.max(top, bar.bottom);
+  return top + GAP_PX;
+}
 
 /**
  * Contents list for the site details page, like Wikipedia's (D-082): sticky in the left column, the
@@ -19,13 +36,16 @@ export function PageToc({ items }: { items: TocItem[] }) {
   }, [items]);
   const [active, setActive] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  /** The entry the user last clicked. It stays selected until the user scrolls the page themselves (D-116). */
+  const clicked = useRef<string | null>(null);
 
   useEffect(() => {
     let raf = 0;
     const update = () => {
       raf = 0;
-      // the last section whose top has passed 30% of the viewport is the one being read
-      const line = window.innerHeight * 0.3;
+      if (clicked.current) return;
+      // the last entry whose top has reached the reading line is the one being read
+      const line = readingLine() + 1;
       let cur: string | null = null;
       for (const f of flat) {
         const el = document.getElementById(f.id);
@@ -34,12 +54,25 @@ export function PageToc({ items }: { items: TocItem[] }) {
       setActive(cur ?? flat[0]?.id ?? null);
     };
     const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
+    // Any scrolling the user does themselves hands the highlight back to the scroll tracking.
+    const release = () => { clicked.current = null; };
+    const onKey = (e: KeyboardEvent) => { if (["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " "].includes(e.key)) release(); };
+    // A press outside the contents (the scrollbar, a chart that moves the page) also counts as the user taking over.
+    const onDown = (e: MouseEvent) => { if (!(e.target instanceof Element && e.target.closest('nav[aria-label="Contents"]'))) release(); };
     update();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
+    window.addEventListener("wheel", release, { passive: true });
+    window.addEventListener("touchmove", release, { passive: true });
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("mousedown", onDown);
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
+      window.removeEventListener("wheel", release);
+      window.removeEventListener("touchmove", release);
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("mousedown", onDown);
       if (raf) cancelAnimationFrame(raf);
     };
   }, [flat]);
@@ -59,18 +92,31 @@ export function PageToc({ items }: { items: TocItem[] }) {
     if (r.top < b.top + 8 || r.bottom > b.bottom - 8) box.scrollTop += r.top - b.top - b.height / 3;
   }, [active]);
 
+  /**
+   * Jump to an entry (D-116): put its top on the reading line, below the app header and the pinned
+   * timeline. Pinning can change as the page moves, so re-measure until the target stays put. The clicked
+   * entry stays selected even when the page can't scroll that far (near the bottom).
+   */
   const go = (id: string) => {
     const el = document.getElementById(id);
     if (!el) return;
-    el.scrollIntoView({ behavior: "instant", block: "start" });
-    // A pinned bar (the site timeline, D-099) can cover the target: nudge it to just below the bar.
-    const bar = document.querySelector<HTMLElement>("[data-sticky-bar]");
-    if (bar) {
-      const b = bar.getBoundingClientRect(), r = el.getBoundingClientRect();
-      const pinned = b.top >= 63.5 && b.top <= 64.5; // fully pinned under the 64px app header, not being pushed out
-      if (pinned && r.top < b.bottom + 16) window.scrollBy({ top: r.top - b.bottom - 16, behavior: "instant" });
-    }
+    clicked.current = id;
     setActive(id);
+    el.scrollIntoView({ behavior: "instant", block: "start" });
+    const align = () => {
+      if (clicked.current !== id) return; // the user has scrolled since
+      for (let i = 0; i < 4; i++) {
+        const d = el.getBoundingClientRect().top - readingLine();
+        if (Math.abs(d) < 1) break;
+        const before = window.scrollY;
+        window.scrollBy({ top: d, behavior: "instant" });
+        if (window.scrollY === before) break; // top or bottom of the page
+      }
+    };
+    align();
+    // The pinned timeline settles its height a frame or two after a jump: align again once it has.
+    requestAnimationFrame(() => requestAnimationFrame(align));
+    setTimeout(align, 150);
   };
 
   const render = (xs: TocItem[], depth: number) => (

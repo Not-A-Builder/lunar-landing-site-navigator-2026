@@ -13,8 +13,9 @@ import { InfoTip } from "@/components/InfoTip";
 import { NumText } from "@/components/Num";
 import { RagBadge } from "@/components/RagBadge";
 import { DateField, TimeField } from "@/components/site-selection/DateTimePickers";
-import { useAssumptions } from "@/lib/assumptions-store";
+import { useEffectiveAssumptions } from "@/lib/assumptions-store";
 import { downloadCsv } from "@/lib/csv";
+import { enthusiastPick } from "@/lib/enthusiast-metrics";
 import { powerModel } from "@/lib/engine/analysis";
 import { DAY_MS, HOUR_MS } from "@/lib/engine/scenario";
 import { containing, nextAfter } from "@/lib/engine/windows";
@@ -27,12 +28,22 @@ import { useNowHour } from "@/lib/use-now";
 import { AssumptionsModal } from "./AssumptionsModal";
 import { BandsModal } from "./BandsModal";
 import { useEditor } from "./editor-store";
-import { categoryAnchor, metricAnchor, MetricList, shownMetrics } from "./MetricList";
+import { categoryAnchor, metricAnchor, metricLabel, MetricList, shownMetrics } from "./MetricList";
 import { PageToc, type TocItem } from "./PageToc";
 import { btnPrimary, btnSecondary } from "@/lib/ui";
 
 /** Pick the copy for the current persona: enthusiast → educator → planner, increasingly technical. */
 const by = <T,>(p: Persona, enthusiast: T, educator: T, planner: T) => (p === "enthusiast" ? enthusiast : p === "educator" ? educator : planner);
+
+/** Chart block titles per persona. The page body and its contents both use these, so the names always match (D-110). */
+const blockTitles = (p: Persona) => ({
+  horizon: by(p, "What you would see on the horizon", "Horizon view: what hides the Sun and Earth", "Horizon view: terrain, Sun and Earth tracks"),
+  sunView: by(p, "When the Sun is up", "Sun from the site", "Sun from the site: elevation vs terrain horizon"),
+  earthView: by(p, "When you can see Earth", "Earth from the site", "Earth from the site: elevation vs terrain, DSN coverage"),
+  libration: by(p, "Why Earth wobbles in the sky", "Libration: why Earth wobbles", "Libration: Earth az/el track"),
+  battery: by(p, "Battery over the mission", "Battery charge", "Battery charge"),
+  arrayPower: by(p, "Solar power", "Array power", "Array power"),
+});
 
 /**
  * Page 2: one site at one landing time (D-082). Header (name, coordinates, metadata, editors, compare),
@@ -44,9 +55,15 @@ export function SiteDetails({ site }: { site: Site | null }) {
   const router = useRouter();
   const persona = usePersona((s) => s.persona);
   const cardH = CARD_H[persona];
-  const a = useAssumptions((s) => s.a);
-  const bandOverrides = useAssumptions((s) => s.bands);
+  // Enthusiasts always see results for the default assumptions and bands (D-117).
+  const { a, bands: bandOverrides } = useEffectiveAssumptions(persona);
   const openEditor = useEditor((s) => s.open);
+  const closeEditor = useEditor((s) => s.close);
+  // Enthusiasts don't get the planner editors (D-114): close one left open when switching to that persona.
+  const enthusiast = persona === "enthusiast";
+  useEffect(() => {
+    if (enthusiast) closeEditor();
+  }, [enthusiast, closeEditor]);
   const nowHour = useNowHour();
   const tParam = params.get("t");
   const landingMs = useMemo(() => {
@@ -92,24 +109,36 @@ export function SiteDetails({ site }: { site: Site | null }) {
   }, [sc, cur]);
   const power = useMemo(() => (sc ? powerModel(sc) : null), [sc]);
 
-  const toc = useMemo<TocItem[]>(() => [
-    {
-      id: "views", label: "Horizon, Sun & Earth views", children: [
-        { id: "horizon", label: "Horizon view" },
-        { id: "sun-view", label: "Sun from the site" },
-        { id: "earth-view", label: "Earth from the site" },
-        { id: "libration", label: "Libration" },
-      ],
-    },
-    {
-      id: "metrics", label: "Metrics", children: shownMetrics(m).filter((g) => g.items.length).map(({ cat, items }) => ({
-        id: categoryAnchor(cat.id), label: cat.label, children: [
-          ...(cat.id === "overall" ? [{ id: "battery", label: "Battery charge" }, { id: "array-power", label: "Array power" }] : []),
-          ...items.map(({ m: def }) => ({ id: metricAnchor(def.id), label: def.name })),
+  const T = blockTitles(persona);
+  const toc = useMemo<TocItem[]>(() => {
+    const t = blockTitles(persona);
+    return [
+      {
+        id: "views", label: "Horizon, Sun & Earth views", children: [
+          { id: "horizon", label: t.horizon },
+          { id: "sun-view", label: t.sunView },
+          { id: "earth-view", label: t.earthView },
+          { id: "libration", label: t.libration },
         ],
-      })),
-    },
-  ], [m]);
+      },
+      {
+        id: "metrics", label: "Metrics", children: shownMetrics(m, persona).filter((g) => g.items.length).map(({ cat, items }) => {
+          // Same order as the body: enthusiast takeaway cards first, then the battery and power charts, then the rows.
+          const card = (id: string) => persona === "enthusiast" && !!enthusiastPick(id)?.card;
+          const row = ({ m: def }: (typeof items)[number]) => ({ id: metricAnchor(def.id), label: metricLabel(def, persona) });
+          // Enthusiasts get the categories only, with no expandable list of metrics under each (D-111).
+          if (persona === "enthusiast") return { id: categoryAnchor(cat.id), label: cat.label };
+          return {
+            id: categoryAnchor(cat.id), label: cat.label, children: [
+              ...items.filter(({ m: def }) => card(def.id)).map(row),
+              ...(cat.id === "overall" ? [{ id: "battery", label: t.battery }, { id: "array-power", label: t.arrayPower }] : []),
+              ...items.filter(({ m: def }) => !card(def.id)).map(row),
+            ],
+          };
+        }),
+      },
+    ];
+  }, [m, persona]);
 
   const { pageRef, trackRef, barRef, pinned: tlPinned } = useStickyTimeline(!!sc);
 
@@ -172,13 +201,15 @@ export function SiteDetails({ site }: { site: Site | null }) {
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <button type="button" onClick={() => openEditor({ kind: "assumptions" })} className={btnSecondary}>
-            <SlidersHorizontal size={18} aria-hidden /> Set mission assumptions
-          </button>
-          <button type="button" onClick={() => openEditor({ kind: "bands" })} className={btnSecondary}>
-            <Steps size={18} aria-hidden /> Customise rating bands
-          </button>
-          <span className="mx-2 h-8 w-px bg-line" role="separator" aria-orientation="vertical" />
+          {!enthusiast && <>
+            <button type="button" onClick={() => openEditor({ kind: "assumptions" })} className={btnSecondary}>
+              <SlidersHorizontal size={18} aria-hidden /> Set mission assumptions
+            </button>
+            <button type="button" onClick={() => openEditor({ kind: "bands" })} className={btnSecondary}>
+              <Steps size={18} aria-hidden /> Customise rating bands
+            </button>
+            <span className="mx-2 h-8 w-px bg-line" role="separator" aria-orientation="vertical" />
+          </>}
           <Link href={compareHref} className={btnPrimary}>
             <Plus size={18} weight="bold" aria-hidden /> Add to comparison
           </Link>
@@ -216,12 +247,16 @@ export function SiteDetails({ site }: { site: Site | null }) {
           </div>
           <div className="flex h-10 items-center gap-1.5 text-sm text-muted">
             Mission length
-            <button type="button" onClick={() => openEditor({ kind: "assumptions", focus: "missionDays" })} title="Change the mission length in Mission assumptions"
-              className="inline-flex items-center gap-1 font-medium text-fg underline decoration-dotted decoration-faint underline-offset-4 hover:decoration-fg">
-              <span className="num">{a.missionDays}</span> Earth days <PencilSimple size={14} className="text-faint" aria-hidden />
-            </button>
+            {enthusiast ? (
+              <span className="font-medium text-fg"><span className="num">{a.missionDays}</span> Earth days</span>
+            ) : (
+              <button type="button" onClick={() => openEditor({ kind: "assumptions", focus: "missionDays" })} title="Change the mission length in Mission assumptions"
+                className="inline-flex items-center gap-1 font-medium text-fg underline decoration-dotted decoration-faint underline-offset-4 hover:decoration-fg">
+                <span className="num">{a.missionDays}</span> Earth days <PencilSimple size={14} className="text-faint" aria-hidden />
+              </button>
+            )}
             <InfoTip title="Mission length" sources={["mission-assumption"]}>
-              Everything on this page covers the time from landing to the end of the mission. The default, 30 Earth days, is about one full lunar day (29.5 days), so every site shows a whole cycle of light and dark. Change it in Mission assumptions.
+              Everything on this page covers the time from landing to the end of the mission. The default, 30 Earth days, is about one full lunar day (29.5 days), so every site shows a whole cycle of light and dark.{!enthusiast && " Change it in Mission assumptions."}
             </InfoTip>
           </div>
         </div>
@@ -306,7 +341,7 @@ export function SiteDetails({ site }: { site: Site | null }) {
                   tip="Hours with both sunlight (power) and Earth in view (direct communication) at the same time." sources={["jpl-horizons", "lola-pds"]} />
               </div>
 
-              <Block id="horizon" title={P("What you would see on the horizon", "Horizon view: what hides the Sun and Earth", "Horizon view: terrain, Sun and Earth tracks")}
+              <Block id="horizon" title={T.horizon}
                 lead={P(
                   "At the pole the Sun circles around the horizon instead of rising high. Small hills decide whether it is hidden.",
                   "Turn on the spot and trace the skyline: that's the grey band. The Sun's path stays low and goes all the way round; Earth hardly moves. Whatever dips under the skyline is hidden.",
@@ -318,19 +353,19 @@ export function SiteDetails({ site }: { site: Site | null }) {
                 <HorizonPanorama sc={sc} cursor={cur} persona={persona} onCursor={pickTime} distKm={an.terrain?.maskDistKm} distStepDeg={an.terrain?.stepDeg} />
               </Block>
 
-              <Block id="sun-view" title={P("When the Sun is up", "Sun from the site", "Sun from the site: elevation vs terrain horizon")}
+              <Block id="sun-view" title={T.sunView}
                 lead={P("The orange line is how high the Sun is; the grey is the hills in front of it. Solid orange means the site is in sunlight.", "The Sun's height over time against the height of the terrain in the Sun's direction. Where the orange line clears the grey, the site is sunlit.", undefined)}
                 tip={<InfoTip title="Sun from the site" sources={["jpl-horizons", "lola-pds", "bryant-2009"]}>Sun elevation (orange) against the terrain horizon in the Sun&apos;s direction at each moment (grey). Solid where at least {Math.round(a.sunDiskThreshold * 100)}% of the disk is visible, dashed where it is hidden; the lane underneath shows the sunlit windows. Click to move the timeline.</InfoTip>}>
                 <BodyTimeline sc={sc} body="sun" cursor={cur} onCursor={pickTime} persona={persona} />
               </Block>
 
-              <Block id="earth-view" title={P("When you can see Earth", "Earth from the site", "Earth from the site: elevation vs terrain, DSN coverage")}
+              <Block id="earth-view" title={T.earthView}
                 lead={P("Earth barely moves in the Moon's sky, but at the pole it sits so low that a small wobble hides it behind hills.", "Earth's height over time against the terrain in Earth's direction. A radio link also needs a Deep Space Network antenna on Earth that can see the Moon (one grey lane per complex); the bottom lane is when both line up.", undefined)}
                 tip={<InfoTip title="Earth from the site" sources={["jpl-horizons", "lola-pds", "dsn-810-005"]}>Earth elevation (blue) against the terrain horizon in Earth&apos;s direction. Solid where at least {Math.round(a.earthDiskThreshold * 100)}% of Earth&apos;s disk is visible. Lanes: Earth in view; one per DSN complex (Canberra, Madrid, Goldstone, in the order the Moon reaches them as Earth turns) showing when the Moon is ≥ {a.dsnMinElevDeg}° above that complex&apos;s horizon; Contact = both at once. Red marks are handover gaps: Earth is in view but no complex can see the Moon. Click to move the timeline.</InfoTip>}>
                 <BodyTimeline sc={sc} body="earth" cursor={cur} onCursor={pickTime} persona={persona} />
               </Block>
 
-              <Block id="libration" title={P("Why Earth wobbles in the sky", "Libration: why Earth wobbles", "Libration: Earth az/el track")}
+              <Block id="libration" title={T.libration}
                 tip={<InfoTip title="Libration" sources={["jpl-horizons", "svs-libration"]}>The Moon keeps one face to Earth, but its slightly tilted, elliptical orbit makes Earth drift in a small loop in the lunar sky over each month. Near the pole that loop can carry Earth below the horizon. Libration is already in the JPL Horizons geometry; nothing is added.</InfoTip>}>
                 <div className="grid gap-x-10 gap-y-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)]">
                   <div className="text-sm leading-relaxed text-muted">
@@ -373,14 +408,14 @@ export function SiteDetails({ site }: { site: Site | null }) {
               <MetricList values={m} persona={persona} computing={an.stage !== "full"} exportMeta={landingMs !== null ? { siteId: id, site: name, lat, lon, landingMs } : undefined} extras={{
                 overall: (
                   <div className="divide-y divide-line">
-                    <Block id="battery" sub title={P("Battery over the mission", "Battery charge", "Battery charge")}
+                    <Block id="battery" sub title={T.battery}
                       lead={P("The lander runs on sunlight. When the Sun hides behind hills, it lives off its battery.", "The battery fills while the panels make more than the lander uses, and drains in the dark.", undefined)}
                       tip={<InfoTip title="Battery charge" sources={["jpl-horizons", "lola-pds", "nssdc-moon", "mission-assumption"]}>
                         Simulated every {sc.series.stepMs / 60000} min from landing, starting full at {a.batteryWh.toLocaleString("en-US")} Wh. Each step adds the array output and subtracts the load: {a.loadW} W while any sunlight reaches the array, {a.survivalLoadW} W survival (heaters) otherwise. Charge stays between 0 and full. Lowest: {fmtPct(power.minSoc, 1)} at {fmtUTC(power.minSocAt)}{power.depletedAt ? `; first empty at ${fmtUTC(power.depletedAt)}` : ""}. Lander values are example assumptions you can change.
                       </InfoTip>}>
                       <PowerCharts sc={sc} power={power} cursor={cur} onCursor={pickTime} persona={persona} only="battery" />
                     </Block>
-                    <Block id="array-power" sub title={P("Solar power", "Array power", "Array power")}
+                    <Block id="array-power" sub title={T.arrayPower}
                       lead={P("How much power the solar panels make, against what the lander needs (dashed line).", "Output depends on how much of the Sun clears the terrain and how squarely sunlight hits the panels.", undefined)}
                       tip={<InfoTip title="Array power" sources={["jpl-horizons", "lola-pds", "nssdc-moon", "mission-assumption"]}>
                         Output = 1,361 W/m² (sunlight at 1 AU, NSSDCA) ÷ (Sun distance in AU)² × visible share of the Sun&apos;s disk × cos(angle between sunlight and the panel) × {a.panelAreaM2} m² × {a.panelEfficiency} efficiency. Mounting: {a.panelTracking === "vertical-tracking" ? "vertical, turned to face the Sun" : a.panelTracking === "vertical-fixed" ? `vertical, fixed facing ${a.panelFixedAzDeg}°` : "horizontal"}. Mean {Math.round(power.avgW)} W, peak {Math.round(power.peakW)} W. The dashed line is the load.
@@ -395,8 +430,8 @@ export function SiteDetails({ site }: { site: Site | null }) {
         </div>
       )}
 
-      <AssumptionsModal persona={persona} />
-      <BandsModal persona={persona} values={m} />
+      {!enthusiast && <AssumptionsModal persona={persona} />}
+      {!enthusiast && <BandsModal persona={persona} values={m} />}
     </div>
   );
 }

@@ -5,8 +5,9 @@ import { memo, type ReactNode } from "react";
 import { HoverCard } from "@/components/HoverCard";
 import { InfoTip } from "@/components/InfoTip";
 import { NumText } from "@/components/Num";
-import { BandStrip, RAG_META, RagBadge, RagIcon } from "@/components/RagBadge";
+import { BandStrip, RAG_META, RagBadge, RagHint, RagIcon } from "@/components/RagBadge";
 import { downloadCsv, toCsv } from "@/lib/csv";
+import { enthusiastCategoryStatusTip, enthusiastPick } from "@/lib/enthusiast-metrics";
 import { catalog, getMetric, metricsInCategory, type MetricDef } from "@/lib/metrics";
 import type { MetricValue, ValueStatus } from "@/lib/metrics/types";
 import { rollUp } from "@/lib/metrics/types";
@@ -26,11 +27,17 @@ export const STATUS_META: Record<ValueStatus, { label: string; hint: string }> =
 export const metricAnchor = (id: string) => `m-${id.replace(/\./g, "-")}`;
 export const categoryAnchor = (id: string) => `cat-${id}`;
 
-/** Metrics shown for each category (unavailable ones are hidden, D-041), in catalog order. */
-export function shownMetrics(values: Record<string, MetricValue> | undefined) {
+/**
+ * Metrics shown for each category, in catalog order. Unavailable ones are hidden (D-041). The
+ * Enthusiast persona sees only its curated main metrics (`src/lib/enthusiast-metrics.ts`, D-109).
+ */
+export function shownMetrics(values: Record<string, MetricValue> | undefined, persona?: Persona) {
   return catalog.categories.map((cat) => ({
     cat,
-    items: metricsInCategory(cat.id).map((m) => ({ m, v: values?.[m.id] })).filter((x) => x.v && x.v.status !== "unavailable") as { m: MetricDef; v: MetricValue }[],
+    items: metricsInCategory(cat.id)
+      .filter((m) => persona !== "enthusiast" || !!enthusiastPick(m.id))
+      .map((m) => ({ m, v: values?.[m.id] }))
+      .filter((x) => x.v && x.v.status !== "unavailable") as { m: MetricDef; v: MetricValue }[],
   }));
 }
 
@@ -40,23 +47,32 @@ export function shownMetrics(values: Record<string, MetricValue> | undefined) {
  * the mechanism, how to read it, and the colour bands. Mission planner: values with status, the
  * calculation behind each one, bands and the data rows (D-089).
  */
+/** The name a metric goes by for this persona: the body and the page contents both use it (D-110). */
+export function metricLabel(m: MetricDef, persona: Persona) {
+  if (persona !== "enthusiast") return m.name;
+  return enthusiastPick(m.id)?.card ?? m.question;
+}
+
 export function MetricList({ values, persona, computing, extras, exportMeta }: { values: Record<string, MetricValue> | undefined; persona: Persona; computing: boolean; extras?: Record<string, ReactNode>; exportMeta?: CsvMeta }) {
-  const groups = shownMetrics(values);
+  const groups = shownMetrics(values, persona);
+  // Category status rolls up every shown metric, including ones hidden for enthusiasts, so it reads the same for every persona.
+  const allGroups = shownMetrics(values);
   return (
     <div>
       <p className="text-sm text-muted">
         {computing ? "Computing multi-year, area and sensitivity results…" : "All results computed."}
         {values && <> <span className="num">{groups.reduce((n, g) => n + g.items.length, 0)}</span> metrics for this site and date{persona === "planner" ? "; metrics with no public data source are hidden." : "."}</>}
       </p>
-      {groups.map(({ cat, items }) => {
+      {groups.map(({ cat, items }, gi) => {
         if (!items.length) return null;
-        const roll = rollUp(items.map((x) => x.v.rating).filter((r): r is NonNullable<typeof r> => !!r));
+        const roll = rollUp(allGroups[gi].items.map((x) => x.v.rating).filter((r): r is NonNullable<typeof r> => !!r));
         return (
           <section key={cat.id} id={categoryAnchor(cat.id)} aria-labelledby={`${categoryAnchor(cat.id)}-h`} className="mt-10 scroll-mt-24">
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-line pb-3">
               <h3 id={`${categoryAnchor(cat.id)}-h`} className="text-[26px] font-semibold">{cat.label}</h3>
-              {roll && <RollUpBadge rag={roll.rag} n={roll.n} />}
-              <div className="ml-auto flex items-center gap-4">
+              {roll && <RollUpBadge rag={roll.rag} n={roll.n} persona={persona} />}
+              {/* Enthusiasts get neither the count nor the CSV download (D-115). */}
+              {persona !== "enthusiast" && <div className="ml-auto flex items-center gap-4">
                 <span className="text-xs text-faint"><span className="num">{items.length}</span> metric{items.length === 1 ? "" : "s"}</span>
                 {exportMeta && (
                   <button type="button" onClick={() => downloadCategoryCsv(cat, items, exportMeta)} title={`Download the ${cat.label} metrics for this site and date as a CSV file`} aria-label={`Download ${cat.label} metrics (CSV)`}
@@ -64,11 +80,12 @@ export function MetricList({ values, persona, computing, extras, exportMeta }: {
                     <DownloadSimple size={15} aria-hidden /> Download CSV
                   </button>
                 )}
-              </div>
+              </div>}
             </div>
+            {persona === "enthusiast" && <TakeawayRows items={items.filter(({ m }) => enthusiastPick(m.id)?.card)} />}
             {extras?.[cat.id]}
             <ul className="divide-y divide-line">
-              {items.map(({ m, v }) => <MetricRow key={m.id} m={m} v={v} persona={persona} />)}
+              {items.filter(({ m }) => persona !== "enthusiast" || !enthusiastPick(m.id)?.card).map(({ m, v }) => <MetricRow key={m.id} m={m} v={v} persona={persona} />)}
             </ul>
           </section>
         );
@@ -97,12 +114,45 @@ function downloadCategoryCsv(cat: { id: string; label: string }, items: { m: Met
   downloadCsv(`${meta.siteId}-${stamp}-${cat.id}-metrics.csv`, toCsv(rows));
 }
 
-function RollUpBadge({ rag, n }: { rag: "green" | "amber" | "red"; n: number }) {
+/**
+ * Enthusiast takeaways (D-109): the category's headline metrics, first in its list, in the same row
+ * layout as the other metrics. Rated ones get a coloured accent bar plus the rating icon and word;
+ * unrated facts keep a neutral bar.
+ */
+function TakeawayRows({ items }: { items: { m: MetricDef; v: MetricValue }[] }) {
+  if (!items.length) return null;
+  return (
+    <ul className="divide-y divide-line border-b border-line" aria-label="Main takeaways">
+      {items.map(({ m, v }) => {
+        const rag = v.rating?.rag;
+        return (
+          <li key={m.id} id={metricAnchor(m.id)} className="relative grid scroll-mt-24 gap-x-10 gap-y-2 py-5 md:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
+            <span aria-hidden className="absolute bottom-5 left-0 top-5 w-0.5" style={{ background: rag ? RAG_META[rag].color : "var(--line)" }} />
+            <div className="flex min-w-0 items-start gap-1 pl-4">
+              <h4 className="font-medium leading-snug">{enthusiastPick(m.id)?.card ?? m.question}</h4>
+              <span className="-mt-0.5 shrink-0">
+                <InfoTip title={enthusiastPick(m.id)?.card ?? m.question} sources={v.sources?.length ? v.sources : ["metrics-sheet"]}>
+                  {enthusiastPick(m.id)?.tip ?? m.definition}
+                </InfoTip>
+              </span>
+            </div>
+            <div className="min-w-0 pl-4 md:pl-0">
+              <Value v={v} large readOnly />
+              {rag && <div className="mt-1.5"><RagBadge rag={rag} /></div>}
+            </div>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+function RollUpBadge({ rag, n, persona }: { rag: "green" | "amber" | "red"; n: number; persona: Persona }) {
   return (
     <span className="inline-flex items-center gap-1.5 text-xs text-muted">
       <RagBadge rag={rag} />
-      <InfoTip title="Category status">
-        Rolled up from the {n} rated metric{n === 1 ? "" : "s"} in this category: mostly red shows Challenging, any red or a middling average shows Trade-off, otherwise Good.
+      <InfoTip title={persona === "enthusiast" ? "Section verdict" : "Category status"}>
+        {persona === "enthusiast" ? enthusiastCategoryStatusTip(n) : <>Rolled up from the {n} rated metric{n === 1 ? "" : "s"} in this category: mostly red shows Challenging, any red or a middling average shows Trade-off, otherwise Good.</>}
       </InfoTip>
     </span>
   );
@@ -115,23 +165,26 @@ const MetricRow = memo(function MetricRow({ m, v, persona }: { m: MetricDef; v: 
     <li id={metricAnchor(m.id)} className="grid scroll-mt-24 gap-x-10 gap-y-3 py-5 md:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
       <div className="min-w-0">
         <div className="flex items-start gap-1">
-          <h4 className="font-medium leading-snug">{enthusiast ? m.question : m.name}</h4>
+          <h4 className="font-medium leading-snug">{metricLabel(m, persona)}</h4>
           <span className="-mt-0.5 shrink-0">
-            <InfoTip title={m.name} sources={v.sources?.length ? v.sources : ["metrics-sheet"]}>
+            <InfoTip title={metricLabel(m, persona)} sources={v.sources?.length ? v.sources : ["metrics-sheet"]}>
+              {/* Enthusiasts get plain-language copy written for them (D-112); the others get the sheet's definition and detail. */}
+              {enthusiast ? enthusiastPick(m.id)?.tip ?? m.definition : <>
               <span className="block">{m.definition}</span>
               {!enthusiast && <span className="mt-1.5 block"><b className="font-medium text-fg">Why it matters:</b> {m.significance}</span>}
               {planner && (m.role || m.dependencies) && <span className="mt-1.5 block">Role: {m.role}{m.dependencies ? ` · depends on ${m.dependencies}` : ""}</span>}
               {m.unit && <span className="mt-1.5 block">Unit: {m.unit}</span>}
               {m.caveats && <span className="mt-1.5 block">Caveat: {m.caveats}</span>}
+              </>}
             </InfoTip>
           </span>
         </div>
-        {enthusiast && <p className="mt-1 text-sm leading-relaxed text-muted">{m.views.enthusiast}</p>}
+        {enthusiast && enthusiastPick(m.id)?.subtext && <p className="mt-1 text-sm leading-relaxed text-muted">{m.views.enthusiast}</p>}
         {educator && <div className="mt-1.5"><EducatorText id={m.id} v={v} /></div>}
         {planner && <p className="mt-1 line-clamp-3 text-sm leading-relaxed text-muted">{m.definition}</p>}
       </div>
       <div className="min-w-0">
-        {!educator && <Value v={v} large={!enthusiast} />}
+        {!educator && <Value v={v} large={!enthusiast} readOnly={enthusiast} />}
         {!enthusiast && (
           <div className={`flex flex-wrap items-center gap-x-4 gap-y-1.5 ${educator ? "" : "mt-2"}`}>
             {v.rating && <RatingButton rating={v.rating} />}
@@ -152,9 +205,10 @@ const MetricRow = memo(function MetricRow({ m, v, persona }: { m: MetricDef; v: 
 });
 
 /** The value, split into readable lines when it lists several parts ("a · b · c" or "a; b"). */
-function Value({ v, large }: { v: MetricValue; large: boolean }) {
+function Value({ v, large, readOnly }: { v: MetricValue; large: boolean; readOnly?: boolean }) {
   const parts = v.display.split(/ · |; /).map((p) => p.trim()).filter(Boolean);
-  const editable = v.status === "assumption" && v.inputs?.length;
+  // "Your input" values open Mission assumptions, except for enthusiasts, who don't get the editors (D-114).
+  const editable = !readOnly && v.status === "assumption" && v.inputs?.length;
   const body = parts.length > 1 ? (
     <ul className="space-y-0.5">
       {parts.map((p, i) => (
@@ -179,10 +233,10 @@ function AssumptionTrigger({ inputs, className, children }: { inputs: string[]; 
   );
 }
 
-function BandsTrigger({ k, className, children }: { k?: string; className?: string; children: ReactNode }) {
+function BandsTrigger({ k, className, children, title = "Change these rating bands" }: { k?: string; className?: string; children: ReactNode; title?: string }) {
   const open = useEditor((s) => s.open);
   return (
-    <button type="button" onClick={() => open({ kind: "bands", focus: k })} title="Change these rating bands" aria-label="Change these rating bands" className={className}>
+    <button type="button" onClick={() => open({ kind: "bands", focus: k })} title={title} aria-label="Change these rating bands" className={className}>
       {children}
     </button>
   );
@@ -190,9 +244,12 @@ function BandsTrigger({ k, className, children }: { k?: string; className?: stri
 
 function RatingButton({ rating }: { rating: NonNullable<MetricValue["rating"]> }) {
   return (
-    <BandsTrigger k={rating.key} className="inline-flex items-center gap-1 rounded-sm text-xs text-fg hover:underline hover:decoration-dotted hover:underline-offset-4">
-      <RagIcon rag={rating.rag} />
-      {RAG_META[rating.rag].label}
+    // No native title here: the rating's own hover hint explains it (D-113); the sliders icon signals the editor.
+    <BandsTrigger k={rating.key} title="" className="inline-flex items-center gap-1 rounded-sm text-xs text-fg hover:underline hover:decoration-dotted hover:underline-offset-4">
+      <RagHint rag={rating.rag} className="inline-flex items-center gap-1">
+        <RagIcon rag={rating.rag} />
+        {RAG_META[rating.rag].label}
+      </RagHint>
       <SlidersHorizontal size={14} className="text-faint" aria-hidden />
     </BandsTrigger>
   );
