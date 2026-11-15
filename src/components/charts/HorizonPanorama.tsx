@@ -235,7 +235,7 @@ function BodyLabel({ x, y, color, text, w }: { x: number; y: number; color: stri
 }
 
 function PassList({ label, color, idx, el, frac, t, digits }: { label: string; color: string; idx: number[]; el: Float32Array; frac: Float32Array; t: Float64Array; digits: number }) {
-  // In the comparison's narrow tooltip the time sits above its reading instead of at the far edge (D-131).
+  // In the comparison's narrow tooltip the time sits above its reading instead of at the far edge (D-131b).
   const stacked = useComparisonMode();
   return (
     <div className="mt-2 border-t border-line pt-1.5">

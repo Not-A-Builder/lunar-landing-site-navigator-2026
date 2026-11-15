@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-/** Numbered section heading for the Data & methods page (D-139): "01 — Kicker", big title, lead. */
+/** Numbered section heading for the Data & methods page (D-139b): "01 — Kicker", big title, lead. */
 export function SectionHead({ id, n, kicker, title, children }: { id: string; n: string; kicker: string; title: ReactNode; children?: ReactNode }) {
   return (
     <header className="reveal max-w-3xl">

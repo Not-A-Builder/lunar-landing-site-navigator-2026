@@ -7,7 +7,7 @@ import { Code } from "./parts";
 type Step = { icon: Icon; title: string; when: string; short: string; body: ReactNode[]; cmd?: string[] };
 
 /**
- * The four stages from NASA archive to screen (D-139). Every statement here describes code in this repo:
+ * The four stages from NASA archive to screen (D-139b). Every statement here describes code in this repo:
  * pipeline/download-raw.sh, fetch-ephemeris.ts, build-terrain.ts, build-deploy-bundle.ts, src/lib/engine,
  * src/lib/metrics/compute.ts and the two API routes.
  */

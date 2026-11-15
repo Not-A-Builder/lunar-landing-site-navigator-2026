@@ -28,7 +28,7 @@
   --earth: #2f6bc9;
   --terrain: #a59e92;
   --good: #217a3a;
-  /* Fill on a comparison's most favourable cell (D-134). Light: 12% of --good. */
+  /* Fill on a comparison's most favourable cell (D-134b). Light: 12% of --good. */
   --best-fill: color-mix(in srgb, var(--good) 12%, transparent);
   --warning: #a86b0c;
   --critical: #bb3a2f;
@@ -62,7 +62,7 @@
   --earth: #4f8fe6;
   --terrain: #4b4741;
   --good: #3fae5a;
-  /* Dark backgrounds make the same mix read much bolder, so it is lighter here (D-137). */
+  /* Dark backgrounds make the same mix read much bolder, so it is lighter here (D-137b). */
   --best-fill: color-mix(in srgb, var(--good) 6%, transparent);
   --warning: #e9ae35;
   --critical: #e05a4f;
@@ -290,7 +290,7 @@ details[open] > summary .caret {
 }
 
 /*
- * Data & methods page (D-139). Motion is light and runs on the compositor (opacity / transform only).
+ * Data & methods page (D-139b). Motion is light and runs on the compositor (opacity / transform only).
  * - .reveal: rises in as it scrolls into view, driven by the scroll position itself (CSS scroll-driven
  *   animation, no JavaScript). Browsers without it simply show the content.
  * - .draw-line: an SVG path with pathLength="1" draws itself once on load.
@@ -337,7 +337,7 @@ details[open] > summary .caret {
 }
 
 /*
- * Splash (D-144, D-145): every full page load (first visit and each refresh), always dark whatever the theme. Its
+ * Splash (D-144, D-145b): every full page load (first visit and each refresh), always dark whatever the theme. Its
  * colours are the dark theme's tokens, fixed here so the splash never follows the light theme. Timeline: the counter
  * and bar run 1 → 100% over 5 s (same easing for both), hold briefly at 100%, then the overlay fades into the page.
  * Everything is CSS so it starts at first paint; with reduced motion only the counter, bar and fade remain.

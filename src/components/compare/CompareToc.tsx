@@ -28,7 +28,7 @@ function readingLine() {
 type Flat = { id: string; label: string; depth: number; parents: string[] };
 
 /**
- * Contents for the comparison (D-135). At rest, a rail of dashes at the page's left edge: one per section
+ * Contents for the comparison (D-135b). At rest, a rail of dashes at the page's left edge: one per section
  * and sub-section, the one being read highlighted, gliding as you scroll. Point at the rail (or focus it) and
  * the rest of the page dims while the full contents list opens in the same spot. There you can scroll it,
  * expand / collapse each category's metrics (mission planner), and click to jump. Leaving it, Escape, a

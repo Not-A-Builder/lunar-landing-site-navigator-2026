@@ -60,7 +60,7 @@ const COLS = ["w-11", "w-12 sm:w-40", "", "w-28 sm:w-56"];
 
 /**
  * `starredElsewhere`: these scenarios are starred, but via a newer row. Only the newest row of a starred set
- * shows the filled star (D-138); older ones show an empty star that explains instead of toggling.
+ * shows the filled star (D-138b); older ones show an empty star that explains instead of toggling.
  */
 function HistoryRow({ entry, starred, starredElsewhere = false, opened }: { entry: HistoryEntry; starred: boolean; starredElsewhere?: boolean; opened: string }) {
   const toggleStar = useHistory((s) => s.toggleStar);
@@ -155,7 +155,7 @@ export function HistoryView() {
   const starredKeys = new Set(starredList.map((x) => scenarioKey(x.scenarios)));
   const starred = byRecent(starredList);
   const recent = collapseRevisits(byRecent(entries));
-  // The newest row of each scenario set; only that row carries a starred set's filled star (D-138).
+  // The newest row of each scenario set; only that row carries a starred set's filled star (D-138b).
   const newestOfKey = new Map<string, string>();
   for (const e of recent) if (!newestOfKey.has(scenarioKey(e.scenarios))) newestOfKey.set(scenarioKey(e.scenarios), e.id);
   const groups: { label: string; items: HistoryEntry[] }[] = [];

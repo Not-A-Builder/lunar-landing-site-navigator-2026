@@ -10,7 +10,7 @@ export type ValRow = { id: string; name: string; oursSun: number; lolaSun: numbe
 const P = { l: 56, r: 16, t: 16, b: 48 };
 
 /**
- * Validation scatter (D-139): for each south-polar site, our share of time with any part of the Sun (or
+ * Validation scatter (D-139b): for each south-polar site, our share of time with any part of the Sun (or
  * Earth) above the terrain horizon against the LOLA team's average-visibility map. Points on the diagonal
  * agree. Data: src/data/validation.json (pipeline:terrain).
  */

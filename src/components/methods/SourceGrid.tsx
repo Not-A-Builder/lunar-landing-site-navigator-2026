@@ -23,7 +23,7 @@ const FILTERS: { id: Kind | "all"; label: string }[] = [
 export type SourceCard = { id: SourceId; name: string; provider: string; url: string; use: string; usedIn: string[] };
 
 /**
- * Every entry of the source registry (src/lib/sources.ts) as a card, most-used first (D-139). "Used in"
+ * Every entry of the source registry (src/lib/sources.ts) as a card, most-used first (D-139b). "Used in"
  * counts metrics that cite the source on the reference run (src/data/source-usage.json); sources no metric
  * cites (maps, charts, pages) say so.
  */

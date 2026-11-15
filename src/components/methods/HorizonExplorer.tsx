@@ -10,7 +10,7 @@ const PAD = { l: 52, r: 12, t: 14, b: 36 };
 const COMPASS: Record<number, string> = { 0: "N", 90: "E", 180: "S", 270: "W", 360: "N" };
 
 /**
- * Terrain horizon explorer (D-139): the real 360° horizon mask of a listed site, read from its
+ * Terrain horizon explorer (D-139b): the real 360° horizon mask of a listed site, read from its
  * precomputed terrain file (LOLA ray-march, pipeline/build-terrain.ts), at each observer height the file
  * holds. Switching site or height eases the line from the old mask to the new one.
  */

@@ -13,7 +13,7 @@ import haworth from "../../../public/data/terrain/haworth.json";
 export const metadata = { title: "Data & methods" };
 
 /**
- * Data & methods (D-139): a landing-page style walk through how every number is fetched, computed,
+ * Data & methods (D-139b): a landing-page style walk through how every number is fetched, computed,
  * checked and shown. Everything on it is read from the same generated files the app uses, so it can't
  * drift from the product: the source registry, source usage, validation results, the ephemeris index,
  * the site list, the cited reference values and the default assumptions.

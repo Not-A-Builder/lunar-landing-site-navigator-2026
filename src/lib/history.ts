@@ -19,7 +19,7 @@ export const MAX_HISTORY = 300;
 /** Identity of a scenario set: same sites at the same landing times, in the same order. */
 export const scenarioKey = (scenarios: Scenario[]) => serialiseScenarios(scenarios);
 
-/** Revisits of the same scenarios within this long after the previous opening are one entry (D-138). */
+/** Revisits of the same scenarios within this long after the previous opening are one entry (D-138b). */
 export const REVISIT_MERGE_MS = 30 * 60_000;
 
 /** `later` reopens the same scenarios as `earlier`, at most REVISIT_MERGE_MS after it. */
@@ -27,7 +27,7 @@ const isQuickRevisit = (earlier: Pick<HistoryEntry, "scenarios" | "at">, later: 
   scenarioKey(earlier.scenarios) === scenarioKey(later.scenarios) && later.at - earlier.at <= REVISIT_MERGE_MS;
 
 /**
- * Newest-first list with consecutive quick revisits merged into the newest of each run (D-138). The gap is
+ * Newest-first list with consecutive quick revisits merged into the newest of each run (D-138b). The gap is
  * measured between neighbouring openings, so a chain of revisits each within 30 min stays one entry.
  */
 export function collapseRevisits(newestFirst: HistoryEntry[]): HistoryEntry[] {
@@ -103,7 +103,7 @@ export const useHistory = create<HistoryState>()(
         set((s) => {
           const key = scenarioKey(scenarios);
           const head = s.entries[0];
-          // Same visit, or a quick revisit of the same scenarios (D-138): the newest entry takes this opening.
+          // Same visit, or a quick revisit of the same scenarios (D-138b): the newest entry takes this opening.
           const replaceHead = head && (head.id === visit || isQuickRevisit(head, { scenarios, at }));
           const entries = replaceHead
             ? [{ id: visit, scenarios, at }, ...s.entries.slice(1)]

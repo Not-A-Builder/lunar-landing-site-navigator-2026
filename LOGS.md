@@ -806,7 +806,7 @@ Decision:
 - **Storage:** per browser, in localStorage (`llsn-history`), like the persona. There are no accounts, so history doesn't follow the user across devices. History is capped at the latest 300 entries; starred items are never dropped. "Clear history" (with an inline confirm) empties history and keeps starred items. Other open tabs pick up changes.
 - Code: `src/lib/history.ts` (store, URL ↔ scenarios), `src/components/history/` (`HistoryRecorder` in the root layout, `HistoryView`), `src/app/history/page.tsx`.
 
-## D-131 · 2026-11-15 · Comparison refinements: step-style cards, editable cards, readable narrow columns
+## D-131b · 2026-11-15 · Comparison refinements: step-style cards, editable cards, readable narrow columns
 Status: confirmed (owner request, 2026-11-15; refines D-130)
 Decision:
 - **Subheader:** the "Compare N scenarios" heading is removed (kept for screen readers only). The left cell shows the kind (e.g. "Different sites and dates") and the controls. The scenario cards are now the "Select Scenarios to Compare" step's own card component (`ScenarioCard` in `ScenarioBar.tsx`), so both pages look the same.
@@ -847,41 +847,41 @@ Decision:
 Status: confirmed (owner request, 2026-11-15; replaces D-134)
 Decision: "Clear history" is a text-only link button (`btnLink` in `src/lib/ui.ts`: muted, underlined, no box or icon), not a tertiary button. "Cancel" in its confirm step is a link button too; the confirming "Clear" stays secondary. The D-134 tertiary style is removed because nothing else used it.
 
-## D-132 · 2026-11-15 · No "n/a" rows in the enthusiast category scores
-Status: confirmed (owner request, 2026-11-15; refines D-131)
-Decision: in the comparison's "At-a-glance score per category (1–10)" table (enthusiasts only, D-131), a category gets no row when any computed scenario has no score for it (no rated metric, shown before as "n/a"). Categories still computing keep their row with "…" until their results arrive.
+## D-132b · 2026-11-15 · No "n/a" rows in the enthusiast category scores
+Status: confirmed (owner request, 2026-11-15; refines D-131b)
+Decision: in the comparison's "At-a-glance score per category (1–10)" table (enthusiasts only, D-131b), a category gets no row when any computed scenario has no score for it (no rated metric, shown before as "n/a"). Categories still computing keep their row with "…" until their results arrive.
 
-## D-133 · 2026-11-15 · Comparison timeline row stays pinned down to Array power
+## D-133b · 2026-11-15 · Comparison timeline row stays pinned down to Array power
 Status: confirmed (owner request, 2026-11-15; matches D-099 on site details)
 Decision: in the comparison, the Timeline row (play, selected day, "Back to landing", and each scenario's sunlit / Earth lanes) stays pinned right under the sticky card bar while the Horizon, Sun & Earth views, the status rows, the Overall metrics and the Battery and Array power charts scroll under it. It lets go, scrolling away with the page, when the bottom of the Array power row passes. That is the last row that follows the selected time; the metrics after it don't depend on it. It is the same technique as the site details timeline: the row is CSS sticky inside a track that runs to the bottom of the Array power row, so the browser does the pinning with no scripted movement. While pinned it draws its own left, right and bottom hairlines and a soft shadow, so it reads as part of the table it covers. The card bar's height is measured into `--cmp-sub-h`, so the row always sits right under it. Chart tooltips placed above a chart now clear everything pinned at the top (elements marked `data-sticky-top`), not a fixed 180 px.
 
-## D-134 · 2026-11-15 · Mission planners get the green best-cell fill too; ties all filled
+## D-134b · 2026-11-15 · Mission planners get the green best-cell fill too; ties all filled
 Status: confirmed (owner request, 2026-11-15; changes the planner marker from D-130)
 Decision: in the comparison, Mission planner now gets the same soft green fill on the leading cell(s) of a rated row as Enthusiast and Educator; the slim green left edge is removed. Planners keep each rated cell's band score in the corner, with ▲ on the leaders, so they can see how far ahead a cell is. A cell leads when it has the highest band score. Cells tied for the lead are all filled: within 0.05 of the top score, or showing the same value as the top cell (e.g. both "31%"). When every cell ties, none is filled. The planner metrics intro now says what a green cell means.
 
-## D-135 · 2026-11-15 · Contents for the comparison: dash rail that opens into a list
+## D-135b · 2026-11-15 · Contents for the comparison: dash rail that opens into a list
 Status: confirmed (owner request, 2026-11-15)
 Decision:
 - **Layout:** the 9-column comparison area is unchanged. From 768 px the page gets a 64 px left gutter, and the contents rail sits there at the page's left edge, left of the label column. The rail is vertically centred in the space below the sticky header and card bar. Below 768 px there is no rail.
 - **At rest:** one dash per section and sub-section (longer for sections). The one being read is dark, and the highlight glides between dashes as you scroll (300 ms).
 - **Open:** pointing at the rail (70 ms rest, with a generous hit area, so "near" counts), focusing it or clicking it dims the rest of the page below the app header. The full list then opens in the same spot (fade + slight scale from the left, 200 ms), scrolled so the entry being read is in the middle. The list scrolls on its own with a persistent scrollbar. The section being read is shaded, and the exact entry has a solid fill. Leaving the rail and list (200 ms grace), Escape, a click on the dimmed page, or choosing an entry closes it.
-- **Jumping:** an entry's top lands just below everything pinned at the top: the card bar and, between the timeline and Array power, the pinned timeline row (D-133). The highlight follows the same reading line, as on site details (D-116).
-- **Entries per persona, as on site details (D-110, D-111, D-118):** Site and landing; Score per category (enthusiasts only, D-131); Horizon, Sun & Earth views (Timeline and status, then the four chart titles in the persona's wording); Metrics (the categories this persona sees). Mission planners can also expand / collapse each category to list its metrics (takeaways first, Battery and Array power under Overall), and the category being read opens by itself. Enthusiasts and educators get categories only, with no carets.
+- **Jumping:** an entry's top lands just below everything pinned at the top: the card bar and, between the timeline and Array power, the pinned timeline row (D-133b). The highlight follows the same reading line, as on site details (D-116).
+- **Entries per persona, as on site details (D-110, D-111, D-118):** Site and landing; Score per category (enthusiasts only, D-131b); Horizon, Sun & Earth views (Timeline and status, then the four chart titles in the persona's wording); Metrics (the categories this persona sees). Mission planners can also expand / collapse each category to list its metrics (takeaways first, Battery and Array power under Overall), and the category being read opens by itself. Enthusiasts and educators get categories only, with no carets.
 - Code: `src/components/compare/CompareToc.tsx`. CompareView builds the entries (`compareToc`) from the same metric grouping its rows use, and every row it lists has an anchor id.
 
-## D-136 · 2026-11-15 · Corner band score and ▲ removed from the comparison
-Status: confirmed (owner request, 2026-11-15; reverses that part of D-130 / D-134)
-Decision: comparison cells no longer show the band score (0–10) in the corner or the green ▲ on the leading cell, in any view. The only best-cell marker is the soft green fill on the leading cell(s), ties included (D-134). The planner's Metrics intro no longer mentions the corner number. Band scores still decide which cell leads and still feed the enthusiast category scores.
+## D-136b · 2026-11-15 · Corner band score and ▲ removed from the comparison
+Status: confirmed (owner request, 2026-11-15; reverses that part of D-130 / D-134b)
+Decision: comparison cells no longer show the band score (0–10) in the corner or the green ▲ on the leading cell, in any view. The only best-cell marker is the soft green fill on the leading cell(s), ties included (D-134b). The planner's Metrics intro no longer mentions the corner number. Band scores still decide which cell leads and still feed the enthusiast category scores.
 
-## D-137 · 2026-11-15 · Subtler best-cell fill in dark mode
-Status: confirmed (owner request, 2026-11-15; refines D-134)
+## D-137b · 2026-11-15 · Subtler best-cell fill in dark mode
+Status: confirmed (owner request, 2026-11-15; refines D-134b)
 Decision: the soft green fill on a comparison's most favourable cell(s) is now a theme token, `--best-fill` in `globals.css`. Light mode keeps 12% of `--good` (the owner is happy with it). Dark mode drops to 6%, because the same mix reads much bolder on the near-black background. Cells use the Tailwind utility `bg-(--best-fill)`. Applying the token only through an inline style let the CSS build drop it as unused, and a plain class in `globals.css` didn't reliably reach the dev server's stylesheet.
 
 ## D-138 · 2026-11-15 · Comparison contents list: no header, page background
-Status: confirmed (owner request, 2026-11-15; refines D-135)
+Status: confirmed (owner request, 2026-11-15; refines D-135b)
 Decision: the contents list that opens from the dash rail on the comparison no longer has a "Contents" header row; the list starts straight away. It now uses the page background of the current theme (`bg`) instead of the raised panel colour, keeping its hairline border and shadow over the dimmed page. Screen readers still announce it as "Contents" (`aria-label`).
 
-## D-138 · 2026-11-15 · History: quick revisits merged; one star per scenario set
+## D-138b · 2026-11-15 · History: quick revisits merged; one star per scenario set
 Status: confirmed (owner request, 2026-11-15; refines D-131)
 Decision:
 - **Quick revisits:** when the same scenario set (same sites at the same landing times, same order) is opened again within 30 minutes of its previous opening, with nothing else opened in between, History keeps one row, at the latest opening time. The gap is measured between neighbouring openings, so a chain of revisits each within 30 minutes stays one row. A revisit after more than 30 minutes, or after opening something else, is a new row (D-131 duplicates). New openings are merged when recorded (`REVISIT_MERGE_MS` in `src/lib/history.ts`); entries already stored are merged when listed (`collapseRevisits`).
@@ -896,7 +896,7 @@ Status: confirmed (owner request, 2026-11-15)
 Decision:
 - **Names:** the three ratings are now Favourable (green), Conditional (amber) and Unfavourable (red), instead of Good, Trade-off and Challenging. That applies everywhere ratings appear: badges, hover hints (whose wording is unchanged), metric rows, comparison cells, CSV exports and the Rating bands editor ("Favourable starts at", "Conditional starts at", and its validation message).
 - **Icons:** the same shapes and glyphs as before, each paired with its own colour (D-024): a circle with a tick, a diamond with "!" and an octagon with "!". They are now drawn in `RagBadge.tsx` (not Phosphor's fill icons) to be slightly heavier at the same size. The shapes fill a little more of the box (circle radius about 110 of 128, against Phosphor's 104), and the glyph strokes are thicker (22 against 16 units). Glyphs are cut out with a mask, so cell fills show through. Checked side by side with the Phosphor icons at 17 px and enlarged, in both themes.
-- **Enthusiasts see words, not numbers:** the comparison's category table (enthusiast only, D-131) is now "At a glance, by category". Each cell shows only the rating icon and word, with no "N / 10". The green best-cell fill still uses the underlying score, so it can mark one of two cells with the same word. The lead line, the tooltip and the contents entry are reworded to match. No other numeric score reaches enthusiasts: their curated metrics exclude the suitability index, and band strips are hidden for them.
+- **Enthusiasts see words, not numbers:** the comparison's category table (enthusiast only, D-131b) is now "At a glance, by category". Each cell shows only the rating icon and word, with no "N / 10". The green best-cell fill still uses the underlying score, so it can mark one of two cells with the same word. The lead line, the tooltip and the contents entry are reworded to match. No other numeric score reaches enthusiasts: their curated metrics exclude the suitability index, and band strips are hidden for them.
 
 ## D-141 · 2026-11-15 · Rating rename completed across descriptive copy (completes D-140)
 Status: confirmed (owner request, 2026-11-15)
@@ -907,7 +907,7 @@ Decision: an audit after D-140 found copy that still named ratings by colour or 
 - **Deliberately unchanged:** ordinary uses of "good", "trade-off" or "challenging" in metric copy (e.g. "good ground", "makes trade-offs legible"); "red marks" for DSN handover gaps on the Earth chart (chart marks, not ratings); "a green cell" for the comparison's best-cell fill; internal code names (`green` / `amber` / `red` keys, `--good` token); and earlier entries in this log.
 - **Open:** the in-progress Data & methods page (`src/components/methods/MethodsPage.tsx`, `PipelineExplorer.tsx`, from a parallel session) still says "red / amber / green bands", and mentions a "0–10 position used for comparison scores". To update once that work is finished.
 
-## D-139 · 2026-11-15 · Data & methods redesigned as a landing page
+## D-139b · 2026-11-15 · Data & methods redesigned as a landing page
 Status: confirmed (owner request, 2026-11-15)
 Decision:
 - **Layout:** full header width (1600 px). A full-width hero (headline, two buttons, Haworth's real ground-level horizon from its terrain file drawing itself across the page, six key figures), then the site-details split: sticky contents on the left (the same `PageToc`), sections on the right. Chapters "How it works" and "Inventory" group the sections; anchors `#reference-values` and `#assumptions` are kept for links from the source registry.
@@ -921,7 +921,7 @@ Decision:
 Status: confirmed (owner correction, 2026-11-15; reverses the azimuth direction set in D-086)
 Decision: the horizon panorama's azimuth axis now runs clockwise from left to right, as on a compass: N 0° → E 90° → S 180° → W 270° → N 360°. Before, it ran right to left (N 360° → W → S → E → N 0°) so the skyline would match the time charts' order. The owner ruled that out: the view must read like a compass. There is one shared chart (`HorizonPanorama`), so the change applies on every site details page and in every comparison column, for all personas. The caption under the chart and the "Horizon view" tooltip now say "Compass reads / runs clockwise from left to right: north, east, south, west, back to north". The old claim that the left-to-right order matches the time charts is removed. In narrow charts (comparison columns) the compass labels no longer overlap: below about 46 px per 45°, the in-between directions (NE, SE, SW, NW) are hidden, and below about 34 px the degrees, leaving N E S W N. The solid Sun from D-086 is unchanged. The Data & methods horizon chart (`HorizonExplorer`) already ran N → E → S → W.
 
-## D-140 · 2026-11-15 · No persona selector on Data & methods
+## D-140b · 2026-11-15 · No persona selector on Data & methods
 Status: confirmed (owner request, 2026-11-15; an exception to "persona toggle on every page")
 Decision: the header on `/sources` shows no persona selector; its content is the same for every persona. The title, page links and theme toggle stay. Every other page keeps the selector, and the chosen persona is unchanged when you leave the page. Code: `NO_PERSONA` in `src/components/HeaderBar.tsx`.
 
@@ -937,18 +937,25 @@ Decision: the first load in each browser tab shows a full-screen splash, always 
 Status: confirmed (owner request, 2026-11-15)
 Decision: in the comparison's sticky subheader, every scenario card now has a ×, also when only two are compared (before, the × showed only with three). With three, × folds that column away and the page shows the other two, as before. With two, × folds that column away and then opens the remaining scenario on its own site details page (same site and landing time, `historyHref`), in full. The browser's Back button returns to the two-scenario comparison. Hover titles say what happens ("Remove from comparison and open Scenario B on its own"). Code: `remove` in `src/components/compare/CompareView.tsx`, `removeTitle` on `ScenarioCard`.
 
-## D-145 · 2026-11-15 · Splash: 5 s on every load; Moon drawn with craters, no gradients (amends D-144)
+## D-145b · 2026-11-15 · Splash: 5 s on every load; Moon drawn with craters, no gradients (amends D-144)
 Status: confirmed (owner requests, 2026-11-15)
 Decision: the counter now runs 1% → 100% in **5 s** (was 4 s); the fade starts at 5.2 s. The splash plays on **every full page load**, first visit and each refresh, replacing D-144's once-per-tab rule. The sessionStorage flag and the pre-paint gate script are removed. Moving between pages inside the app does not replay it, because the root layout stays mounted. All gradients are gone: the background is the dark theme's `--bg` (#0b0a09), flat, and the glow above the Moon, the shaded surface fill and the gradient on the progress fill are removed. The Moon is now a line drawing. The rim (solid, 70% opacity) draws out from the centre, and small crater drawings dissolve into view from the centre outward (opacity and a slight blur). The craters are decorative, not data: a fixed, seeded field of 90 with realistic size statistics (many small, few large). They are squashed into ovals more strongly near the limb because the surface is seen at a grazing angle there. Light comes from the right, so the left inner wall is shaded. Detail grows with size, as on real craters: bowl → flat floor → terraced wall and ejecta-blanket edge → central peak. None sit behind the footer line. Code: `CRATERS` / `Crater` in `src/components/Splash.tsx`; timings in `globals.css` ("Splash").
 
 ## D-146 · 2026-11-15 · Data & methods: name cards moved to a footer, tall cards with a big corner letter (amends D-143)
-
+Status: confirmed (owner request, 2026-11-15)
 Decision: the "The name" strip (what each letter of VISTA stands for) moves from under the hero stats to the very bottom of the Data & methods page, after the FAQ, as a full-width `<footer>` with a top rule. Each card is now 3× its old height (500 px from the `sm` breakpoint; 320 px on phones, so five stacked cards don't fill several screens). The letter is huge (16rem), bold, at 8% of the text colour, and set past the top-right corner so the card edge clips it. The word and its explanation sit at the bottom left of the card. IBM Plex Sans now also loads weight 700 for the letter, so the browser doesn't fake the bold. Code: `NameStrip` in `src/components/methods/MethodsPage.tsx`; weight list in `src/app/layout.tsx`.
 
 ## D-147 · 2026-11-15 · Name footer on the home page too; label dropped, "Lunar" spelled out (amends D-146)
-
+Status: confirmed (owner request, 2026-11-15)
 Decision: the name footer from D-146 is now a shared component (`src/components/NameFooter.tsx`) and also closes the home page. There it sits below the full-height map and site list, reached by scrolling past them. The "The name" label is removed from both footers. The sentence now reads "Lunar VISTA stands for Lunar Visibility & Illumination Site Trade-off Analyzer." "Lunar" is added in the footer only; `SITE_FULL_NAME` (used by the splash, the browser tab title and the logo alt text) is unchanged.
 
 ## D-148 · 2026-11-15 · Timeline play buttons filled with the primary colour
-
+Status: confirmed (owner request, 2026-11-15)
 Decision: the play/pause button on the site-details timeline and on the comparison timeline is now filled with the theme's primary colour: a light fill with a dark icon in dark mode, and a dark fill with a light icon in light mode. It uses the same `primary` / `primary-ink` tokens as the main call-to-action buttons and fades slightly on hover. Before, it was a panel-coloured outline button that blended into the timeline. The ephemeris demo's play button on Data & methods is unchanged. Code: `src/components/charts/MissionTimeline.tsx`, `src/components/compare/CompareView.tsx`.
+
+## D-149 · 2026-11-15 · Duplicate decision IDs split with a "b" suffix; docs brought up to date
+Status: confirmed (owner choice, 2026-11-15)
+Decision:
+- **Duplicate IDs:** parallel sessions gave D-131 to D-140 and D-145 to two entries each. The first entry of each pair (by position in this log) keeps its ID. The second becomes `D-1xxb`: D-131b to D-137b (comparison work), D-138b (History quick revisits), D-139b (Data & methods redesign), D-140b (no persona selector on Data & methods), D-145b (splash, 5 s on every load). Cross-references inside this log, in `MEMORY.md` and in code comments now point at the right entry by topic. Entries are otherwise unchanged. Renumbering to new IDs was ruled out so existing references keep their numbers. D-096 was never assigned; that gap stays.
+- **Missing status lines:** D-146 to D-148 get "Status: confirmed (owner request, 2026-11-15)", like their neighbours.
+- **Docs:** README (pages list, `npm run dev`, custom coordinates work from the committed `data/deploy` bundle), `docs/architecture.md` (`/history`, the deploy bundle step, the 3D globe, History state), `CLAUDE.md` (layout and stack) and `MEMORY.md` (D-145 to D-148) now match the code. The `/api/terrain` comment no longer says it needs `data/raw`. The empty, unused `scratchpad.md` is removed.

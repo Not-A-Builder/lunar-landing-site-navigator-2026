@@ -12,7 +12,7 @@ const label = (k: string) => {
 };
 
 /**
- * The cited lunar-wide reference values (src/data/references.json), searchable (D-139). Each row opens to
+ * The cited lunar-wide reference values (src/data/references.json), searchable (D-139b). Each row opens to
  * its context and the exact quote from the cited document.
  */
 export function ReferenceTable({ rows }: { rows: RefRow[] }) {

@@ -81,7 +81,7 @@ type Cols = { keys: string[]; persona: Persona };
  * The comparison (D-130). Full viewport width, one row per piece of information: on wide screens a label
  * column (3 of 12) then one column per scenario (the other 9, split 2 or 3 ways); below 1280 px the label
  * sits above its row. Each scenario column shows exactly what its solo site details page shows for the
- * current persona. Rated rows give the most favourable cell(s) a soft green fill, in every view (D-134, D-136).
+ * current persona. Rated rows give the most favourable cell(s) a soft green fill, in every view (D-134b, D-136b).
  */
 export function CompareView() {
   const router = useRouter();
@@ -246,7 +246,7 @@ export function CompareView() {
               </button>
             </div>
           </div>
-          {/* The same cards as the "Select Scenarios to Compare" step (D-131). Clicking one opens that step
+          {/* The same cards as the "Select Scenarios to Compare" step (D-131b). Clicking one opens that step
               with this scenario in the form, ready to change; × folds its column away (with 2, the other opens on its own, D-145). */}
           {keys.map((k, i) => (
             <div key={k} data-col={k} className="flex min-w-0 flex-col justify-center px-1.5 py-3 transition-opacity duration-300">
@@ -261,11 +261,11 @@ export function CompareView() {
         </div>
       </div>
 
-      {/* Charts in narrow columns: tooltips outside the plot, key / value summaries stacked (D-131). */}
+      {/* Charts in narrow columns: tooltips outside the plot, key / value summaries stacked (D-131b). */}
       <ComparisonMode.Provider value={true}>
       <div className="px-4 sm:px-6 md:pl-16">
         <Overview C={C} scenarios={scenarios} resolved={resolved} results={results} a={a} onTime={setScenarioTime} />
-        {/* The category roll-up (words only, D-140) is for enthusiasts only; educators and planners compare metric by metric (D-131). */}
+        {/* The category roll-up (words only, D-140) is for enthusiasts only; educators and planners compare metric by metric (D-131b). */}
         {enthusiast && (
           <Section id="cmp-scores" title="At a glance, by category" lead="How each scenario fares in each category, from its main results. There is no single right answer: a less favourable category can still be the right trade for a given mission."
             tip={<InfoTip title="How this is worked out" sources={["mission-assumption"]}>Each rated result is favourable, conditional or unfavourable against planning thresholds. A category combines its rated results into one overall word, and the green cell is the scenario that does best in that category. Hover a rating to see which results fed it.</InfoTip>}>
@@ -315,7 +315,7 @@ function Section({ id, title, lead, tip, children, level = 2 }: { id: string; ti
         <H id={`${id}-h`} className={`flex items-center font-semibold tracking-tight ${level === 2 ? "text-2xl" : "text-[22px]"}`}>{title}{tip}</H>
         {lead && <p className="mt-1 max-w-4xl text-sm leading-relaxed text-muted">{lead}</p>}
       </div>
-      {/* Each section is a bounded table: hairlines on all four sides (D-131). */}
+      {/* Each section is a bounded table: hairlines on all four sides (D-131b). */}
       <div className="border-x border-b border-line">{children}</div>
     </section>
   );
@@ -324,7 +324,7 @@ function Section({ id, title, lead, tip, children, level = 2 }: { id: string; ti
 /**
  * Which columns lead a row: the highest score, when at least two columns have one. Every cell tied for the
  * lead counts: the same score, or the same value as shown (e.g. both "31%"), so two equally good cells are
- * both marked (D-134). When every cell ties, none is.
+ * both marked (D-134b). When every cell ties, none is.
  */
 function leaders(scores: (number | null | undefined)[] | undefined, shown?: (string | undefined)[]) {
   if (!scores) return new Set<number>();
@@ -348,15 +348,15 @@ function Row({ C, id, label, cells, scores, shown, align = "start" }: {
   const best = leaders(scores, shown);
   return (
     <div id={id} className={`${GRID} border-t border-line`}>
-      {/* Label column: a very subtle fill sets it apart from the scenario cells (D-131). */}
+      {/* Label column: a very subtle fill sets it apart from the scenario cells (D-131b). */}
       <div className={`col-span-full min-w-0 bg-panel px-5 pb-2 pt-5 text-[15px] xl:col-span-1 xl:pb-5 xl:pr-6 ${align === "center" ? "flex flex-col justify-center" : ""}`}>{label}</div>
       {C.keys.map((k, i) => {
         const isBest = best.has(i);
         return (
           <div key={k} data-col={k}
             className={`relative min-w-0 border-l border-line px-5 pb-5 pt-2 transition-[opacity,background-color,box-shadow,border-color] duration-300 xl:pt-5 ${align === "center" ? "flex flex-col justify-center" : ""} ${isBest ? "bg-(--best-fill)" : ""}`}>
-            {/* Every persona: a soft green fill on the leading cell(s), ties included (D-134); no corner score or ▲ (D-136).
-                The fill is a theme token, lighter in dark mode (D-137), applied as a Tailwind utility so a CSS rule
+            {/* Every persona: a soft green fill on the leading cell(s), ties included (D-134b); no corner score or ▲ (D-136b).
+                The fill is a theme token, lighter in dark mode (D-137b), applied as a Tailwind utility so a CSS rule
                 references it (an inline style alone let the build drop the token). */}
             {isBest && <span className="sr-only">Most favourable of the compared scenarios.</span>}
             <div>{cells[i]}</div>
@@ -540,7 +540,7 @@ const Scores = memo(function Scores({ C, results }: { C: Cols; results: Analysis
           const rated = metricsInCategory(c.id).map((d) => ({ d, v: m?.[d.id] })).filter((x) => x.v?.rating);
           return { m, rated, r: rollUp(rated.map((x) => x.v!.rating!)) };
         });
-        // A category with no score ("n/a") for any computed scenario has no row (D-132).
+        // A category with no score ("n/a") for any computed scenario has no row (D-132b).
         if (per.some((p) => p.m && !p.r)) return null;
         return (
           <Row key={c.id} C={C} align="center" scores={per.map((p) => p.r?.score ?? null)}
@@ -548,7 +548,7 @@ const Scores = memo(function Scores({ C, results }: { C: Cols; results: Analysis
             cells={per.map(({ m, rated, r }) => (
               <span title={rated.length ? `${rated.length} rated metric${rated.length === 1 ? "" : "s"}:\n` + rated.map((x) => `${x.d.name}: ${x.v!.display} (${RAG_META[x.v!.rating!.rag].label})`).join("\n") : "No rated metrics in this category"}>
                 {!m ? <span className="text-muted">…</span> : r ? (
-                  // Words only, no numeric score (D-140): enthusiasts are the only ones who see this table (D-131).
+                  // Words only, no numeric score (D-140): enthusiasts are the only ones who see this table (D-131b).
                   <RagHint rag={r.rag} className="inline-flex cursor-default items-center gap-2 whitespace-nowrap font-medium"><RagIcon rag={r.rag} size={20} />{RAG_META[r.rag].label}</RagHint>
                 ) : <span className="text-faint">n/a</span>}
               </span>
@@ -581,7 +581,7 @@ const Views = memo(function Views({ C, results, a, offset, spanMs, playing, time
   return (
     <Section id="cmp-views" title="Horizon, Sun & Earth views" lead={viewsLead(persona)}>
       {/* The selected time is the same number of hours after each scenario's own landing. The row stays
-          pinned under the card bar down to Array power, as on the site details page (D-099, D-133). */}
+          pinned under the card bar down to Array power, as on the site details page (D-099, D-133b). */}
       <div ref={trackRef} id="cmp-timeline" className="pointer-events-none">
       <div ref={barRef} data-sticky-top={pinned ? "" : undefined} className="pointer-events-auto sticky z-10 bg-bg transition-shadow duration-200"
         style={{ top: "calc(65px + var(--cmp-sub-h, 0px))", boxShadow: pinned ? "-1px 0 0 var(--line), 1px 0 0 var(--line), 0 1px 0 var(--line), 0 8px 16px -12px rgb(0 0 0 / 0.5)" : undefined }}>
@@ -617,7 +617,7 @@ const Views = memo(function Views({ C, results, a, offset, spanMs, playing, time
             return (
               <>
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-lg font-semibold leading-snug"><span><NumText>{c.value}</NumText></span>{c.rag && <RagBadge rag={c.rag} />}</div>
-                {/* "a · b · c" / "a; b" read one part per line in a narrow column (D-131). */}
+                {/* "a · b · c" / "a; b" read one part per line in a narrow column (D-131b). */}
                 {c.sub && <ul className="mt-1 space-y-0.5 text-sm leading-snug text-muted">{c.sub.split(/ · |; /).map((p, j) => <li key={j}><NumText>{p}</NumText></li>)}</ul>}
               </>
             );
@@ -656,7 +656,7 @@ const Views = memo(function Views({ C, results, a, offset, spanMs, playing, time
 const STICKY_END_ID = "cmp-array-power";
 
 /**
- * Sticky timeline row (D-133), the same technique as the site details timeline (D-099): the row is CSS
+ * Sticky timeline row (D-133b), the same technique as the site details timeline (D-099): the row is CSS
  * `position: sticky` inside a "track" that runs from the row's place in the page to the bottom of the
  * Array power row, so the browser does the pinning and the push-out at the end. The track is that tall but
  * gives the space back with a negative bottom margin, so the layout is unchanged. JS only re-measures when
@@ -776,11 +776,11 @@ function metricGroups(results: Analysis[], persona: Persona) {
   })).filter((g) => g.items.length);
 }
 
-/** Row anchors the contents jump to (D-135). */
+/** Row anchors the contents jump to (D-135b). */
 const metricRowId = (id: string) => `cmp-m-${id.replace(/\./g, "-")}`;
 
 /**
- * The comparison's contents (D-135): the same entries, names and order as the site details contents for this
+ * The comparison's contents (D-135b): the same entries, names and order as the site details contents for this
  * persona (D-110, D-111, D-118), plus the comparison's own sections. Mission planners also get each
  * category's metrics, collapsible.
  */

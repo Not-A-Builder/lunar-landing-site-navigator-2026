@@ -23,7 +23,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       {/* Every load starts in the dark theme, rendered on the server so there is no flash (D-072). */}
       {/* Browser extensions (e.g. ColorZilla's cz-shortcut-listen) add attributes to <body> before hydration (D-101). */}
       <body className="flex min-h-full flex-col" suppressHydrationWarning>
-        {/* Splash on every full page load (D-145). */}
+        {/* Splash on every full page load (D-145b). */}
         <Splash />
         <PersonaHydrator />
         {/* Records opened site details and comparisons for History (D-131); reads the URL, so needs Suspense. */}

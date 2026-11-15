@@ -13,7 +13,7 @@ const SPAN = 0.4; // degrees either side of the horizon shown on the slider
 const THRESH = DEFAULT_ASSUMPTIONS.sunDiskThreshold;
 
 /**
- * Sun-disk demo (D-139): drag the Sun's centre across a flat horizon and read the visible share from the
+ * Sun-disk demo (D-139b): drag the Sun's centre across a flat horizon and read the visible share from the
  * same function the engine uses (geometry.ts diskAboveHorizon, the f(t) of Liu et al. 2023). The Sun's
  * size is its angular radius at 1 AU from the NSSDCA solar radius.
  */

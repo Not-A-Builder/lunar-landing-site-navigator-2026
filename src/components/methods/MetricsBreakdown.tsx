@@ -13,7 +13,7 @@ const STATUS = [
 ] as const;
 
 /**
- * How the 196 metrics break down by value status on the reference run (D-139), and how many sit in each
+ * How the 196 metrics break down by value status on the reference run (D-139b), and how many sit in each
  * category. Counts come from src/data/source-usage.json (pipeline:terrain) and the metrics catalog.
  */
 export function MetricsBreakdown({ counts, basis, total, categories }: {

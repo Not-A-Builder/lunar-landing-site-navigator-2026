@@ -83,7 +83,7 @@ const TOC: TocItem[] = [
   { id: "faq", label: "Questions" },
 ];
 
-/** Data & methods as a landing page (D-139): hero, then a 3 / 9 split with sticky contents like site details. */
+/** Data & methods as a landing page (D-139b): hero, then a 3 / 9 split with sticky contents like site details. */
 export function MethodsPage({ data }: { data: MethodsData }) {
   const unavailable = data.statusCounts.unavailable ?? 0;
   const shown = data.metricTotal - unavailable;

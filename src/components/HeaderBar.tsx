@@ -24,12 +24,12 @@ const MARK = 20;
  */
 const MARK_SHIFT = Math.round((WORDMARK_H * (LOGO_CAPS.top + LOGO_CAPS.bottom)) / (2 * LOGO_CAPS.artboard) - WORDMARK_H / 2);
 
-/** Pages whose content is the same for every persona, so the header shows no persona selector (D-140). */
+/** Pages whose content is the same for every persona, so the header shows no persona selector (D-140b). */
 const NO_PERSONA = new Set(["/sources"]);
 
 /**
  * The regular header row: title, page links, persona and theme. Also the fallback while the URL is read.
- * Data & methods has no persona selector: it reads the same for everyone (D-140).
+ * Data & methods has no persona selector: it reads the same for everyone (D-140b).
  * The title always leads to site selection; while a comparison is open it first asks to exit it (D-130).
  */
 export function DefaultHeaderBar({ comparing = false }: { comparing?: boolean }) {

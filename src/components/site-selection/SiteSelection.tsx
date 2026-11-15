@@ -52,7 +52,7 @@ function formFromScenario(sc: Scenario): { siteId: string | null; coords: string
  */
 function entryState(params: URLSearchParams) {
   const q = parseScenarios(params.get("s"), { allowPartial: true });
-  // `edit=<i>`: a card clicked on Compare opens that scenario in the form (D-131).
+  // `edit=<i>`: a card clicked on Compare opens that scenario in the form (D-131b).
   const edit = params.get("edit") !== null ? Number(params.get("edit")) : NaN;
   if (Number.isInteger(edit) && edit >= 0 && edit < q.length) return { editing: edit as number | null, form: formFromScenario(q[edit]) };
   if (q.length >= MAX_COMPARE) return { editing: q.length - 1 as number | null, form: formFromScenario(q[q.length - 1]) };

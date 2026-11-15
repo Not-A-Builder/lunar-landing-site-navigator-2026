@@ -325,7 +325,7 @@ function DsnSummary({ d, persona, minEl }: { d: DsnSummaryData; persona: Persona
 
   if (persona === "planner") {
     // Each value is a list of parts: one line of "a · b · c" on the site details page; in the narrow
-    // comparison columns the key sits above its value and each part gets its own line (D-131).
+    // comparison columns the key sits above its value and each part gets its own line (D-131b).
     const rows: [string, ReactNode[]][] = [
       [`DSN visibility (Moon ≥ ${minEl}°)`, [...DSN_RELAY_ORDER.map((k) => <>{DSN_COMPLEXES[k].short} <N>{fmtPct(d.share[k])}</N></>), <>any <N>{fmtPct(d.any)}</N> of the mission</>]],
       ["Coverage gaps, whole mission", d.gapsAll.length

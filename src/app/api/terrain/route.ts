@@ -4,7 +4,8 @@ import { loadTerrainContext } from "@/lib/engine/terrain-context";
 
 /**
  * GET /api/terrain?lat=-85.2&lon=30.1 -> TerrainFile for a custom coordinate, computed from LOLA
- * (same code as the pipeline). Needs the raw layers in data/raw (pipeline/download-raw.sh).
+ * (same code as the pipeline). Reads data/raw when present, else the committed data/deploy bundle
+ * (see terrain-context.ts).
  */
 const memo = new Map<string, unknown>();
 

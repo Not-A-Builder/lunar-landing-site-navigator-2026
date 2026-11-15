@@ -5,7 +5,7 @@ import { createContext, useCallback, useContext, useLayoutEffect, useRef, useSta
 /** Small helpers shared by the SVG charts: linear scales, a measured-width container, hover and tooltips. */
 
 /**
- * True inside the comparison (D-131), where each chart only gets a narrow column: tooltips sit outside the
+ * True inside the comparison (D-131b), where each chart only gets a narrow column: tooltips sit outside the
  * plot (below it, or above when there is no room) and key / value summaries stack vertically.
  */
 export const ComparisonMode = createContext(false);
@@ -134,7 +134,7 @@ export function ChartTip({ x, w, show, top = 8, width = 288, children }: { x: nu
 }
 
 /**
- * Comparison tooltip (D-131): centred on the hovered point and kept inside the column, just below the plot
+ * Comparison tooltip (D-131b): centred on the hovered point and kept inside the column, just below the plot
  * (the chart's <svg>) so the plot stays fully visible; above it when the screen has no room below.
  */
 function OutsideTip({ x, w, show, width, children }: { x: number; w: number; show: boolean; width: number; children: ReactNode }) {

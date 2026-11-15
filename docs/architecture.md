@@ -8,18 +8,24 @@
  PDS/LROC/USGS/Diviner ─► download-raw.sh ──────────► data/raw/ (git-ignored)
  data/raw + ephemeris ──► build-terrain.ts ─────────► public/data/terrain/<site>.json, peers.json,
                                                        src/data/validation.json, src/data/source-usage.json
+ data/raw ──────────────► build-deploy-bundle.ts ───► data/deploy/ (127 MB, committed: brotli DEMs, PSRs,
+                                                       gazetteer, Diviner)
 
  SERVER (Next.js route handlers)
  /api/ephemeris/[year]  live Horizons table for years outside 2024–2032
- /api/terrain?lat&lon   terrain file for custom coordinates (same code as the pipeline; needs data/raw)
+ /api/terrain?lat&lon   terrain file for custom coordinates (same code as the pipeline; reads data/raw
+                        when present, else data/deploy; TERRAIN_SOURCE=deploy forces the bundle)
  /api/horizons          raw topocentric proxy (debug / planners)
 
  BROWSER (all metric maths runs client-side, instantly, for any date and assumption)
  ephemeris tables + terrain file ─► engine/scenario (10-min series, windows)
                                  ─► engine/analysis (multi-year, landing-date percentiles, area grid, sensitivity, power, link)
                                  ─► metrics/compute (196 MetricValues: status, sources, RAG rating)
-                                 ─► pages: / (select), /site/[id] (details), /compare, /sources
+                                 ─► pages: / (select), /site/[id] (details), /compare, /history, /sources
 ```
+
+Maps: OpenLayers + proj4 for the polar stereographic and flat whole-Moon maps; three.js for the 3D globe
+(`src/components/map/MoonGlobe.tsx`, WAC tiles).
 
 ## Core computation
 
@@ -42,6 +48,9 @@
 - **Persona and assumptions:** zustand stores persisted to localStorage, rehydrated after mount.
 - **Site, date and comparison:** kept in the URL (`/site/<id>?t=ISO`, `/compare?s=id@ISO,…`), so every
   view is shareable.
+- **History:** every site details page and comparison opened, per browser in localStorage
+  (`src/lib/history.ts`, recorded by `HistoryRecorder` in the root layout). No accounts, so nothing
+  leaves the browser.
 
 ## Next.js notes
 

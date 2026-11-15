@@ -18,16 +18,27 @@ All data comes from NASA and partner-agency sources:
 
 Every value shows its provenance; see [docs/data-sources.md](docs/data-sources.md) and the in-app Data & methods page.
 
+## Pages
+
+- **Site selection** (`/`): south-pole map (or the whole Moon, flat or as a 3D globe), curated site lists,
+  custom coordinates, landing date and time.
+- **Site details** (`/site/<id>`): horizon view, Sun and Earth against the horizon, a 30-day timeline,
+  libration and 13 metric categories.
+- **Compare** (`/compare`): up to three site + date scenarios side by side.
+- **History** (`/history`): site details and comparisons opened in this browser, with starring.
+- **Data & methods** (`/sources`): how every number is fetched, computed and cited.
+
 ## Run
 
 ```bash
 npm install
-npm run dev:1313     # http://localhost:1313
+npm run dev          # http://localhost:1313
 npm test
 ```
 
-Precomputed data (ephemeris, terrain for 65 curated sites) is committed. Rebuilding terrain or analysing
-custom coordinates needs the raw rasters: `npm run pipeline:raw` (see [pipeline/README.md](pipeline/README.md)).
+Precomputed data is committed: ephemeris 2024–2032, terrain for the 65 curated sites, and a compact NASA
+terrain bundle (`data/deploy`, 127 MB) so custom coordinates work without extra downloads. Only rebuilding
+terrain needs the full raw rasters: `npm run pipeline:raw` (~500 MB, see [pipeline/README.md](pipeline/README.md)).
 
 ## Repo guide
 

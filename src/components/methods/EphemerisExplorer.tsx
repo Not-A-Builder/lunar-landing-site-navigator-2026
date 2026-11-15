@@ -11,7 +11,7 @@ const DAY = 86_400_000;
 const PAD = { l: 56, r: 16, t: 16, b: 48 };
 
 /**
- * Libration explorer (D-139): the sub-Earth point from the real hourly Horizons table for one year.
+ * Libration explorer (D-139b): the sub-Earth point from the real hourly Horizons table for one year.
  * The path is drawn from samples every 6 hours; the dot follows the slider (00:00 UTC each day).
  * Nothing here is illustrative: every point is read from public/data/ephemeris/<year>.bin.
  */

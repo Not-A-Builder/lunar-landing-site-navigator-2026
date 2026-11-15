@@ -85,7 +85,7 @@ function FullName() {
 }
 
 /**
- * Load splash (D-144, D-145), always in the dark theme: the wordmark, the full name, and a counter that runs
+ * Load splash (D-144, D-145b), always in the dark theme: the wordmark, the full name, and a counter that runs
  * 1% → 100% in 5 s before the overlay fades into the page underneath (which loads meanwhile). It plays on every
  * full page load (first visit and each refresh), not on in-app navigation: the root layout stays mounted.
  * All motion is CSS (globals.css, "Splash"), so it starts at first paint even before React hydrates and still

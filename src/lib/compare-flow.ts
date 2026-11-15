@@ -11,7 +11,7 @@ export const validBack = (back: string | null): string | null => (back && back.s
 
 /**
  * URL that opens the flow with `scenarios` already saved and the next slot's landing time set to `t`.
- * `edit` opens that saved scenario in the form instead, ready to change (a card clicked on Compare, D-131).
+ * `edit` opens that saved scenario in the form instead, ready to change (a card clicked on Compare, D-131b).
  */
 export function compareFlowHref(scenarios: Scenario[], back: string, t?: string, edit?: number): string {
   const q = [

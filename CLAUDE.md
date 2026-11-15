@@ -59,21 +59,21 @@ node scripts/screenshot.mjs <outDir> <url…>   # headless screenshots + console
 ## Layout
 
 ```
-src/app/                 /, /site/[siteId] (+ /site/custom?lat&lon), /compare, /sources, /api/horizons, /api/ephemeris/[year], /api/terrain
-src/components/          AppHeader, PersonaToggle, InfoTip, RagBadge, map/MoonMap, charts/*, site-selection/, site-details/, compare/
+src/app/                 /, /site/[siteId] (+ /site/custom?lat&lon), /compare, /history, /sources, /api/horizons, /api/ephemeris/[year], /api/terrain
+src/components/          AppHeader/HeaderBar, PersonaToggle, InfoTip, RagBadge, Splash, NameFooter, map/ (MoonMap, MoonGlobe), charts/*, site-selection/, site-details/, compare/, history/, methods/ (Data & methods)
 src/lib/engine/          pure maths: geometry, ephemeris tables, series, windows, terrain (masks), scenario, analysis; server-only: dem-readers, terrain-build, terrain-context
 src/lib/metrics/         compute.ts (all 196 metrics → MetricValue with status + sources + rating), types.ts (RAG bands, roll-up), format.ts
-src/lib/                 sources.ts (registry), assumptions(.ts|-store.ts), persona.ts, sites.ts, moon.ts (basemaps), data-client.ts, use-analysis.ts
+src/lib/                 sources.ts (registry), assumptions(.ts|-store.ts), bands.ts, persona.ts, enthusiast-/educator-metrics.ts (curated picks), sites.ts, moon.ts (basemaps), history.ts, compare-flow.ts, config.ts, data-client.ts, use-analysis.ts
 src/data/                generated JSON (catalog, sites, references, validation, source-usage). Do not hand-edit; rebuild via pipeline
 public/data/             ephemeris/*.bin, terrain/*.json (pipeline outputs fetched at runtime)
-pipeline/                build_metrics_catalog.py, build_sites.py, fetch-ephemeris.ts, build-terrain.ts, download-raw.sh, lib/shapefile.ts
-data/source/             snapshots of research inputs (sheet CSV, sites research, references research); data/raw/ = big downloads
+pipeline/                build_metrics_catalog.py, build_sites.py, fetch-ephemeris.ts, build-terrain.ts, build-deploy-bundle.ts, download-raw.sh, lib/shapefile.ts
+data/source/             snapshots of research inputs (sheet CSV, sites research, references research); data/raw/ = big downloads (git-ignored); data/deploy/ = committed terrain bundle
 ```
 
 ## Stack
 
 Next.js 16.4 (App Router, `cacheComponents` on) · React 19 · TypeScript · Tailwind 4 (light/dark tokens in
-`globals.css`, radii ≤ 2px, text ≥ 14px) · IBM Plex Sans + Mono (numbers) · Phosphor icons · zustand (persona, assumptions) · OpenLayers + proj4 (polar stereographic + global maps)
+`globals.css`, radii ≤ 2px, text ≥ 14px) · IBM Plex Sans + Mono (numbers) · Phosphor icons · zustand (persona, assumptions, history) · OpenLayers + proj4 (polar stereographic + global maps) · three.js (3D globe)
 · geotiff (pipeline) · vitest · playwright-core (screenshots). Pipeline in TypeScript via `tsx` (shares
 `src/lib/engine`), plus small stdlib Python scripts.
 

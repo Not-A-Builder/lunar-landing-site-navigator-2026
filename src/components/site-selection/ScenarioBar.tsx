@@ -89,7 +89,7 @@ export function ScenarioBar({
   );
 }
 
-/** One scenario card. Also used, as a `div`, for the comparison's cards (D-131), so both look the same. */
+/** One scenario card. Also used, as a `div`, for the comparison's cards (D-131b), so both look the same. */
 export function ScenarioCard({
   i, label, letter, active = false, onEdit, onRemove, children, as: Tag = "li", className = "", editTitle = "Edit date, time and site", removeTitle = "Remove",
 }: { i: number; label: string; letter: string; active?: boolean; onEdit?: () => void; onRemove?: () => void; children: React.ReactNode; as?: "li" | "div"; className?: string; editTitle?: string; removeTitle?: string }) {
