@@ -91,8 +91,8 @@ export function ScenarioBar({
 
 /** One scenario card. Also used, as a `div`, for the comparison's cards (D-131), so both look the same. */
 export function ScenarioCard({
-  i, label, letter, active = false, onEdit, onRemove, children, as: Tag = "li", className = "", editTitle = "Edit date, time and site",
-}: { i: number; label: string; letter: string; active?: boolean; onEdit?: () => void; onRemove?: () => void; children: React.ReactNode; as?: "li" | "div"; className?: string; editTitle?: string }) {
+  i, label, letter, active = false, onEdit, onRemove, children, as: Tag = "li", className = "", editTitle = "Edit date, time and site", removeTitle = "Remove",
+}: { i: number; label: string; letter: string; active?: boolean; onEdit?: () => void; onRemove?: () => void; children: React.ReactNode; as?: "li" | "div"; className?: string; editTitle?: string; removeTitle?: string }) {
   // A saved card is clickable as a whole to edit it (D-075); × stops the click from reaching the card.
   const editable = onEdit
     ? {
@@ -126,7 +126,7 @@ export function ScenarioCard({
             onRemove();
           }}
           aria-label={`Remove scenario ${letter}`}
-          title="Remove"
+          title={removeTitle}
           className="-m-1 shrink-0 cursor-pointer rounded-sm p-1 text-muted hover:bg-line hover:text-fg"
         >
           <X size={16} />

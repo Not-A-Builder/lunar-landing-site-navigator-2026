@@ -337,11 +337,12 @@ details[open] > summary .caret {
 }
 
 /*
- * Splash (D-144): first load in each browser tab, always dark whatever the theme. Its colours are the dark
- * theme's tokens, fixed here so the splash never follows the light theme. Timeline: the counter and bar run
- * 1 → 100% over 4 s (same easing for both), hold briefly at 100%, then the overlay fades into the page.
+ * Splash (D-144, D-145): every full page load (first visit and each refresh), always dark whatever the theme. Its
+ * colours are the dark theme's tokens, fixed here so the splash never follows the light theme. Timeline: the counter
+ * and bar run 1 → 100% over 5 s (same easing for both), hold briefly at 100%, then the overlay fades into the page.
  * Everything is CSS so it starts at first paint; with reduced motion only the counter, bar and fade remain.
- * html[data-splash="seen"] is set before paint by an inline script when the tab has already seen it.
+ * Change the 5 s in all splash timings together (count, fill, exit delays, rise). Background: the dark theme's
+ * --bg, flat. The Moon is a line drawing (rim + craters that dissolve in, delays set per crater in Splash.tsx).
  */
 @property --splash-n {
   syntax: "<integer>";
@@ -350,7 +351,6 @@ details[open] > summary .caret {
 }
 .splash {
   --splash-bg: #0b0a09;
-  --splash-surface: #1b1917;
   --splash-line: #2a2723;
   --splash-fg: #ece8e1;
   --splash-muted: #a8a197;
@@ -364,12 +364,9 @@ details[open] > summary .caret {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background: radial-gradient(120% 80% at 50% 38%, #12110f 0%, var(--splash-bg) 60%);
+  background: var(--splash-bg);
   color: var(--splash-fg);
-  animation: splash-out 750ms cubic-bezier(0.4, 0, 0.2, 1) 4200ms forwards;
-}
-html[data-splash="seen"] .splash {
-  display: none;
+  animation: splash-out 750ms cubic-bezier(0.4, 0, 0.2, 1) 5200ms forwards;
 }
 .splash-moon {
   position: absolute;
@@ -427,7 +424,7 @@ html[data-splash="seen"] .splash {
   letter-spacing: 0;
   color: var(--splash-fg);
   counter-reset: splash var(--splash-n);
-  animation: splash-count 4000ms var(--splash-ease) both;
+  animation: splash-count 5000ms var(--splash-ease) both;
 }
 .splash-count::after {
   content: counter(splash) "%";
@@ -443,9 +440,9 @@ html[data-splash="seen"] .splash {
   position: absolute;
   inset: 0;
   transform-origin: left center;
-  background: linear-gradient(90deg, color-mix(in srgb, var(--splash-fg) 30%, transparent), var(--splash-fg));
+  background: var(--splash-fg);
   box-shadow: 0 0 10px color-mix(in srgb, var(--splash-fg) 45%, transparent);
-  animation: splash-fill 4000ms var(--splash-ease) both;
+  animation: splash-fill 5000ms var(--splash-ease) both;
 }
 .splash-foot {
   position: absolute;
@@ -482,14 +479,12 @@ html[data-splash="seen"] .splash {
 @keyframes splash-rise {
   from { transform: translateY(70px); }
 }
-@keyframes splash-glow {
-  from { opacity: 0; }
-  60% { opacity: 1; }
-  to { opacity: 0.75; }
+@keyframes splash-crater-in {
+  from { opacity: 0; filter: blur(3px); }
 }
 @media (prefers-reduced-motion: no-preference) {
   .splash-content {
-    animation: splash-content-out 750ms cubic-bezier(0.4, 0, 0.2, 1) 4200ms forwards;
+    animation: splash-content-out 750ms cubic-bezier(0.4, 0, 0.2, 1) 5200ms forwards;
   }
   .splash-logo {
     animation: splash-logo-in 1400ms cubic-bezier(0.2, 0.7, 0.2, 1) 150ms both;
@@ -504,10 +499,10 @@ html[data-splash="seen"] .splash {
     animation: splash-soft-in 1000ms ease-out 1000ms both;
   }
   .splash-rise {
-    animation: splash-rise 4600ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    animation: splash-rise 5600ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
   }
-  .splash-glow {
-    animation: splash-glow 4200ms ease-out both;
+  .splash-crater {
+    animation: splash-crater-in 1400ms ease-out both;
   }
   .splash-rim {
     animation: draw-line 2600ms cubic-bezier(0.65, 0, 0.35, 1) 200ms both;

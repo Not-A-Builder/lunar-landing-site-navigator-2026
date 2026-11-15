@@ -27,6 +27,7 @@ import { blockCopy, blockTitles, by, LibrationText, statusCardHeads, statusCards
 import type { Assumptions } from "@/lib/assumptions";
 import { useEffectiveAssumptions } from "@/lib/assumptions-store";
 import { compareFlowHref, markFlowEntry } from "@/lib/compare-flow";
+import { historyHref } from "@/lib/history";
 import { MAX_COMPARE } from "@/lib/config";
 import { enthusiastPick } from "@/lib/enthusiast-metrics";
 import { educatorPick } from "@/lib/educator-metrics";
@@ -146,13 +147,19 @@ export function CompareView() {
 
   const removeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => () => { if (removeTimer.current) clearTimeout(removeTimer.current); }, []);
-  /** × on a card (3 scenarios only): the column folds away, then the page shows the other two. */
+  /**
+   * × on a card: the column folds away, then the page shows the rest. With two scenarios the one left
+   * opens in full on its site details page (D-145); Back returns to the two-scenario comparison.
+   */
   const remove = (i: number) => {
-    if (n <= 2 || cols.removing) return;
+    if (n < 2 || cols.removing) return;
     const k = keys[i];
     setCols((c) => ({ ...c, removing: k }));
     const next = scenarios.filter((_, j) => j !== i);
-    removeTimer.current = setTimeout(() => router.replace(`/compare?s=${serialiseScenarios(next)}`, { scroll: false }), COL_MS);
+    removeTimer.current = setTimeout(() => {
+      if (next.length === 1 && next[0].siteId) router.push(historyHref(next));
+      else router.replace(`/compare?s=${serialiseScenarios(next)}`, { scroll: false });
+    }, COL_MS);
   };
   const setScenarioTime = useCallback((i: number, ms: number) => {
     const next = scenarios.map((s, j) => (j === i ? { ...s, t: new Date(ms).toISOString().replace(".000Z", "Z") } : s));
@@ -240,12 +247,13 @@ export function CompareView() {
             </div>
           </div>
           {/* The same cards as the "Select Scenarios to Compare" step (D-131). Clicking one opens that step
-              with this scenario in the form, ready to change; × (with 3) folds its column away. */}
+              with this scenario in the form, ready to change; × folds its column away (with 2, the other opens on its own, D-145). */}
           {keys.map((k, i) => (
             <div key={k} data-col={k} className="flex min-w-0 flex-col justify-center px-1.5 py-3 transition-opacity duration-300">
               <ScenarioCard as="div" className="cmp-card" i={i} letter={LETTERS[i]} label={`Scenario ${LETTERS[i]}`} editTitle="Change this scenario's date, time or site"
                 onEdit={() => { markFlowEntry(here); router.push(compareFlowHref(scenarios, here, undefined, i)); }}
-                onRemove={n > 2 ? () => remove(i) : undefined}>
+                onRemove={() => remove(i)}
+                removeTitle={n === 2 ? `Remove from comparison and open Scenario ${LETTERS[1 - i]} on its own` : "Remove from comparison"}>
                 <ScenarioLines name={resolved[i]?.name ?? "Unknown site"} when={scenarios[i].t ? Date.parse(scenarios[i].t) : null} />
               </ScenarioCard>
             </div>

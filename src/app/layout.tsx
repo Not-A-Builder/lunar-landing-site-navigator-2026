@@ -4,11 +4,11 @@ import { Suspense } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { HistoryRecorder } from "@/components/history/HistoryRecorder";
 import { PersonaHydrator } from "@/components/PersonaToggle";
-import { Splash, SplashGate } from "@/components/Splash";
+import { Splash } from "@/components/Splash";
 import { SITE_FULL_NAME, SITE_TITLE } from "@/lib/config";
 import "./globals.css";
 
-const plexSans = IBM_Plex_Sans({ variable: "--font-plex-sans", subsets: ["latin"], weight: ["400", "500", "600"] });
+const plexSans = IBM_Plex_Sans({ variable: "--font-plex-sans", subsets: ["latin"], weight: ["400", "500", "600", "700"] });
 const plexMono = IBM_Plex_Mono({ variable: "--font-plex-mono", subsets: ["latin"], weight: ["400", "500"] });
 
 export const metadata: Metadata = {
@@ -23,8 +23,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       {/* Every load starts in the dark theme, rendered on the server so there is no flash (D-072). */}
       {/* Browser extensions (e.g. ColorZilla's cz-shortcut-listen) add attributes to <body> before hydration (D-101). */}
       <body className="flex min-h-full flex-col" suppressHydrationWarning>
-        {/* First-load splash, once per tab (D-144). The script hides it before paint if this tab has seen it. */}
-        <SplashGate />
+        {/* Splash on every full page load (D-145). */}
         <Splash />
         <PersonaHydrator />
         {/* Records opened site details and comparisons for History (D-131); reads the URL, so needs Suspense. */}

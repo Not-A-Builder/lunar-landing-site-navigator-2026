@@ -3,9 +3,10 @@
 import { ArrowDown, ArrowUpRight, CaretRight, Check, X } from "@phosphor-icons/react";
 import type { ReactNode } from "react";
 import { InfoTip } from "@/components/InfoTip";
+import { NameFooter } from "@/components/NameFooter";
 import { PageToc, type TocItem } from "@/components/site-details/PageToc";
 import type { Assumptions } from "@/lib/assumptions";
-import { MAX_COMPARE, SITE_FULL_NAME, SITE_TITLE } from "@/lib/config";
+import { SITE_TITLE } from "@/lib/config";
 import type { SourceId } from "@/lib/sources";
 import { btnPrimary, btnSecondary } from "@/lib/ui";
 import { DiskExplorer } from "./DiskExplorer";
@@ -371,6 +372,8 @@ export function MethodsPage({ data }: { data: MethodsData }) {
           </Section>
         </div>
       </div>
+
+      <NameFooter sites={data.sites.total} metrics={data.metricTotal} className="mt-24" />
     </div>
   );
 }
@@ -406,8 +409,6 @@ function Hero({ data, shown, unavailable, meanSun, basisName, basisDate }: { dat
         <HeroStat value={String(data.sites.total)} label="landing sites, each with a cited coordinate" tip="Every site record keeps the source link and the exact text its coordinate was copied from." sources={["lroc-sites", "usgs-gazetteer", "nasa-artemis", "nasa-clps"]} />
         <HeroStat value={String(data.references.length)} label="lunar reference values, each quoted from its source" tip="Lunar-wide values; each row quotes its document and page." sources={["reference-literature"]} />
       </div>
-
-      <NameStrip sites={data.sites.total} metrics={data.metricTotal} />
     </section>
   );
 }
@@ -440,44 +441,6 @@ function HeroHorizon({ mask, dem }: { mask: number[]; dem: string }) {
         </InfoTip>
       </figcaption>
     </figure>
-  );
-}
-
-/**
- * What the name stands for (D-143): Lunar VISTA = Visibility & Illumination Site Trade-off Analyzer, one column
- * per letter with what that word means in the tool. Counts come from the generated data, not typed in.
- */
-function NameStrip({ sites, metrics }: { sites: number; metrics: number }) {
-  const letters: { word: string; text: string }[] = [
-    { word: "Visibility", text: "Is Earth above the site\u2019s real horizon? That decides direct-to-Earth radio contact." },
-    { word: "Illumination", text: "How much of the Sun\u2019s disk clears the terrain, which drives solar power and temperature." },
-    { word: "Site", text: `${sites} landing sites with cited coordinates, or any point you type in.` },
-    { word: "Trade-off", text: `Up to ${MAX_COMPARE} site-and-date scenarios side by side, with the reasons they differ.` },
-    { word: "Analyzer", text: `${metrics} metrics, each computed, modelled from your inputs, quoted from a source, or hidden.` },
-  ];
-  return (
-    <div className="reveal mt-14">
-      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <Eyebrow>The name</Eyebrow>
-        <p className="text-base text-muted">
-          <span className="font-medium text-fg">{SITE_TITLE}</span> stands for {SITE_FULL_NAME}.
-        </p>
-      </div>
-      <dl className="mt-5 grid grid-cols-1 gap-px overflow-hidden rounded-sm border border-line bg-line sm:grid-cols-2 lg:grid-cols-5">
-        {letters.map(({ word, text }, i) => (
-          <div key={word} className={`bg-bg p-5 ${i === letters.length - 1 ? "sm:col-span-2 lg:col-span-1" : ""}`}>
-            <dt className="flex items-baseline gap-3">
-              <span className="text-[3rem] leading-none font-semibold tracking-tight text-fg" aria-hidden>{word[0]}</span>
-              <span className="text-base font-medium text-fg">
-                {word}
-                {i === 0 && <span className="text-faint"> &amp;</span>}
-              </span>
-            </dt>
-            <dd className="mt-3 text-sm leading-snug text-muted">{text}</dd>
-          </div>
-        ))}
-      </dl>
-    </div>
   );
 }
 
