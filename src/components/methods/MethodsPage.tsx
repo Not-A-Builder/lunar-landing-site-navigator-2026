@@ -16,6 +16,7 @@ import { PipelineExplorer } from "./PipelineExplorer";
 import { ReferenceTable, type RefRow } from "./ReferenceTable";
 import { SourceGrid, type SourceCard } from "./SourceGrid";
 import { ValidationChart, type ValRow } from "./ValidationChart";
+import { useWidth } from "./use-width";
 
 export type MethodsData = {
   heroMask: number[];
@@ -408,20 +409,27 @@ function Hero({ data, shown, unavailable, meanSun, basisName, basisDate }: { dat
   );
 }
 
-/** Haworth's real ground-level horizon (LOLA ray-march, 1° bins) drawn across the hero; vertical scale stretched. */
+/**
+ * Haworth's real ground-level horizon (LOLA ray-march, 1° bins) drawn across the hero; vertical scale stretched.
+ * Drawn in real pixels (not a stretched viewBox): the draw-on animation measures the path length, which a
+ * non-uniformly scaled SVG gets wrong, so the line used to stop short of the fill.
+ */
 function HeroHorizon({ mask, dem }: { mask: number[]; dem: string }) {
-  const W = 1440, H = 200, top = 16, bottom = 176;
+  const [box, W] = useWidth<HTMLDivElement>(1400);
+  const H = W < 640 ? 160 : 208, top = 16, bottom = H - 24;
   const lo = Math.min(0, ...mask) - 1, hi = Math.max(0, ...mask) + 1;
   const y = (v: number) => top + ((hi - v) / (hi - lo)) * (bottom - top);
   const pts = [...mask, mask[0]].map((v, i) => [(i / mask.length) * W, y(v)] as const);
   const line = pts.map(([x, yy], i) => `${i ? "L" : "M"}${x.toFixed(1)},${yy.toFixed(1)}`).join("");
   return (
     <figure className="mt-14">
-      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="block h-40 w-full sm:h-52" aria-hidden>
-        <path d={`${line}L${W},${H}L0,${H}Z`} className="draw-fade fill-terrain" fillOpacity={0.35} />
-        <line x1={0} x2={W} y1={y(0)} y2={y(0)} className="stroke-faint" strokeDasharray="4 6" vectorEffect="non-scaling-stroke" />
-        <path d={line} pathLength={1} className="draw-line fill-none stroke-fg" strokeWidth={1.5} strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
-      </svg>
+      <div ref={box}>
+        <svg width={W} height={H} className="block" aria-hidden>
+          <path d={`${line}L${W},${H}L0,${H}Z`} className="draw-fade fill-terrain" fillOpacity={0.35} />
+          <line x1={0} x2={W} y1={y(0)} y2={y(0)} className="stroke-faint" strokeDasharray="4 6" />
+          <path d={line} pathLength={1} className="draw-line fill-none stroke-fg" strokeWidth={1.5} strokeLinejoin="round" />
+        </svg>
+      </div>
       <figcaption className="mt-3 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-faint">
         <span>The real horizon around Haworth, all 360° from north, traced from {dem}. Dashed: a flat horizon. Height stretched to show the shape.</span>
         <InfoTip title="Haworth horizon" sources={["lola-pds"]}>
