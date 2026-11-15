@@ -591,7 +591,7 @@ const Views = memo(function Views({ C, results, a, offset, spanMs, playing, time
         </InfoTip>}>
           <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-muted">
             <button type="button" onClick={() => onPlaying(!playing)} aria-label={playing ? "Pause" : "Play"} title={playing ? "Pause" : "Play: one mission day per second"}
-              className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-sm border border-line bg-panel-2 text-fg hover:border-muted">
+              className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-sm border border-primary bg-primary text-primary-ink transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg">
               {playing ? <Pause size={16} weight="fill" /> : <Play size={16} weight="fill" />}
             </button>
             <span><span className="num text-fg">Day {day}</span> · <span className="num">+{fmtHours(offset / HOUR_MS)}</span> after landing</span>

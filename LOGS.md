@@ -948,3 +948,7 @@ Decision: the "The name" strip (what each letter of VISTA stands for) moves from
 ## D-147 · 2026-11-15 · Name footer on the home page too; label dropped, "Lunar" spelled out (amends D-146)
 
 Decision: the name footer from D-146 is now a shared component (`src/components/NameFooter.tsx`) and also closes the home page. There it sits below the full-height map and site list, reached by scrolling past them. The "The name" label is removed from both footers. The sentence now reads "Lunar VISTA stands for Lunar Visibility & Illumination Site Trade-off Analyzer." "Lunar" is added in the footer only; `SITE_FULL_NAME` (used by the splash, the browser tab title and the logo alt text) is unchanged.
+
+## D-148 · 2026-11-15 · Timeline play buttons filled with the primary colour
+
+Decision: the play/pause button on the site-details timeline and on the comparison timeline is now filled with the theme's primary colour: a light fill with a dark icon in dark mode, and a dark fill with a light icon in light mode. It uses the same `primary` / `primary-ink` tokens as the main call-to-action buttons and fades slightly on hover. Before, it was a panel-coloured outline button that blended into the timeline. The ephemeris demo's play button on Data & methods is unchanged. Code: `src/components/charts/MissionTimeline.tsx`, `src/components/compare/CompareView.tsx`.

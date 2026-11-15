@@ -97,7 +97,7 @@ export function MissionTimeline({ start, end, value, onChange, onTick, playing, 
       aria-pressed={playing}
       aria-label={playing ? "Pause the timeline" : "Play the timeline"}
       title={playing ? "Pause (Space)" : "Play the mission forward, one day per second (Space)"}
-      className="mt-[29px] inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-sm border border-line bg-panel-2 text-fg transition-colors hover:border-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+      className="mt-[29px] inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-sm border border-primary bg-primary text-primary-ink transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-offset-2 focus-visible:ring-offset-bg focus-visible:ring-2 focus-visible:ring-accent"
     >
       {playing ? <Pause size={18} weight="fill" aria-hidden /> : <Play size={18} weight="fill" aria-hidden />}
     </button>
