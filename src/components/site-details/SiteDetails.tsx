@@ -126,8 +126,8 @@ export function SiteDetails({ site }: { site: Site | null }) {
           // Same order as the body: enthusiast takeaway cards first, then the battery and power charts, then the rows.
           const card = (id: string) => persona === "enthusiast" && !!enthusiastPick(id)?.card;
           const row = ({ m: def }: (typeof items)[number]) => ({ id: metricAnchor(def.id), label: metricLabel(def, persona) });
-          // Enthusiasts get the categories only, with no expandable list of metrics under each (D-111).
-          if (persona === "enthusiast") return { id: categoryAnchor(cat.id), label: cat.label };
+          // Enthusiasts and educators get the categories only, with no expandable list of metrics under each (D-111, D-118).
+          if (persona !== "planner") return { id: categoryAnchor(cat.id), label: cat.label };
           return {
             id: categoryAnchor(cat.id), label: cat.label, children: [
               ...items.filter(({ m: def }) => card(def.id)).map(row),

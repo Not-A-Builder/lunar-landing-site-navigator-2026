@@ -3,8 +3,8 @@
  * metrics of each category, not the obscure or technical ones. This is a curated presentation choice:
  * it picks which computed metrics to show and how to label and explain them, and adds no values of its own.
  *
- * - `card`: a main takeaway, listed first in its category under this short label. Its row is accented
- *   by the metric's rating (good / trade-off / challenging) and stays neutral when unrated.
+ * - `card`: a main takeaway, listed first in its category under this short label, with its rating
+ *   (good / trade-off / challenging) when it has one.
  * - `subtext`: show the sheet's enthusiast line (`views.enthusiast`) under the question. Only set where
  *   that line adds something; most just repeat or reword the question, so they stay hidden.
  * - `tip`: the metric's tooltip for enthusiasts (D-112), in plain language. It describes what the app
@@ -136,9 +136,5 @@ export const ENTHUSIAST_METRICS: Record<string, EnthusiastPick> = {
     tip: "The closest site where another mission is planned, from NASA, commercial and international plans, with its distance. Missions close together may need to coordinate landings and radio use. Plans and dates often change.",
   },
 };
-
-/** Enthusiast tooltip for a category's status badge (D-112); matches `rollUp` in `src/lib/metrics/types.ts`. */
-export const enthusiastCategoryStatusTip = (n: number) =>
-  `An overall verdict for this section, from all ${n} of its rated result${n === 1 ? "" : "s"}, including some shown only in the Educator and Mission planner views. Challenging when most of them are red or they're poor on average; Trade-off when any is red or they're middling; Good when none is red and they're good on average.`;
 
 export const enthusiastPick = (id: string): EnthusiastPick | undefined => ENTHUSIAST_METRICS[id];
