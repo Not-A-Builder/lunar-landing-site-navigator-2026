@@ -20,7 +20,7 @@ export function BandsPanel() {
         <button onClick={resetBands} className="text-sm text-muted underline hover:text-fg">Reset all to defaults</button>
       </div>
       <p className="mb-4 max-w-3xl text-sm text-muted">
-        These thresholds decide red / amber / green for every rated metric and the 1–10 scores on Compare. Each one starts at a default with a stated reason. Change any of them for your mission; linked bands follow your assumptions until you edit them.
+        These thresholds decide whether every rated metric is favourable, conditional or unfavourable, and which scenario leads each row on Compare. Each one starts at a default with a stated reason. Change any of them for your mission; linked bands follow your assumptions until you edit them.
       </p>
       <div className="overflow-x-auto">
         <table className="w-full min-w-180 text-sm">
@@ -28,8 +28,8 @@ export function BandsPanel() {
             <tr className="text-left text-xs text-faint">
               <th className="py-1.5 font-normal">Band set</th>
               <th className="font-normal">Better</th>
-              <th className="font-normal">Amber starts at</th>
-              <th className="font-normal">Green starts at</th>
+              <th className="font-normal">Conditional starts at</th>
+              <th className="font-normal">Favourable starts at</th>
               <th className="font-normal">Preview</th>
               <th className="font-normal" />
             </tr>
@@ -87,7 +87,7 @@ function BandRow({ k, edited, spec, defaults, onSet, onReset }: {
       ))}
       <td className="py-2 pr-2">
         <BandStrip rating={rate(mid, spec)} value={mid} />
-        {!valid && <div className="mt-1 text-xs text-critical">Green must be {d.better === "higher" ? "at or above" : "at or below"} amber; not applied.</div>}
+        {!valid && <div className="mt-1 text-xs text-critical">Favourable must be {d.better === "higher" ? "at or above" : "at or below"} conditional; not applied.</div>}
       </td>
       <td className="py-2">{edited && <button onClick={() => { setDraft(null); onReset(); }} className="text-xs text-muted underline hover:text-fg">Reset</button>}</td>
     </tr>

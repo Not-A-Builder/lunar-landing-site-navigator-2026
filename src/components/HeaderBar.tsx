@@ -5,17 +5,31 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { exitCompareFlow, validBack } from "@/lib/compare-flow";
 import { SITE_TITLE } from "@/lib/config";
+import { parseScenarios } from "@/lib/scenarios";
+import { useExitCompare } from "./compare/ExitCompareDialog";
 import { NavLinks } from "./NavLinks";
 import { PersonaToggle } from "./PersonaToggle";
 import { ThemeToggle } from "./ThemeToggle";
 
 const divider = <span className="h-6 w-px shrink-0 bg-line" aria-hidden />;
 
-/** The regular header row: title, page links, persona and theme. Also the fallback while the URL is read. */
-export function DefaultHeaderBar() {
+/**
+ * The regular header row: title, page links, persona and theme. Also the fallback while the URL is read.
+ * The title always leads to site selection; while a comparison is open it first asks to exit it (D-130).
+ */
+export function DefaultHeaderBar({ comparing = false }: { comparing?: boolean }) {
+  const askExit = useExitCompare((s) => s.setOpen);
   return (
     <>
-      <Link href="/" className="shrink-0 font-semibold tracking-tight">
+      <Link
+        href="/"
+        onClick={(e) => {
+          if (!comparing || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+          e.preventDefault();
+          askExit(true);
+        }}
+        className="shrink-0 font-semibold tracking-tight"
+      >
         {SITE_TITLE}
       </Link>
       {divider}
@@ -37,7 +51,7 @@ export function HeaderBar() {
   const params = useSearchParams();
   const router = useRouter();
   const back = pathname === "/" ? validBack(params.get("back")) : null;
-  if (!back) return <DefaultHeaderBar />;
+  if (!back) return <DefaultHeaderBar comparing={pathname === "/compare" && parseScenarios(params.get("s")).length >= 2} />;
   // Only the close (×) and the step's title, from the left edge: no app name, links, persona or theme (D-129).
   return (
     <div className="flex items-center gap-3">

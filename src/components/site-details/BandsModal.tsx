@@ -78,7 +78,7 @@ function Editor({ focus, onClose, values }: { focus?: BandKey; onClose: () => vo
       labelledBy="bands-title"
       onClose={onClose}
       dirty={changed.length > 0}
-      description="Thresholds that turn a value into red / amber / green bands"
+      description="Thresholds that rate each value favourable, conditional or unfavourable"
       footer={
         <EditorFooter
           dirty={changed.length > 0}
@@ -114,13 +114,13 @@ function Editor({ focus, onClose, values }: { focus?: BandKey; onClose: () => vo
               <div className="flex gap-4">
                 {(["amber", "green"] as const).map((f) => (
                   <label key={f} className="min-w-0 flex-1 text-xs text-muted">
-                    {f === "amber" ? "Trade-off starts at" : "Good starts at"}
+                    {f === "amber" ? "Conditional starts at" : "Favourable starts at"}
                     <span className={`mt-1 flex h-10 items-center rounded-sm border bg-bg focus-within:border-fg ${ok ? "border-line" : "border-critical"}`}>
                       <input
                         type="number"
                         step="any"
                         value={draft[k][f]}
-                        aria-label={`${d.label}: ${f === "amber" ? "trade-off" : "good"} threshold`}
+                        aria-label={`${d.label}: ${f === "amber" ? "conditional" : "favourable"} threshold`}
                         onChange={(e) => setDraft({ ...draft, [k]: { ...draft[k], [f]: e.target.value } })}
                         className="num h-full min-w-0 flex-1 bg-transparent px-2 text-sm text-fg outline-none"
                       />
@@ -137,7 +137,7 @@ function Editor({ focus, onClose, values }: { focus?: BandKey; onClose: () => vo
                     {users[0] && <p className="mt-1 text-xs text-faint">Marker: this site&apos;s value for {users[0].name} (<span className="num">{show(users[0].value)}{d.unit}</span>)</p>}
                   </>
                 ) : (
-                  <p className="text-xs text-critical">{d.better === "higher" ? "“Good” must be at or above “Trade-off”." : "“Good” must be at or below “Trade-off”."} Not saved until fixed.</p>
+                  <p className="text-xs text-critical">{d.better === "higher" ? "“Favourable” must be at or above “Conditional”." : "“Favourable” must be at or below “Conditional”."} Not saved until fixed.</p>
                 )}
               </div>
             </div>

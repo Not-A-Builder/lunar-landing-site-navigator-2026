@@ -9,11 +9,15 @@ import { serialiseScenarios, type Scenario } from "@/lib/scenarios";
 /** Only same-origin paths count as a return target (no `//host` or absolute URLs). */
 export const validBack = (back: string | null): string | null => (back && back.startsWith("/") && !back.startsWith("//") ? back : null);
 
-/** URL that opens the flow with `scenarios` already saved and the next slot's landing time set to `t`. */
-export function compareFlowHref(scenarios: Scenario[], back: string, t?: string): string {
+/**
+ * URL that opens the flow with `scenarios` already saved and the next slot's landing time set to `t`.
+ * `edit` opens that saved scenario in the form instead, ready to change (a card clicked on Compare, D-131).
+ */
+export function compareFlowHref(scenarios: Scenario[], back: string, t?: string, edit?: number): string {
   const q = [
     scenarios.length ? `s=${serialiseScenarios(scenarios)}` : "",
     t ? `t=${encodeURIComponent(t)}` : "",
+    edit !== undefined ? `edit=${edit}` : "",
     `back=${encodeURIComponent(back)}`,
   ].filter(Boolean);
   return `/?${q.join("&")}`;

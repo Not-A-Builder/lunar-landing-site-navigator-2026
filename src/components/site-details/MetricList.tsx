@@ -120,75 +120,92 @@ function TakeawayRows({ items }: { items: { m: MetricDef; v: MetricValue }[] }) 
   if (!items.length) return null;
   return (
     <ul className="divide-y divide-line border-b border-line" aria-label="Main takeaways">
-      {items.map(({ m, v }) => {
-        const rag = v.rating?.rag;
-        return (
-          <li key={m.id} id={metricAnchor(m.id)} className="grid scroll-mt-24 gap-x-10 gap-y-2 py-5 md:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
-            <div className="flex min-w-0 items-start gap-1">
-              <h4 className="font-medium leading-snug">{enthusiastPick(m.id)?.card ?? m.question}</h4>
-              <span className="-mt-0.5 shrink-0">
-                <InfoTip title={enthusiastPick(m.id)?.card ?? m.question} sources={v.sources?.length ? v.sources : ["metrics-sheet"]}>
-                  {enthusiastPick(m.id)?.tip ?? m.definition}
-                </InfoTip>
-              </span>
-            </div>
-            <div className="min-w-0">
-              <Value v={v} large readOnly />
-              {rag && <div className="mt-1.5"><RagBadge rag={rag} /></div>}
-            </div>
-          </li>
-        );
-      })}
+      {items.map(({ m, v }) => (
+        <li key={m.id} id={metricAnchor(m.id)} className="grid scroll-mt-24 gap-x-10 gap-y-2 py-5 md:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
+          <div className="min-w-0"><MetricLabelCell m={m} v={v} persona="enthusiast" takeaway /></div>
+          <div className="min-w-0"><MetricAnswerCell m={m} v={v} persona="enthusiast" takeaway /></div>
+        </li>
+      ))}
     </ul>
   );
 }
 
 /** Memoised: rows don't depend on the selected time, so timeline playback (D-093) skips them. */
 const MetricRow = memo(function MetricRow({ m, v, persona }: { m: MetricDef; v: MetricValue; persona: Persona }) {
-  const planner = persona === "planner", educator = persona === "educator", enthusiast = persona === "enthusiast";
   return (
     <li id={metricAnchor(m.id)} className="grid scroll-mt-24 gap-x-10 gap-y-3 py-5 md:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
-      <div className="min-w-0">
-        <div className="flex items-start gap-1">
-          <h4 className="font-medium leading-snug">{metricLabel(m, persona)}</h4>
-          <span className="-mt-0.5 shrink-0">
-            <InfoTip title={metricLabel(m, persona)} sources={v.sources?.length ? v.sources : ["metrics-sheet"]}>
-              {/* Enthusiasts and educators get copy written for them (D-112, D-118); planners get the sheet's definition and detail. */}
-              {enthusiast ? enthusiastPick(m.id)?.tip ?? m.definition : educator ? educatorPick(m.id)?.tip ?? m.definition : <>
-              <span className="block">{m.definition}</span>
-              {!enthusiast && <span className="mt-1.5 block"><b className="font-medium text-fg">Why it matters:</b> {m.significance}</span>}
-              {planner && (m.role || m.dependencies) && <span className="mt-1.5 block">Role: {m.role}{m.dependencies ? ` · depends on ${m.dependencies}` : ""}</span>}
-              {m.unit && <span className="mt-1.5 block">Unit: {m.unit}</span>}
-              {m.caveats && <span className="mt-1.5 block">Caveat: {m.caveats}</span>}
-              </>}
-            </InfoTip>
-          </span>
-        </div>
-        {enthusiast && enthusiastPick(m.id)?.subtext && <p className="mt-1 text-sm leading-relaxed text-muted">{m.views.enthusiast}</p>}
-        {educator && <div className="mt-1.5"><EducatorExplain id={m.id} /></div>}
-        {planner && <p className="mt-1 line-clamp-3 text-sm leading-relaxed text-muted">{m.definition}</p>}
-      </div>
-      <div className="min-w-0">
-        {/* The answer: educators read it as a plain-English sentence with the value in bold (D-121); the others see the value. */}
-        {educator ? <EducatorAnswer id={m.id} v={v} /> : <Value v={v} large={!enthusiast} readOnly={enthusiast} />}
-        {!enthusiast && (
-          <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5">
-            {v.rating && <RatingButton rating={v.rating} />}
-            <StatusLabel v={v} />
-          </div>
-        )}
-        {!enthusiast && v.rating && typeof v.value === "number" && (
-          <BandsTrigger k={v.rating.key} className="mt-3 block w-full text-left">
-            <BandStrip rating={v.rating} value={v.value} wide />
-          </BandsTrigger>
-        )}
-        {planner && v.note && <p className="mt-2.5 text-sm leading-relaxed text-muted"><NumText>{v.note}</NumText></p>}
-        {educator && v.note && <p className="mt-2 text-xs text-faint">{v.note}</p>}
-        {planner && v.detail && v.status !== "reference" && <DataRows detail={v.detail} />}
-      </div>
+      <div className="min-w-0"><MetricLabelCell m={m} v={v} persona={persona} /></div>
+      <div className="min-w-0"><MetricAnswerCell m={m} v={v} persona={persona} /></div>
     </li>
   );
 });
+
+/**
+ * Left half of a metric row: the persona's name for the metric, its tooltip and the explanation under it.
+ * Shared by the site details page and the comparison's label column, so both always read the same (D-130).
+ * `v` only supplies the tooltip's sources. `takeaway`: an enthusiast takeaway row (no subtext, D-109).
+ */
+export function MetricLabelCell({ m, v, persona, takeaway }: { m: MetricDef; v?: MetricValue; persona: Persona; takeaway?: boolean }) {
+  const planner = persona === "planner", educator = persona === "educator", enthusiast = persona === "enthusiast";
+  return (
+    <>
+      <div className="flex items-start gap-1">
+        <h4 className="font-medium leading-snug">{metricLabel(m, persona)}</h4>
+        <span className="-mt-0.5 shrink-0">
+          <InfoTip title={metricLabel(m, persona)} sources={v?.sources?.length ? v.sources : ["metrics-sheet"]}>
+            {/* Enthusiasts and educators get copy written for them (D-112, D-118); planners get the sheet's definition and detail. */}
+            {enthusiast ? enthusiastPick(m.id)?.tip ?? m.definition : educator ? educatorPick(m.id)?.tip ?? m.definition : <>
+            <span className="block">{m.definition}</span>
+            <span className="mt-1.5 block"><b className="font-medium text-fg">Why it matters:</b> {m.significance}</span>
+            {(m.role || m.dependencies) && <span className="mt-1.5 block">Role: {m.role}{m.dependencies ? ` · depends on ${m.dependencies}` : ""}</span>}
+            {m.unit && <span className="mt-1.5 block">Unit: {m.unit}</span>}
+            {m.caveats && <span className="mt-1.5 block">Caveat: {m.caveats}</span>}
+            </>}
+          </InfoTip>
+        </span>
+      </div>
+      {enthusiast && !takeaway && enthusiastPick(m.id)?.subtext && <p className="mt-1 text-sm leading-relaxed text-muted">{m.views.enthusiast}</p>}
+      {educator && <div className="mt-1.5"><EducatorExplain id={m.id} /></div>}
+      {planner && <p className="mt-1 line-clamp-3 text-sm leading-relaxed text-muted">{m.definition}</p>}
+    </>
+  );
+}
+
+/**
+ * Right half of a metric row: the value (or the educator's sentence), rating, status, band strip, note and
+ * data rows. Shared by the site details page and each scenario column of the comparison (D-130).
+ */
+export function MetricAnswerCell({ m, v, persona, takeaway }: { m: MetricDef; v: MetricValue; persona: Persona; takeaway?: boolean }) {
+  const planner = persona === "planner", educator = persona === "educator", enthusiast = persona === "enthusiast";
+  if (takeaway) {
+    return (
+      <>
+        <Value v={v} large readOnly />
+        {v.rating && <div className="mt-1.5"><RagBadge rag={v.rating.rag} /></div>}
+      </>
+    );
+  }
+  return (
+    <>
+      {/* The answer: educators read it as a plain-English sentence with the value in bold (D-121); the others see the value. */}
+      {educator ? <EducatorAnswer id={m.id} v={v} /> : <Value v={v} large={!enthusiast} readOnly={enthusiast} />}
+      {!enthusiast && (
+        <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5">
+          {v.rating && <RatingButton rating={v.rating} />}
+          <StatusLabel v={v} />
+        </div>
+      )}
+      {!enthusiast && v.rating && typeof v.value === "number" && (
+        <BandsTrigger k={v.rating.key} className="mt-3 block w-full text-left">
+          <BandStrip rating={v.rating} value={v.value} wide />
+        </BandsTrigger>
+      )}
+      {planner && v.note && <p className="mt-2.5 text-sm leading-relaxed text-muted"><NumText>{v.note}</NumText></p>}
+      {educator && v.note && <p className="mt-2 text-xs text-faint">{v.note}</p>}
+      {planner && v.detail && v.status !== "reference" && <DataRows detail={v.detail} />}
+    </>
+  );
+}
 
 /** The value, split into readable lines when it lists several parts ("a · b · c" or "a; b"). */
 function Value({ v, large, readOnly }: { v: MetricValue; large: boolean; readOnly?: boolean }) {

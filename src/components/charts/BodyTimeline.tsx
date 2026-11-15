@@ -9,7 +9,7 @@ import { compass, fmtDeg, fmtHours, fmtLat, fmtLon, fmtPct } from "@/lib/metrics
 import type { SourceId } from "@/lib/sources";
 import { InfoTip } from "../InfoTip";
 import type { Persona } from "@/lib/persona";
-import { AXIS, ChartTip, dayTicks, fmtDay, fmtMissionTime, fmtWhen, Legend, niceTicks, sampleAt, scale, TIME_MARGIN, TipHead, TipRows, usePlotHover, useWidth } from "./chart-kit";
+import { AXIS, ChartTip, dayTicks, fmtDay, fmtMissionTime, fmtWhen, Legend, niceTicks, sampleAt, scale, TIME_MARGIN, TipHead, TipRows, useComparisonMode, usePlotHover, useWidth } from "./chart-kit";
 
 type Lane = { key: string; label: string; iv: Interval[]; color: string; opacity: number; h: number; gaps?: Interval[]; /** the combined lane: a little extra space above, label in the text colour */ result?: boolean };
 const HOUR = 3_600_000;
@@ -315,6 +315,7 @@ const N = ({ children }: { children: ReactNode }) => <span className="num text-f
 const ho = (h: { from: number; to: number }) => `${DSN_COMPLEXES[h.from].short} → ${DSN_COMPLEXES[h.to].short}`;
 
 function DsnSummary({ d, persona, minEl }: { d: DsnSummaryData; persona: Persona; minEl: number }) {
+  const stacked = useComparisonMode();
   const top = d.handovers[0];
   const widest = d.spacing.reduce((b, x) => (x.deg > b.deg ? x : b));
   const topIsWidest = !!top && top.from === widest.from;
@@ -323,22 +324,35 @@ function DsnSummary({ d, persona, minEl }: { d: DsnSummaryData; persona: Persona
     : null;
 
   if (persona === "planner") {
-    const rows: [string, ReactNode][] = [
-      [`DSN visibility (Moon ≥ ${minEl}°)`, <>{DSN_RELAY_ORDER.map((k, j) => <Fragment key={k}>{j ? " · " : ""}{DSN_COMPLEXES[k].short} <N>{fmtPct(d.share[k])}</N></Fragment>)} · any <N>{fmtPct(d.any)}</N> of the mission</>],
+    // Each value is a list of parts: one line of "a · b · c" on the site details page; in the narrow
+    // comparison columns the key sits above its value and each part gets its own line (D-131).
+    const rows: [string, ReactNode[]][] = [
+      [`DSN visibility (Moon ≥ ${minEl}°)`, [...DSN_RELAY_ORDER.map((k) => <>{DSN_COMPLEXES[k].short} <N>{fmtPct(d.share[k])}</N></>), <>any <N>{fmtPct(d.any)}</N> of the mission</>]],
       ["Coverage gaps, whole mission", d.gapsAll.length
-        ? <><N>{d.gapsAll.length}</N>, longest <N>{fmtHours(d.longestAllH)}</N>; by handover {d.handovers.map((h, j) => <Fragment key={`${h.from}-${h.to}`}>{j ? " · " : ""}{ho(h)} <N>{h.n}</N></Fragment>)}</>
-        : "None"],
+        ? [<><N>{d.gapsAll.length}</N>, longest <N>{fmtHours(d.longestAllH)}</N>; by handover</>, ...d.handovers.map((h) => <>{ho(h)} <N>{h.n}</N></>)]
+        : ["None"]],
       [`While Earth is in view (${fmtHours(d.dteH)})`, d.gaps.length
-        ? <><N>{d.gaps.length}</N> {d.gaps.length === 1 ? "gap" : "gaps"}, <N>{fmtHours(d.gapH)}</N> in all; longest <N>{fmtHours((d.longest!.end - d.longest!.start) / HOUR)}</N> from <N>{fmtWhen(d.longest!.start)}</N></>
-        : d.dteH > 0 ? "No gaps" : "Earth never in view"],
-      ["Contact (Earth in view ∩ DSN)", <><N>{fmtHours(d.contactH)}</N> (<N>{fmtPct(d.contactShare)}</N> of the mission)</>],
-      ["Complex spacing (Moon's westward path)", <>{d.spacing.map((x, j) => <Fragment key={x.from}>{j ? " · " : ""}{ho({ from: x.from, to: DSN_RELAY_ORDER[(j + 1) % 3] })} <N>{fmtDeg(x.deg, 0)}</N></Fragment>)}</>],
+        ? [<><N>{d.gaps.length}</N> {d.gaps.length === 1 ? "gap" : "gaps"}, <N>{fmtHours(d.gapH)}</N> in all</>, <>longest <N>{fmtHours((d.longest!.end - d.longest!.start) / HOUR)}</N> from <N>{fmtWhen(d.longest!.start)}</N></>]
+        : [d.dteH > 0 ? "No gaps" : "Earth never in view"]],
+      ["Contact (Earth in view ∩ DSN)", [<><N>{fmtHours(d.contactH)}</N> (<N>{fmtPct(d.contactShare)}</N> of the mission)</>]],
+      ["Complex spacing (Moon's westward path)", d.spacing.map((x, j) => <>{ho({ from: x.from, to: DSN_RELAY_ORDER[(j + 1) % 3] })} <N>{fmtDeg(x.deg, 0)}</N></>)],
     ];
     return (
       <div className="mt-4 max-w-4xl border-t border-line pt-3 text-sm">
-        <dl className="grid gap-x-6 gap-y-1.5 sm:grid-cols-[max-content_minmax(0,1fr)]">
-          {rows.map(([k, v]) => <Fragment key={k}><dt className="text-muted">{k}</dt><dd>{v}</dd></Fragment>)}
-        </dl>
+        {stacked ? (
+          <dl className="space-y-2.5">
+            {rows.map(([k, parts]) => (
+              <div key={k}>
+                <dt className="text-muted">{k}</dt>
+                <dd>{parts.map((p, j) => <div key={j}>{p}</div>)}</dd>
+              </div>
+            ))}
+          </dl>
+        ) : (
+          <dl className="grid gap-x-6 gap-y-1.5 sm:grid-cols-[max-content_minmax(0,1fr)]">
+            {rows.map(([k, parts]) => <Fragment key={k}><dt className="text-muted">{k}</dt><dd>{parts.map((p, j) => <Fragment key={j}>{j ? (k.startsWith("Coverage") && j === 1 ? " " : " · ") : ""}{p}</Fragment>)}</dd></Fragment>)}
+          </dl>
+        )}
         <p className="mt-2 text-muted">Geometric visibility only: real DSN passes are scheduled and shared with other missions.</p>
       </div>
     );

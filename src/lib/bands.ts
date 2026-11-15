@@ -35,15 +35,15 @@ export const BAND_DEFS: Record<BandKey, BandDef> = {
     label: "Longest darkness", better: "lower", unit: " h", linkedTo: "battery capacity ÷ survival load",
     defaults: (a) => ({ amber: +survivable(a).toFixed(1), green: +(survivable(a) / 2).toFixed(1) }),
     domain: (_a, t) => ({ min: 0, max: Math.max(t.amber * 2, 1) }),
-    basis: (a) => `Red beyond what your battery can survive on heaters (${survivable(a).toFixed(0)} h from your assumptions); green within half of it.`,
+    basis: (a) => `Unfavourable beyond what your battery can survive on heaters (${survivable(a).toFixed(0)} h from your assumptions); favourable within half of it.`,
   },
-  litH: { label: "Longest continuous sunlight", better: "higher", unit: " h", defaults: () => ({ amber: 78, green: 156 }), domain: (a) => ({ min: 0, max: Math.max(a.missionDays * 24, 157) }), basis: () => "NASA chose its south-pole candidate regions for continuous sunlight over a 6.5-day (156 h) surface stay; half of that marks amber." },
+  litH: { label: "Longest continuous sunlight", better: "higher", unit: " h", defaults: () => ({ amber: 78, green: 156 }), domain: (a) => ({ min: 0, max: Math.max(a.missionDays * 24, 157) }), basis: () => "NASA chose its south-pole candidate regions for continuous sunlight over a 6.5-day (156 h) surface stay, so 156 h or more is favourable; under half of that is unfavourable." },
   blackoutH: { label: "Longest stretch without contact", better: "lower", unit: " h", defaults: () => ({ amber: 72, green: 24 }), domain: (a) => ({ min: 0, max: Math.max(a.missionDays * 24, 73) }), basis: () => `A day without Earth contact is manageable for an autonomous lander; three days is a long blackout. ${TOOL}` },
   slope: {
     label: "Slope", better: "lower", unit: "°", linkedTo: "lander slope tolerance",
     defaults: (a) => ({ amber: a.slopeToleranceDeg, green: a.slopeToleranceDeg / 2 }),
     domain: (a) => ({ min: 0, max: Math.max(30, a.slopeToleranceDeg * 2) }),
-    basis: (a) => `Red above your lander's slope tolerance (${a.slopeToleranceDeg}°); green within half of it.`,
+    basis: (a) => `Unfavourable above your lander's slope tolerance (${a.slopeToleranceDeg}°); favourable within half of it.`,
   },
   margin: { label: "Earth clearance above terrain", better: "higher", unit: "°", defaults: () => ({ amber: 0, green: 3 }), domain: () => ({ min: -10, max: 15 }), basis: () => `Below 0° Earth is hidden; a few degrees of margin keeps the link clear of the terrain edge. ${TOOL}` },
   soc: { label: "Lowest battery charge", better: "higher", unit: "%", defaults: () => ({ amber: 1, green: 30 }), domain: () => ({ min: 0, max: 100 }), basis: () => `Reaching 0% means the battery runs out; 30% keeps a reserve. ${TOOL}` },
@@ -52,7 +52,7 @@ export const BAND_DEFS: Record<BandKey, BandDef> = {
   areaPct: { label: "Share of surrounding area meeting criteria", better: "higher", unit: "%", defaults: () => ({ amber: 40, green: 70 }), domain: () => ({ min: 0, max: 100 }), basis: () => `More qualifying ground means more room for landing error and moving around. ${TOOL}` },
   sunElev: { label: "Sun elevation at landing", better: "higher", unit: "°", defaults: () => ({ amber: 0, green: 3 }), domain: () => ({ min: -5, max: 10 }), basis: () => `Below 0° the Sun is under the flat horizon; near the pole it rarely climbs more than a few degrees. ${TOOL}` },
   hazardPct: { label: "Area too steep for the lander", better: "lower", unit: "%", defaults: () => ({ amber: 60, green: 30 }), domain: () => ({ min: 0, max: 100 }), basis: () => `Share of the surrounding area steeper than your lander's tolerance. ${TOOL}` },
-  heritageKm: { label: "Distance to nearest historic artifact", better: "higher", unit: " km", defaults: () => ({ amber: 2, green: 10 }), domain: () => ({ min: 0, max: 50 }), basis: () => "Red inside the 2 km touchdown-targeting distance in NASA's 2011 lunar heritage recommendations; green beyond 10 km (tool default)." },
+  heritageKm: { label: "Distance to nearest historic artifact", better: "higher", unit: " km", defaults: () => ({ amber: 2, green: 10 }), domain: () => ({ min: 0, max: 50 }), basis: () => "Unfavourable inside the 2 km touchdown-targeting distance in NASA's 2011 lunar heritage recommendations; favourable beyond 10 km (tool default)." },
 };
 
 export const BAND_KEYS = Object.keys(BAND_DEFS) as BandKey[];
@@ -74,7 +74,7 @@ export function resolveBands(a: Assumptions, overrides: BandOverrides = {}): Rec
     out[k] = {
       better: d.better, amber: t.amber, green: t.green,
       min: Math.min(dom.min, t.amber, t.green), max: Math.max(dom.max, t.amber, t.green), unit: d.unit,
-      basis: t === def ? d.basis(a) : `Edited by you: amber at ${fmt(t.amber)}, green at ${fmt(t.green)} (default ${fmt(def.amber)} / ${fmt(def.green)}: ${d.basis(a)})`,
+      basis: t === def ? d.basis(a) : `Edited by you: conditional from ${fmt(t.amber)}, favourable from ${fmt(t.green)} (default ${fmt(def.amber)} / ${fmt(def.green)}: ${d.basis(a)})`,
     };
   }
   return out;

@@ -1,19 +1,45 @@
 "use client";
 
-import { CheckCircle, WarningDiamond, WarningOctagon, type Icon } from "@phosphor-icons/react";
-import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import type { Rag, Rating } from "@/lib/metrics/types";
 
-const META: Record<Rag, { label: string; Icon: Icon; color: string }> = {
-  green: { label: "Good", Icon: CheckCircle, color: "var(--good)" },
-  amber: { label: "Trade-off", Icon: WarningDiamond, color: "var(--warning)" },
-  red: { label: "Challenging", Icon: WarningOctagon, color: "var(--critical)" },
+/** Rating names (D-140). Each always shows with its own shape and colour, never colour alone (D-024). */
+const META: Record<Rag, { label: string; color: string }> = {
+  green: { label: "Favourable", color: "var(--good)" },
+  amber: { label: "Conditional", color: "var(--warning)" },
+  red: { label: "Unfavourable", color: "var(--critical)" },
+};
+
+/**
+ * Rating icons (D-140): a solid circle with a tick, a diamond with "!" and an octagon with "!", drawn here
+ * (256-unit box, like Phosphor's) so they carry a little more weight than Phosphor's fill icons at the same
+ * size: each shape fills slightly more of the box, and the glyph strokes are thicker. Glyphs are cut out
+ * with a mask, so whatever is behind the icon (a page, a card, a highlighted cell) shows through.
+ */
+const SHAPE: Record<Rag, ReactNode> = {
+  green: <circle cx="128" cy="128" r="106" />,
+  amber: <path d="M128 21 235 128 128 235 21 128Z" />,
+  red: <path d="M84 23h88l61 61v88l-61 61H84l-61-61V84Z" />,
+};
+const GLYPH: Record<Rag, ReactNode> = {
+  green: <path d="M82 131l30 30 62-64" fill="none" strokeWidth="22" strokeLinecap="round" strokeLinejoin="round" />,
+  amber: <><path d="M128 80v52" strokeWidth="22" strokeLinecap="round" /><circle cx="128" cy="174" r="14" stroke="none" /></>,
+  red: <><path d="M128 76v58" strokeWidth="22" strokeLinecap="round" /><circle cx="128" cy="176" r="14" stroke="none" /></>,
 };
 
 export function RagIcon({ rag, size = 17 }: { rag: Rag; size?: number }) {
-  const m = META[rag];
-  return <m.Icon size={size} weight="fill" style={{ color: m.color }} className="shrink-0" aria-hidden />;
+  const id = `rag-${useId().replace(/:/g, "")}`;
+  return (
+    <svg width={size} height={size} viewBox="0 0 256 256" className="shrink-0" aria-hidden style={{ color: META[rag].color }}>
+      <mask id={id}>
+        <rect width="256" height="256" fill="white" />
+        <g fill="black" stroke="black">{GLYPH[rag]}</g>
+      </mask>
+      {/* A rounded outline on the shape softens its corners like Phosphor's. */}
+      <g fill="currentColor" stroke="currentColor" strokeWidth="8" strokeLinejoin="round" mask={`url(#${id})`}>{SHAPE[rag]}</g>
+    </svg>
+  );
 }
 
 /** What each rating means, in plain words for every persona (D-113). Short enough for two lines. */

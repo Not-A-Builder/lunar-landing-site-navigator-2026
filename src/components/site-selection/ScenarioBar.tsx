@@ -45,9 +45,9 @@ export function ScenarioBar({
           if (i !== activeIndex && i < queue.length) {
             const sc = queue[i];
             return (
-              <Card key={i} i={i} label={`Scenario ${L}`} onEdit={() => onEdit(i)} onRemove={() => onRemoveQueued(i)} letter={L}>
+              <ScenarioCard key={i} i={i} label={`Scenario ${L}`} onEdit={() => onEdit(i)} onRemove={() => onRemoveQueued(i)} letter={L}>
                 {isComplete(sc) ? (
-                  <Lines name={resolveScenarioSite(sc.siteId)?.name ?? "Unknown site"} when={sc.t ? Date.parse(sc.t) : null} />
+                  <ScenarioLines name={resolveScenarioSite(sc.siteId)?.name ?? "Unknown site"} when={sc.t ? Date.parse(sc.t) : null} />
                 ) : (
                   // Partial: a landing time, no site yet. Kept until removed with × (D-074).
                   <>
@@ -55,21 +55,21 @@ export function ScenarioBar({
                     <div className="num truncate text-xs text-muted">{fmtUTC(sc.t ? Date.parse(sc.t) : null)}</div>
                   </>
                 )}
-              </Card>
+              </ScenarioCard>
             );
           }
           if (i === activeIndex) {
             return (
-              <Card key={i} i={i} active label={`Scenario ${L} · ${editing ? "editing" : "selecting now"}`} onRemove={onRemoveCurrent} letter={L}>
+              <ScenarioCard key={i} i={i} active label={`Scenario ${L} · ${editing ? "editing" : "selecting now"}`} onRemove={onRemoveCurrent} letter={L}>
                 {current ? (
-                  <Lines name={resolveScenarioSite(current.siteId)?.name ?? "Unknown site"} when={draftWhen} />
+                  <ScenarioLines name={resolveScenarioSite(current.siteId)?.name ?? "Unknown site"} when={draftWhen} />
                 ) : (
                   <>
                     <div className="truncate text-sm text-muted">Pick a date, time and site below</div>
                     <div className="num truncate text-xs text-faint">{fmtUTC(draftWhen)}</div>
                   </>
                 )}
-              </Card>
+              </ScenarioCard>
             );
           }
           return (
@@ -89,16 +89,17 @@ export function ScenarioBar({
   );
 }
 
-function Card({
-  i, label, letter, active = false, onEdit, onRemove, children,
-}: { i: number; label: string; letter: string; active?: boolean; onEdit?: () => void; onRemove: () => void; children: React.ReactNode }) {
+/** One scenario card. Also used, as a `div`, for the comparison's cards (D-131), so both look the same. */
+export function ScenarioCard({
+  i, label, letter, active = false, onEdit, onRemove, children, as: Tag = "li", className = "", editTitle = "Edit date, time and site",
+}: { i: number; label: string; letter: string; active?: boolean; onEdit?: () => void; onRemove?: () => void; children: React.ReactNode; as?: "li" | "div"; className?: string; editTitle?: string }) {
   // A saved card is clickable as a whole to edit it (D-075); × stops the click from reaching the card.
   const editable = onEdit
     ? {
         role: "button",
         tabIndex: 0,
         "aria-label": `Edit scenario ${letter}`,
-        title: "Edit date, time and site",
+        title: editTitle,
         onClick: onEdit,
         onKeyDown: (e: React.KeyboardEvent) => {
           if (e.target !== e.currentTarget || (e.key !== "Enter" && e.key !== " ")) return;
@@ -108,17 +109,17 @@ function Card({
       }
     : {};
   return (
-    <li
+    <Tag
       {...editable}
       aria-current={active ? "step" : undefined}
       style={stagger(i)}
-      className={`bar-card flex min-h-[76px] min-w-0 flex-col justify-center rounded-sm border bg-panel px-3 py-2 outline-none ${
+      className={`bar-card ${className} flex min-h-[76px] min-w-0 flex-col justify-center rounded-sm border bg-panel px-3 py-2 outline-none ${
         active ? "border-primary ring-1 ring-inset ring-primary" : "border-line"
       } ${onEdit ? "cursor-pointer transition-colors hover:border-muted hover:bg-panel-2 focus-visible:border-fg" : ""}`}
     >
       <div className="flex items-center justify-between gap-2">
         <span className={LABEL}>{label}</span>
-        <button
+        {onRemove && <button
           type="button"
           onClick={(e) => {
             e.stopPropagation();
@@ -129,14 +130,14 @@ function Card({
           className="-m-1 shrink-0 cursor-pointer rounded-sm p-1 text-muted hover:bg-line hover:text-fg"
         >
           <X size={16} />
-        </button>
+        </button>}
       </div>
       {children}
-    </li>
+    </Tag>
   );
 }
 
-function Lines({ name, when }: { name: string; when: number | null }) {
+export function ScenarioLines({ name, when }: { name: string; when: number | null }) {
   return (
     <>
       <div className="truncate font-medium leading-snug">{name}</div>

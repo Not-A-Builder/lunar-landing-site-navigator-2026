@@ -13,6 +13,9 @@ const BTN =
 
 export const btnPrimary = `${BTN} border-primary bg-primary text-primary-ink hover:opacity-90 disabled:hover:opacity-40`;
 export const btnSecondary = `${BTN} border-line bg-panel-2 text-fg hover:border-muted disabled:hover:border-line`;
+/** Link button (D-137): lowest-emphasis actions, text only, no box (replaces the D-134 tertiary). */
+export const btnLink =
+  "cursor-pointer rounded-sm text-sm text-muted underline decoration-line underline-offset-4 transition-colors hover:text-fg hover:decoration-current disabled:cursor-not-allowed disabled:opacity-40";
 
 /** Height of every text, number, search, select and date/time field. */
 export const FIELD_H = "h-10";

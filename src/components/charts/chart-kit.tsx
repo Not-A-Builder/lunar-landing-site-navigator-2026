@@ -1,8 +1,18 @@
 "use client";
 
-import { useCallback, useRef, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 
 /** Small helpers shared by the SVG charts: linear scales, a measured-width container, hover and tooltips. */
+
+/**
+ * True inside the comparison (D-131), where each chart only gets a narrow column: tooltips sit outside the
+ * plot (below it, or above when there is no room) and key / value summaries stack vertically.
+ */
+export const ComparisonMode = createContext(false);
+export const useComparisonMode = () => useContext(ComparisonMode);
+
+/** Bottom edge of whatever is pinned at the top (app header, the comparison's card bar and timeline row): a tooltip placed above must clear it. */
+const stickyBottom = () => Math.max(64, ...[...document.querySelectorAll("[data-sticky-top]")].map((e) => e.getBoundingClientRect().bottom));
 
 export function scale(d0: number, d1: number, r0: number, r1: number) {
   const k = (r1 - r0) / (d1 - d0 || 1);
@@ -110,12 +120,43 @@ export function usePlotHover<K extends string | number>(pick: (px: number, py: n
  * it doesn't chase the pointer vertically. It flips to the left of the point near the right edge.
  */
 export function ChartTip({ x, w, show, top = 8, width = 288, children }: { x: number; w: number; show: boolean; top?: number; width?: number; children: ReactNode }) {
+  if (useComparisonMode()) return <OutsideTip x={x} w={w} show={show} width={width}>{children}</OutsideTip>;
   const left = x + 16 + width > w ? x - 16 - width : x + 16;
   return (
     <div
       aria-hidden={!show}
       className="pointer-events-none absolute left-0 top-0 z-10 rounded-sm border border-line bg-panel/95 px-3 py-2.5 text-xs leading-snug text-fg shadow-lg backdrop-blur-sm motion-safe:transition-[transform,opacity] motion-safe:duration-150 motion-safe:ease-out"
       style={{ width, transform: `translate3d(${Math.max(0, left)}px, ${top}px, 0)`, opacity: show ? 1 : 0 }}
+    >
+      {children}
+    </div>
+  );
+}
+
+/**
+ * Comparison tooltip (D-131): centred on the hovered point and kept inside the column, just below the plot
+ * (the chart's <svg>) so the plot stays fully visible; above it when the screen has no room below.
+ */
+function OutsideTip({ x, w, show, width, children }: { x: number; w: number; show: boolean; width: number; children: ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [top, setTop] = useState<number | null>(null);
+  const tw = Math.min(width, w);
+  const left = Math.max(0, Math.min(w - tw, x - tw / 2));
+  useLayoutEffect(() => {
+    const el = ref.current, parent = el?.parentElement, svg = parent?.querySelector("svg");
+    if (!el || !parent || !svg || !show) return;
+    const p = parent.getBoundingClientRect(), g = svg.getBoundingClientRect(), h = el.offsetHeight;
+    const below = window.innerHeight - g.bottom >= h + 16;
+    const above = g.top - stickyBottom() >= h + 16;
+    const next = below || !above ? g.bottom - p.top + 8 : g.top - p.top - h - 8;
+    setTop((t) => (t === next ? t : next));
+  }, [show, x, w]);
+  return (
+    <div
+      ref={ref}
+      aria-hidden={!show}
+      className="pointer-events-none absolute left-0 top-0 z-[25] rounded-sm border border-line bg-panel px-3 py-2.5 text-xs leading-snug text-fg shadow-lg motion-safe:transition-[transform,opacity] motion-safe:duration-150 motion-safe:ease-out"
+      style={{ width: tw, transform: `translate3d(${left}px, ${top ?? 0}px, 0)`, opacity: show && top !== null ? 1 : 0 }}
     >
       {children}
     </div>

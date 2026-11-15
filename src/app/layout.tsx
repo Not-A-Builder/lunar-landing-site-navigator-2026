@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
+import { Suspense } from "react";
 import { AppHeader } from "@/components/AppHeader";
+import { HistoryRecorder } from "@/components/history/HistoryRecorder";
 import { PersonaHydrator } from "@/components/PersonaToggle";
 import { SITE_TITLE } from "@/lib/config";
 import "./globals.css";
@@ -21,6 +23,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       {/* Browser extensions (e.g. ColorZilla's cz-shortcut-listen) add attributes to <body> before hydration (D-101). */}
       <body className="flex min-h-full flex-col" suppressHydrationWarning>
         <PersonaHydrator />
+        {/* Records opened site details and comparisons for History (D-131); reads the URL, so needs Suspense. */}
+        <Suspense fallback={null}>
+          <HistoryRecorder />
+        </Suspense>
         <AppHeader />
         <main className="flex-1">{children}</main>
       </body>

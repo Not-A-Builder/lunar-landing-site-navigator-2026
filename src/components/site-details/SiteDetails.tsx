@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowCounterClockwise, ArrowSquareOut, DownloadSimple, PencilSimple, Plus, SlidersHorizontal, Steps, Warning } from "@phosphor-icons/react";
+import { ArrowCounterClockwise, DownloadSimple, PencilSimple, Plus, SlidersHorizontal, Steps, Warning } from "@phosphor-icons/react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
@@ -18,9 +18,8 @@ import { compareFlowHref, markFlowEntry } from "@/lib/compare-flow";
 import { downloadCsv } from "@/lib/csv";
 import { enthusiastPick } from "@/lib/enthusiast-metrics";
 import { powerModel } from "@/lib/engine/analysis";
-import { DAY_MS, HOUR_MS } from "@/lib/engine/scenario";
-import { containing, nextAfter } from "@/lib/engine/windows";
-import { compass, fmtDeg, fmtElevation, fmtHours, fmtLat, fmtLon, fmtPct, fmtUTC } from "@/lib/metrics/format";
+import { DAY_MS } from "@/lib/engine/scenario";
+import { fmtDeg, fmtElevation, fmtLat, fmtLon, fmtUTC } from "@/lib/metrics/format";
 import { usePersona, type Persona } from "@/lib/persona";
 import { GROUP_LABELS, isPolar, type Site } from "@/lib/sites";
 import type { SourceId } from "@/lib/sources";
@@ -31,20 +30,8 @@ import { BandsModal } from "./BandsModal";
 import { useEditor } from "./editor-store";
 import { categoryAnchor, metricAnchor, metricLabel, MetricList, shownMetrics } from "./MetricList";
 import { PageToc, type TocItem } from "./PageToc";
+import { blockCopy, blockTitles, by, LibrationText, statusAt, statusCards, viewsLead } from "./views-copy";
 import { btnPrimary, btnSecondary } from "@/lib/ui";
-
-/** Pick the copy for the current persona: enthusiast → educator → planner, increasingly technical. */
-const by = <T,>(p: Persona, enthusiast: T, educator: T, planner: T) => (p === "enthusiast" ? enthusiast : p === "educator" ? educator : planner);
-
-/** Chart block titles per persona. The page body and its contents both use these, so the names always match (D-110). */
-const blockTitles = (p: Persona) => ({
-  horizon: by(p, "What you would see on the horizon", "Horizon view: what hides the Sun and Earth", "Horizon view: terrain, Sun and Earth tracks"),
-  sunView: by(p, "When the Sun is up", "Sun from the site", "Sun from the site: elevation vs terrain horizon"),
-  earthView: by(p, "When you can see Earth", "Earth from the site", "Earth from the site: elevation vs terrain, DSN coverage"),
-  libration: by(p, "Why Earth wobbles in the sky", "Libration: why Earth wobbles", "Libration: Earth az/el track"),
-  battery: by(p, "Battery over the mission", "Battery charge", "Battery charge"),
-  arrayPower: by(p, "Solar power", "Array power", "Array power"),
-});
 
 /**
  * Page 2: one site at one landing time (D-082). Header (name, coordinates, metadata, editors, compare),
@@ -100,18 +87,10 @@ export function SiteDetails({ site }: { site: Site | null }) {
   };
 
   const cur = cursor ?? landingMs ?? 0;
-  const status = useMemo(() => {
-    if (!sc) return null;
-    const lit = containing(sc.windows.sunlit, cur);
-    const dte = containing(sc.windows.dte, cur);
-    const nextLit = lit ? null : nextAfter(sc.windows.sunlit, cur);
-    const nextDte = dte ? null : nextAfter(sc.windows.dte, cur);
-    const i = Math.max(0, Math.min(sc.series.n - 1, Math.round((cur - sc.series.t[0]) / sc.series.stepMs)));
-    return { lit, dte, nextLit, nextDte, i };
-  }, [sc, cur]);
+  const status = useMemo(() => (sc ? statusAt(sc, cur) : null), [sc, cur]);
   const power = useMemo(() => (sc ? powerModel(sc) : null), [sc]);
 
-  const T = blockTitles(persona);
+  const B = blockCopy(persona, a, { maxRangeKm: an.terrain?.maxRangeKm, stepMin: sc ? sc.series.stepMs / 60000 : undefined, power });
   const toc = useMemo<TocItem[]>(() => {
     const t = blockTitles(persona);
     return [
@@ -314,82 +293,30 @@ export function SiteDetails({ site }: { site: Site | null }) {
             {/* ── Horizon, Sun & Earth views ── */}
             <section id="views" aria-labelledby="views-h" className="scroll-mt-24">
               <h2 id="views-h" className="text-2xl font-semibold tracking-tight">Horizon, Sun &amp; Earth views</h2>
-              <p className="mt-1 text-sm text-muted">{P(
-                "What the sky looks like from this spot, and when the Sun and Earth are up.",
-                "How the terrain, the Sun's low path and Earth's wobble combine at this site. Everything shows the time selected on the timeline.",
-                "Terrain horizon (LOLA), Sun and Earth topocentric tracks (JPL Horizons) and visibility windows, at the timeline's selected time.",
-              )}</p>
+              <p className="mt-1 text-sm text-muted">{viewsLead(persona)}</p>
 
               {/* Fixed per-breakpoint card height (D-097), sized to the longest copy measured for each persona,
                   so changing the time or site never makes the content below jump. */}
               <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                <Card h={cardH} color="var(--sun)" label={P("Is the Sun up?", "Sun at the selected time", "Sun at selected time")}
-                  value={status.lit ? (status.lit.end >= sc.end - sc.series.stepMs ? P("Up for the rest of the mission", "Sunlit to the end of the mission", "Lit · rest of mission") : P(`Up · sets in ${fmtHours((status.lit.end - cur) / HOUR_MS)}`, `Sunlit · sets in ${fmtHours((status.lit.end - cur) / HOUR_MS)}`, `Lit · sets in ${fmtHours((status.lit.end - cur) / HOUR_MS)}`)) : status.nextLit ? P(`Hidden · back in ${fmtHours((status.nextLit.start - cur) / HOUR_MS)}`, `Dark · rises in ${fmtHours((status.nextLit.start - cur) / HOUR_MS)}`, `Dark · rises in ${fmtHours((status.nextLit.start - cur) / HOUR_MS)}`) : P("Hidden all mission", "Dark all mission", "Dark · all mission")}
-                  sub={P(
-                    `Toward the ${compass(sc.series.sunAz[status.i])}, ${upDown(sc.series.sunEl[status.i], 1, "flat ground")}`,
-                    `${upDown(sc.series.sunEl[status.i], 2, "the horizontal")}, toward ${compass(sc.series.sunAz[status.i])}; ${fmtPct(sc.series.sunFrac[status.i])} of its disk clears the terrain`,
-                    `el ${fmtDeg(sc.series.sunEl[status.i], 2)} · az ${fmtDeg(sc.series.sunAz[status.i], 1)} ${compass(sc.series.sunAz[status.i])} · ${fmtPct(sc.series.sunFrac[status.i], 1)} disk`,
-                  )}
-                  tip={`Whether at least ${Math.round(a.sunDiskThreshold * 100)}% of the Sun's disk clears the LOLA terrain horizon at the selected time, and how long until that changes.`} sources={["jpl-horizons", "lola-pds"]} />
-                <Card h={cardH} color="var(--earth)" label={P("Can we call Earth?", "Earth at the selected time", "Earth at selected time")}
-                  value={status.dte ? (status.dte.end >= sc.end - sc.series.stepMs ? P("Yes, for the rest of the mission", "In view to the end of the mission", "In view · rest of mission") : P(`Yes · for ${fmtHours((status.dte.end - cur) / HOUR_MS)}`, `In view · sets in ${fmtHours((status.dte.end - cur) / HOUR_MS)}`, `In view · sets in ${fmtHours((status.dte.end - cur) / HOUR_MS)}`)) : status.nextDte ? P(`Not now · back in ${fmtHours((status.nextDte.start - cur) / HOUR_MS)}`, `Hidden · rises in ${fmtHours((status.nextDte.start - cur) / HOUR_MS)}`, `Hidden · rises in ${fmtHours((status.nextDte.start - cur) / HOUR_MS)}`) : P("Not during this mission", "Hidden all mission", "Hidden · all mission")}
-                  sub={P(
-                    `Toward the ${compass(sc.series.earthAz[status.i])}, ${upDown(sc.series.earthEl[status.i], 1, "flat ground")}`,
-                    `${upDown(sc.series.earthEl[status.i], 2, "the horizontal")}, toward ${compass(sc.series.earthAz[status.i])}; ${sc.series.dsnCount[status.i]} of 3 Deep Space Network sites can see the Moon`,
-                    `el ${fmtDeg(sc.series.earthEl[status.i], 2)} · az ${fmtDeg(sc.series.earthAz[status.i], 1)} ${compass(sc.series.earthAz[status.i])} · ${sc.series.dsnCount[status.i]}/3 DSN`,
-                  )}
-                  tip={`Direct-to-Earth contact needs at least ${Math.round(a.earthDiskThreshold * 100)}% of Earth's disk above the terrain horizon, and a Deep Space Network antenna that can see the Moon (≥ ${a.dsnMinElevDeg}° up).`} sources={["jpl-horizons", "lola-pds", "dsn-810-005"]} />
-                <Card h={cardH} label={P("Sunlight over the mission", "Sunlit, whole mission", "Sunlit % of mission")} value={m["sun.solar-availability-fraction"]?.display ?? "—"} rag={m["sun.solar-availability-fraction"]?.rating?.rag}
-                  sub={`${P("Longest dark stretch", "Longest dark stretch", "Longest dark")} ${m["sun.longest-continuous-darkness"]?.display ?? "—"}`}
-                  tip={`Share of the ${a.missionDays}-day mission with at least ${Math.round(a.sunDiskThreshold * 100)}% of the Sun's disk above the terrain horizon.`} sources={["jpl-horizons", "lola-pds"]} />
-                <Card h={cardH} label={P("Power and a call home at once", "Sun and Earth together", "Sun + Earth together")} value={m["overall.joint-sunlit-dte-window"]?.display.split(" (")[0] ?? "—"} rag={m["overall.joint-sunlit-dte-window"]?.rating?.rag}
-                  sub={`${P("That's ", "That is ", "")}${fmtPct((m["overall.joint-sunlit-dte-window"]?.value ?? 0) / 100)} ${P("of the mission", "of the mission", "of mission")} · Earth in view ${m["earth.total-dte-visibility-fraction"]?.display ?? "—"}`}
-                  tip="Hours with both sunlight (power) and Earth in view (direct communication) at the same time." sources={["jpl-horizons", "lola-pds"]} />
+                {statusCards(persona, a, sc, m, cur).map((c) => <Card key={c.id} h={cardH} {...c} />)}
               </div>
 
-              <Block id="horizon" title={T.horizon}
-                lead={P(
-                  "At the pole the Sun circles around the horizon instead of rising high. Small hills decide whether it is hidden.",
-                  "Turn on the spot and trace the skyline: that's the grey band. The Sun's path stays low and goes all the way round; Earth hardly moves. Whatever dips under the skyline is hidden.",
-                  undefined,
-                )}
-                tip={<InfoTip title="Horizon view" sources={["lola-pds", "jpl-horizons"]}>
-                  The grey skyline is the real terrain around the site, traced out to {an.terrain?.maxRangeKm} km in LOLA elevation data, including the curve of the Moon, seen from {a.mastHeightM} m above the ground. There is no air, so no refraction: the Sun or Earth is visible only when it clears this line. Coloured lines are their paths during the mission; the discs show where they are at the selected time. The compass runs right to left so the terrain appears in the same order as in the time charts below. Click a path to move the timeline to when the Sun or Earth was there.
-                </InfoTip>}>
+              <Block id="horizon" {...B.horizon}>
                 <HorizonPanorama sc={sc} cursor={cur} persona={persona} onCursor={pickTime} distKm={an.terrain?.maskDistKm} distStepDeg={an.terrain?.stepDeg} />
               </Block>
 
-              <Block id="sun-view" title={T.sunView}
-                lead={P("The orange line is how high the Sun is; the grey is the hills in front of it. Solid orange means the site is in sunlight.", "The Sun's height over time against the height of the terrain in the Sun's direction. Where the orange line clears the grey, the site is sunlit.", undefined)}
-                tip={<InfoTip title="Sun from the site" sources={["jpl-horizons", "lola-pds", "bryant-2009"]}>Sun elevation (orange) against the terrain horizon in the Sun&apos;s direction at each moment (grey). Solid where at least {Math.round(a.sunDiskThreshold * 100)}% of the disk is visible, dashed where it is hidden; the lane underneath shows the sunlit windows. Click to move the timeline.</InfoTip>}>
+              <Block id="sun-view" {...B.sunView}>
                 <BodyTimeline sc={sc} body="sun" cursor={cur} onCursor={pickTime} persona={persona} />
               </Block>
 
-              <Block id="earth-view" title={T.earthView}
-                lead={P("Earth barely moves in the Moon's sky, but at the pole it sits so low that a small wobble hides it behind hills.", "Earth's height over time against the terrain in Earth's direction. A radio link also needs a Deep Space Network antenna on Earth that can see the Moon (one grey lane per complex); the bottom lane is when both line up.", undefined)}
-                tip={<InfoTip title="Earth from the site" sources={["jpl-horizons", "lola-pds", "dsn-810-005"]}>Earth elevation (blue) against the terrain horizon in Earth&apos;s direction. Solid where at least {Math.round(a.earthDiskThreshold * 100)}% of Earth&apos;s disk is visible. Lanes: Earth in view; one per DSN complex (Canberra, Madrid, Goldstone, in the order the Moon reaches them as Earth turns) showing when the Moon is ≥ {a.dsnMinElevDeg}° above that complex&apos;s horizon; Contact = both at once. Red marks are handover gaps: Earth is in view but no complex can see the Moon. Click to move the timeline.</InfoTip>}>
+              <Block id="earth-view" {...B.earthView}>
                 <BodyTimeline sc={sc} body="earth" cursor={cur} onCursor={pickTime} persona={persona} />
               </Block>
 
-              <Block id="libration" title={T.libration}
-                tip={<InfoTip title="Libration" sources={["jpl-horizons", "svs-libration"]}>The Moon keeps one face to Earth, but its slightly tilted, elliptical orbit makes Earth drift in a small loop in the lunar sky over each month. Near the pole that loop can carry Earth below the horizon. Libration is already in the JPL Horizons geometry; nothing is added.</InfoTip>}>
+              <Block id="libration" {...B.libration}>
                 <div className="grid gap-x-10 gap-y-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)]">
                   <div className="text-sm leading-relaxed text-muted">
-                    {persona === "enthusiast" && (
-                      <div className="space-y-2.5">
-                        <p>From the Moon, Earth hangs almost still in the sky. It never rises and sets like the Sun does here.</p>
-                        <p>But it does sway a little, tracing the small loop on the chart. At the south pole Earth sits right at the horizon, so that small sway decides whether you can call home.</p>
-                      </div>
-                    )}
-                    {persona === "educator" && (
-                      <div className="space-y-2.5">
-                        <p><b className="font-medium text-fg">Libration in longitude:</b> the Moon spins at a steady rate, but moves faster near perigee and slower near apogee, so we see a little around its east and west edges.</p>
-                        <p><b className="font-medium text-fg">Libration in latitude:</b> the Moon&apos;s spin axis is tilted relative to its orbit, so over a month we look slightly over its north and then its south pole.</p>
-                        {an.multi && <p>Computed from JPL Horizons for <span className="num">2026–2029</span>, the point on the Moon directly below Earth wanders <span className="num">{fmtDeg(an.multi.libLonRange[0], 1)}</span> to <span className="num">{fmtDeg(an.multi.libLonRange[1], 1)}</span> in longitude and <span className="num">{fmtDeg(an.multi.libLatRange[0], 1)}</span> to <span className="num">{fmtDeg(an.multi.libLatRange[1], 1)}</span> in latitude.</p>}
-                        <p>Seen from the Moon, the same motion makes Earth trace the loop on the chart. Try the ±7d buttons to watch Earth dip behind the terrain.</p>
-                        <a className="inline-flex items-center gap-1 text-fg underline underline-offset-4" href="https://svs.gsfc.nasa.gov/gallery/moonphase/" target="_blank" rel="noreferrer">NASA SVS Moon phase &amp; libration animation <ArrowSquareOut size={16} aria-hidden /></a>
-                      </div>
-                    )}
+                    <LibrationText persona={persona} multi={an.multi} />
                     {persona === "planner" && (
                       <dl className="space-y-3">
                         <Stat k="Selected time" v={fmtUTC(cur)} />
@@ -414,18 +341,10 @@ export function SiteDetails({ site }: { site: Site | null }) {
               <MetricList values={m} persona={persona} computing={an.stage !== "full"} exportMeta={landingMs !== null ? { siteId: id, site: name, lat, lon, landingMs } : undefined} extras={{
                 overall: (
                   <div className="divide-y divide-line">
-                    <Block id="battery" sub title={T.battery}
-                      lead={P("The lander runs on sunlight. When the Sun hides behind hills, it lives off its battery.", "The battery fills while the panels make more than the lander uses, and drains in the dark.", undefined)}
-                      tip={<InfoTip title="Battery charge" sources={["jpl-horizons", "lola-pds", "nssdc-moon", "mission-assumption"]}>
-                        Simulated every {sc.series.stepMs / 60000} min from landing, starting full at {a.batteryWh.toLocaleString("en-US")} Wh. Each step adds the array output and subtracts the load: {a.loadW} W while any sunlight reaches the array, {a.survivalLoadW} W survival (heaters) otherwise. Charge stays between 0 and full. Lowest: {fmtPct(power.minSoc, 1)} at {fmtUTC(power.minSocAt)}{power.depletedAt ? `; first empty at ${fmtUTC(power.depletedAt)}` : ""}. Lander values are example assumptions you can change.
-                      </InfoTip>}>
+                    <Block id="battery" sub {...B.battery}>
                       <PowerCharts sc={sc} power={power} cursor={cur} onCursor={pickTime} persona={persona} only="battery" />
                     </Block>
-                    <Block id="array-power" sub title={T.arrayPower}
-                      lead={P("How much power the solar panels make, against what the lander needs (dashed line).", "Output depends on how much of the Sun clears the terrain and how squarely sunlight hits the panels.", undefined)}
-                      tip={<InfoTip title="Array power" sources={["jpl-horizons", "lola-pds", "nssdc-moon", "mission-assumption"]}>
-                        Output = 1,361 W/m² (sunlight at 1 AU, NSSDCA) ÷ (Sun distance in AU)² × visible share of the Sun&apos;s disk × cos(angle between sunlight and the panel) × {a.panelAreaM2} m² × {a.panelEfficiency} efficiency. Mounting: {a.panelTracking === "vertical-tracking" ? "vertical, turned to face the Sun" : a.panelTracking === "vertical-fixed" ? `vertical, fixed facing ${a.panelFixedAzDeg}°` : "horizontal"}. Mean {Math.round(power.avgW)} W, peak {Math.round(power.peakW)} W. The dashed line is the load.
-                      </InfoTip>}>
+                    <Block id="array-power" sub {...B.arrayPower}>
                       <PowerCharts sc={sc} power={power} cursor={cur} onCursor={pickTime} persona={persona} only="array" />
                     </Block>
                   </div>
@@ -534,11 +453,6 @@ function Card({ label, value, sub, color, rag, tip, sources, h }: { label: strin
       {sub && <div className="mt-1 text-sm leading-snug text-muted"><NumText>{sub}</NumText></div>}
     </div>
   );
-}
-
-/** "3.3° above flat ground" / "13.4° below flat ground" (never "−13.4° above"). */
-function upDown(el: number, digits: number, ref: string) {
-  return `${fmtDeg(Math.abs(el), digits)} ${el >= 0 ? "above" : "below"} ${ref}`;
 }
 
 function Stat({ k, v }: { k: string; v: string }) {

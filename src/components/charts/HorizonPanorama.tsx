@@ -5,15 +5,14 @@ import type { Scenario } from "@/lib/engine/scenario";
 import { horizonAt } from "@/lib/engine/terrain";
 import { compass, fmtDeg, fmtPct } from "@/lib/metrics/format";
 import type { Persona } from "@/lib/persona";
-import { AXIS, ChartTip, fmtWhen, Legend, niceTicks, scale, TipHead, TipRows, usePlotHover, useWidth } from "./chart-kit";
+import { AXIS, ChartTip, fmtWhen, Legend, niceTicks, scale, TipHead, TipRows, useComparisonMode, usePlotHover, useWidth } from "./chart-kit";
 
 /**
  * 360° skyline from the site: LOLA terrain horizon plus the paths the Sun and Earth trace during the
  * mission, with both bodies drawn at the selected time.
  *
- * Azimuth runs right-to-left (N 360° → W → S → E → N 0°), D-086. At the south pole the Sun moves
- * toward lower azimuth as time passes, so reading this chart left to right meets the terrain in the
- * same order as the Sun and Earth timelines below it, which run left to right in time.
+ * Azimuth runs clockwise from left to right, as on a compass: N 0° → E → S → W → N 360° (D-142, which
+ * replaces the right-to-left axis of D-086).
  *
  * Bodies and paths are drawn under a slightly translucent terrain, so a body behind a hill is
  * occluded exactly as it would be, and a partly hidden Sun shows only the part above the skyline.
@@ -40,7 +39,7 @@ export function HorizonPanorama({ sc, cursor, persona, distKm, distStepDeg, onCu
     return { yMin: Math.floor(lo - 0.6), yMax: Math.ceil(hi + 1) };
   }, [sc, s]);
 
-  const x = scale(360, 0, m.l, w - m.r);
+  const x = scale(0, 360, m.l, w - m.r);
   const y = scale(yMin, yMax, h - m.b, m.t);
   const bottom = h - m.b;
 
@@ -120,7 +119,11 @@ export function HorizonPanorama({ sc, cursor, persona, distKm, distStepDeg, onCu
   const target = hover?.target ?? null;
   const targetAt = target && { x: x(target.body === "sun" ? s.sunAz[target.i] : s.earthAz[target.i]), y: y(target.body === "sun" ? s.sunEl[target.i] : s.earthEl[target.i]) };
 
-  const compassTicks = [360, 315, 270, 225, 180, 135, 90, 45, 0];
+  const compassTicks = [0, 45, 90, 135, 180, 225, 270, 315, 360];
+  // In a narrow chart (a comparison column) the labels would run into each other: drop the in-between
+  // directions first, then the degrees, keeping N E S W N.
+  const per45 = (w - m.l - m.r) / 8;
+  const showMinor = per45 >= 46, showDeg = per45 >= 34;
   const NAMES: Record<number, string> = { 0: "N", 45: "NE", 90: "E", 135: "SE", 180: "S", 225: "SW", 270: "W", 315: "NW", 360: "N" };
 
   return (
@@ -152,9 +155,11 @@ export function HorizonPanorama({ sc, cursor, persona, distKm, distStepDeg, onCu
         {compassTicks.map((v) => (
           <g key={v}>
             <line x1={x(v)} x2={x(v)} y1={m.t} y2={bottom} stroke="var(--grid)" strokeOpacity={v % 90 ? 0.5 : 1} />
-            <text x={x(v)} y={h - 12} textAnchor={v === 360 ? "start" : v === 0 ? "end" : "middle"} {...AXIS} fill={v % 90 ? "var(--faint)" : "var(--muted)"}>
-              {v % 90 ? NAMES[v] : `${NAMES[v]} ${v}°`}
-            </text>
+            {(v % 90 === 0 || showMinor) && (
+              <text x={x(v)} y={h - 12} textAnchor={v === 0 ? "start" : v === 360 ? "end" : "middle"} {...AXIS} fill={v % 90 ? "var(--faint)" : "var(--muted)"}>
+                {v % 90 ? NAMES[v] : showDeg ? `${NAMES[v]} ${v}°` : NAMES[v]}
+              </text>
+            )}
           </g>
         ))}
         {yMin < 0 && <line x1={m.l} x2={w - m.r} y1={y(0)} y2={y(0)} stroke="var(--faint)" strokeDasharray="2 4" />}
@@ -214,7 +219,7 @@ export function HorizonPanorama({ sc, cursor, persona, distKm, distStepDeg, onCu
       <p className="mt-1.5 text-xs text-faint">
         {enthusiast
           ? "Read it like a photo taken by turning on the spot. Anything under the grey skyline is hidden behind hills."
-          : "Compass reads right to left, so left-to-right matches the order the Sun meets the terrain over time (as in the charts below). Paths and bodies behind the terrain show through faintly."}
+          : "Compass reads clockwise from left to right: north, east, south, west, back to north. Paths and bodies behind the terrain show through faintly."}
       </p>
     </div>
   );
@@ -230,6 +235,8 @@ function BodyLabel({ x, y, color, text, w }: { x: number; y: number; color: stri
 }
 
 function PassList({ label, color, idx, el, frac, t, digits }: { label: string; color: string; idx: number[]; el: Float32Array; frac: Float32Array; t: Float64Array; digits: number }) {
+  // In the comparison's narrow tooltip the time sits above its reading instead of at the far edge (D-131).
+  const stacked = useComparisonMode();
   return (
     <div className="mt-2 border-t border-line pt-1.5">
       <div className="flex items-center gap-1.5 text-muted"><span className="inline-block h-2 w-2 rounded-full" style={{ background: color }} />{label}</div>
@@ -237,9 +244,9 @@ function PassList({ label, color, idx, el, frac, t, digits }: { label: string; c
         <div className="text-faint">Not this way during the mission</div>
       ) : (
         idx.map((i) => (
-          <div key={i} className="num flex justify-between gap-2">
+          <div key={i} className={`num ${stacked ? "mt-1" : "flex justify-between gap-2"}`}>
             <span>{new Date(t[i]).toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" })} {new Date(t[i]).toISOString().slice(11, 16)} UTC</span>
-            <span className={frac[i] > 0 ? "text-fg" : "text-faint"}>{fmtDeg(el[i], digits)} · {frac[i] > 0 ? `${fmtPct(frac[i])} visible` : "hidden"}</span>
+            <span className={`${stacked ? "block " : ""}${frac[i] > 0 ? "text-fg" : "text-faint"}`}>{fmtDeg(el[i], digits)} · {frac[i] > 0 ? `${fmtPct(frac[i])} visible` : "hidden"}</span>
           </div>
         ))
       )}

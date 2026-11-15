@@ -4,7 +4,7 @@
  * it picks which computed metrics to show and how to label and explain them, and adds no values of its own.
  *
  * - `card`: a main takeaway, listed first in its category under this short label, with its rating
- *   (good / trade-off / challenging) when it has one.
+ *   (favourable / conditional / unfavourable, D-140) when it has one.
  * - `subtext`: show the sheet's enthusiast line (`views.enthusiast`) under the question. Only set where
  *   that line adds something; most just repeat or reword the question, so they stay hidden.
  * - `tip`: the metric's tooltip for enthusiasts (D-112), in plain language. It describes what the app

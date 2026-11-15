@@ -3,16 +3,19 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+/**
+ * Page links. Site selection is reached from the app title, and the comparison opens from the
+ * "Select Scenarios to Compare" step, so neither has a link here (D-130).
+ */
 const NAV = [
-  { href: "/", label: "Select sites" },
-  { href: "/compare", label: "Compare" },
+  { href: "/history", label: "History" },
   { href: "/sources", label: "Data & methods" },
 ] as const;
 
-/** Page links; the current page gets full-strength text and a small dot underneath. */
+/** The current page gets full-strength text and a small dot underneath. */
 export function NavLinks() {
   const pathname = usePathname();
-  const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`));
+  const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
   return (
     <nav className="flex gap-6 text-sm">
       {NAV.map((n) => {
