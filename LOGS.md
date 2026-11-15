@@ -744,3 +744,27 @@ Decision: in the Educator view, each metric row's right-hand column now opens wi
 ## D-122 · 2026-11-15 · No rating badge beside the category headings
 Status: confirmed (owner request, 2026-11-15)
 Decision: the site details page no longer shows the rolled-up rating (Good / Trade-off / Challenging, with its info tooltip) beside each category heading under "Metrics", for any persona. Individual metrics keep their ratings, hover hints (D-113) and band strips. The category tooltip copy written for enthusiasts and educators (D-112, D-118) is removed with it. `rollUp` stays, because the Compare page's category scores still use it.
+
+## D-123 · 2026-11-15 · Mission assumptions editor: contents column and one field per row
+Status: confirmed (owner request, 2026-11-15)
+Decision: the Mission assumptions modal (Educator and Mission planner; enthusiasts don't get it, D-114) now has two columns that scroll separately. On the left is a contents list like the page's, with no heading: each group (Mission & visibility, Power, Landing, Communications, Rover) and its fields. Clicking an entry scrolls the fields column so that entry sits at its top and stays selected until the user scrolls the column themselves; otherwise the entry at the top is highlighted. On the right, the groups stack vertically, one field per row. Each row has the label (with "Edited" or "Custom"), the helper text and the default on the left, and the input or select, its unit and any error on the right. Nothing sits side by side any more: before, groups sat in two or three columns. Below 640 px a row stacks label over field, and below 768 px the contents column is hidden. Opening the editor at a field (e.g. from "Mission length") still scrolls to and highlights it.
+
+## D-124 · 2026-11-15 · Modals: always-visible scrollbar, up to 85% of the screen height
+Status: confirmed (owner request, 2026-11-15)
+Decision: both editors (Mission assumptions and Rating bands) can now be up to 85% of the viewport height (was 80%). Each scrolling area shows a persistent scrollbar while its content overflows (`ScrollThumb`, as in the site list, D-064): the body of the Rating bands modal and any other default `Modal`, and both columns of the Mission assumptions modal. macOS hides native scrollbars until you scroll, so without this it wasn't clear there was more below. `Modal` gets a `customBody` option for editors that lay out their own scrolling columns.
+
+## D-125 · 2026-11-15 · Editor subheaders and group headings
+Status: confirmed (owner request, 2026-11-15)
+Decision:
+- **Rating bands:** the subheader reads "Thresholds that turn a value into red / amber / green bands".
+- **Mission assumptions:** the subheader keeps "Inputs, not data. Defaults describe an example small solar-powered lander. Every value marked “Modelled” or “Your input” recomputes when you save." Modal subheaders are no longer capped at 48rem, and they span the full modal width under the title row and close button. The text needs 1084 px: it fits on one line from about a 1450 px wide window (1204 px available at 1600 px and wider) and wraps on narrower ones (1076 px available at 1440 px).
+- **Group headings:** in the assumptions editor, the group headings (Mission & visibility, Power, Landing, Communications, Rover) are 20px, and their one-line hints (e.g. "How long, from what height, and what counts as sunlit or in view.") are removed.
+- **Cleanup:** the enthusiast wording in both editors is removed, because enthusiasts never open them (D-114), and so is their unused `persona` prop.
+
+## D-126 · 2026-11-15 · "Custom" labels styled like "Edited"
+Status: confirmed (owner request, 2026-11-15)
+Decision: in both editors, the "Custom" label beside a value that differs from its default now uses the same small accent-coloured text as "Edited", the label shown while a change is unsaved. Before, the Mission assumptions editor showed "Custom" in faint grey. The Rating bands editor already used the accent colour; it now also keeps the label from shrinking, as "Edited" does.
+
+## D-127 · 2026-11-15 · Custom and edited fields highlighted in the assumptions contents
+Status: confirmed (owner request, 2026-11-15)
+Decision: in the Mission assumptions editor's contents column (D-123), a field entry is shown in the accent colour used for its "Custom" / "Edited" label (D-126) whenever its value differs from the saved value or from the default. It updates as you type, so the list shows at a glance which assumptions aren't defaults. The selected entry keeps its highlight background. Group headings are unchanged.

@@ -7,20 +7,19 @@ import { useAssumptions } from "@/lib/assumptions-store";
 import { BAND_DEFS, BAND_KEYS, bandIsValid, type BandKey, type BandOverrides } from "@/lib/bands";
 import { getMetric } from "@/lib/metrics";
 import { rate, type MetricValue } from "@/lib/metrics/types";
-import type { Persona } from "@/lib/persona";
 import { useEditor } from "./editor-store";
 
 type Draft = Record<BandKey, { amber: string; green: string }>;
 const show = (v: number) => String(+v.toFixed(2));
 
 /** Rating-band editor (D-083). Edits stay in a draft until "Save changes". */
-export function BandsModal({ persona, values }: { persona: Persona; values?: Record<string, MetricValue> }) {
+export function BandsModal({ values }: { values?: Record<string, MetricValue> }) {
   const target = useEditor((s) => s.target);
   const close = useEditor((s) => s.close);
-  return target?.kind === "bands" ? <Editor focus={target.focus as BandKey | undefined} onClose={close} persona={persona} values={values} /> : null;
+  return target?.kind === "bands" ? <Editor focus={target.focus as BandKey | undefined} onClose={close} values={values} /> : null;
 }
 
-function Editor({ focus, onClose, persona, values }: { focus?: BandKey; onClose: () => void; persona: Persona; values?: Record<string, MetricValue> }) {
+function Editor({ focus, onClose, values }: { focus?: BandKey; onClose: () => void; values?: Record<string, MetricValue> }) {
   const a = useAssumptions((s) => s.a);
   const saved = useAssumptions((s) => s.bands);
   const setAllBands = useAssumptions((s) => s.setAllBands);
@@ -79,11 +78,7 @@ function Editor({ focus, onClose, persona, values }: { focus?: BandKey; onClose:
       labelledBy="bands-title"
       onClose={onClose}
       dirty={changed.length > 0}
-      description={
-        persona === "enthusiast"
-          ? "These lines decide when a result counts as good, a trade-off or challenging. They are planning choices, not laws of nature."
-          : "Thresholds that turn a value into red / amber / green, and into the 1–10 scores on Compare. Each starts at a stated default; two follow your mission assumptions until you change them."
-      }
+      description="Thresholds that turn a value into red / amber / green bands"
       footer={
         <EditorFooter
           dirty={changed.length > 0}
@@ -111,7 +106,7 @@ function Editor({ focus, onClose, persona, values }: { focus?: BandKey; onClose:
               <div className="min-w-0">
                 <div className="flex items-baseline gap-2">
                   <span className="font-medium">{d.label}</span>
-                  {custom && <span className="text-xs text-accent">Custom</span>}
+                  {custom && <span className="shrink-0 text-xs text-accent">Custom</span>}
                 </div>
                 <p className="mt-0.5 text-xs leading-relaxed text-faint">{d.better === "higher" ? "Higher is better. " : "Lower is better. "}{d.basis(a)}</p>
                 {users.length > 0 && <p className="mt-1 text-xs text-muted">Rates: {users.map((u) => u.name).join(" · ")}</p>}

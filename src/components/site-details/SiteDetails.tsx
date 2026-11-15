@@ -430,8 +430,8 @@ export function SiteDetails({ site }: { site: Site | null }) {
         </div>
       )}
 
-      {!enthusiast && <AssumptionsModal persona={persona} />}
-      {!enthusiast && <BandsModal persona={persona} values={m} />}
+      {!enthusiast && <AssumptionsModal />}
+      {!enthusiast && <BandsModal values={m} />}
     </div>
   );
 }

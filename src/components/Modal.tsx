@@ -2,16 +2,18 @@
 
 import { X } from "@phosphor-icons/react";
 import { useEffect, useRef, type ReactNode } from "react";
+import { ScrollThumb } from "@/components/ScrollThumb";
 import { createPortal } from "react-dom";
 import { btnPrimary, btnSecondary } from "@/lib/ui";
 
 /**
  * Dialog with a sticky header and footer and a body that scrolls on its own (D-083). It is at most 80%
- * of the page content width (the 1600 px header container) and 80% of the viewport height.
+ * of the page content width (the 1600 px header container) and 85% of the viewport height (D-124). The
+ * body's scrollbar is always drawn while it overflows (`ScrollThumb`), so it's clear there is more below.
  * Escape or a click on the backdrop closes it only when there is nothing unsaved (`dirty` false);
  * otherwise the footer's Discard / Save decide.
  */
-export function Modal({ open, title, description, onClose, dirty, footer, children, labelledBy }: {
+export function Modal({ open, title, description, onClose, dirty, footer, children, labelledBy, customBody }: {
   open: boolean;
   title: string;
   description?: ReactNode;
@@ -20,8 +22,11 @@ export function Modal({ open, title, description, onClose, dirty, footer, childr
   footer: ReactNode;
   children: ReactNode;
   labelledBy?: string;
+  /** The children lay out their own scrolling columns (and scrollbars) instead of one padded, scrolling body. */
+  customBody?: boolean;
 }) {
   const panel = useRef<HTMLDivElement>(null);
+  const body = useRef<HTMLDivElement>(null);
   const id = labelledBy ?? "modal-title";
 
   useEffect(() => {
@@ -57,18 +62,26 @@ export function Modal({ open, title, description, onClose, dirty, footer, childr
         role="dialog"
         aria-modal="true"
         aria-labelledby={id}
-        className="relative flex max-h-[80vh] w-full flex-col overflow-hidden rounded-sm border border-line bg-panel shadow-2xl sm:w-[calc(min(100vw-32px,1568px)*0.8)] motion-safe:animate-[modal-in_180ms_cubic-bezier(0.2,0.7,0.2,1)]"
+        className="relative flex max-h-[85vh] w-full flex-col overflow-hidden rounded-sm border border-line bg-panel shadow-2xl sm:w-[calc(min(100vw-32px,1568px)*0.8)] motion-safe:animate-[modal-in_180ms_cubic-bezier(0.2,0.7,0.2,1)]"
       >
-        <header className="sticky top-0 z-10 flex items-start gap-4 border-b border-line bg-panel px-6 py-4">
-          <div className="min-w-0 flex-1">
-            <h2 id={id} className="text-xl font-semibold">{title}</h2>
-            {description && <div className="mt-1 max-w-3xl text-sm text-muted">{description}</div>}
+        {/* The subheader spans the full width under the title row, so it stays on one line where it fits (D-125). */}
+        <header className="sticky top-0 z-10 border-b border-line bg-panel px-6 py-4">
+          <div className="flex items-start gap-4">
+            <h2 id={id} className="min-w-0 flex-1 text-xl font-semibold">{title}</h2>
+            <button type="button" onClick={onClose} aria-label={dirty ? "Close and discard edits" : "Close"} title={dirty ? "Close and discard edits" : "Close"} className="-mr-2 -mt-1 rounded-sm p-2 text-muted hover:bg-panel-2 hover:text-fg">
+              <X size={20} aria-hidden />
+            </button>
           </div>
-          <button type="button" onClick={onClose} aria-label={dirty ? "Close and discard edits" : "Close"} title={dirty ? "Close and discard edits" : "Close"} className="-mr-2 rounded-sm p-2 text-muted hover:bg-panel-2 hover:text-fg">
-            <X size={20} aria-hidden />
-          </button>
+          {description && <div className="mt-1 text-sm text-muted">{description}</div>}
         </header>
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 py-5">{children}</div>
+        {customBody ? (
+          <div className="flex min-h-0 flex-1 overflow-hidden">{children}</div>
+        ) : (
+          <div className="relative flex min-h-0 flex-1">
+            <div ref={body} className="no-scrollbar min-w-0 flex-1 overflow-y-auto overscroll-contain py-5 pl-6 pr-9">{children}</div>
+            <ScrollThumb target={body} />
+          </div>
+        )}
         <footer className="sticky bottom-0 z-10 flex flex-wrap items-center gap-3 border-t border-line bg-panel px-6 py-3.5">{footer}</footer>
       </div>
     </div>,
