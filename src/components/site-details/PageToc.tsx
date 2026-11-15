@@ -60,7 +60,16 @@ export function PageToc({ items }: { items: TocItem[] }) {
   }, [active]);
 
   const go = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "instant", block: "start" });
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "instant", block: "start" });
+    // A pinned bar (the site timeline, D-099) can cover the target: nudge it to just below the bar.
+    const bar = document.querySelector<HTMLElement>("[data-sticky-bar]");
+    if (bar) {
+      const b = bar.getBoundingClientRect(), r = el.getBoundingClientRect();
+      const pinned = b.top >= 63.5 && b.top <= 64.5; // fully pinned under the 64px app header, not being pushed out
+      if (pinned && r.top < b.bottom + 16) window.scrollBy({ top: r.top - b.bottom - 16, behavior: "instant" });
+    }
     setActive(id);
   };
 

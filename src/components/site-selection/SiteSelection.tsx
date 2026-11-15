@@ -90,7 +90,16 @@ export function SiteSelection() {
   const [coords, setCoords] = useState(initial?.form.coords ?? "");
   const [coordsTouched, setCoordsTouched] = useState(false);
   const nowMinute = useNowMinute();
-  const [picked, setPicked] = useState<number | null>(initial?.form.picked ?? null);
+  // `?t=` carries the landing time back from "Select different site" on the details page (D-100).
+  // The page's state can survive navigation (cacheComponents keeps routes alive), so a new `?t=` is also applied after mount.
+  const tParam = params.get("t");
+  const tMs = tParam ? Date.parse(tParam) : NaN;
+  const [picked, setPicked] = useState<number | null>(() => initial?.form.picked ?? (Number.isFinite(tMs) ? tMs : null));
+  const [seenT, setSeenT] = useState(tParam);
+  if (tParam !== seenT) {
+    setSeenT(tParam);
+    if (Number.isFinite(tMs)) setPicked(tMs);
+  }
   const when = picked ?? nowMinute;
   const [hovered, setHovered] = useState<string | null>(null);
   const [listHover, setListHover] = useState<string | null>(null);

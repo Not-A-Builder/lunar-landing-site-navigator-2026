@@ -10,6 +10,7 @@ import { SOURCES, type SourceId } from "@/lib/sources";
  * Opens on hover, keyboard focus or tap, and stays open while the pointer is over it so links are clickable.
  * The card is portalled to <body> with fixed positioning, so scrolling panels never clip it; it is kept
  * inside the viewport and flips above the icon when there is no room below.
+ * `trigger` replaces the icon with text (dotted underline), e.g. a chart lane label (D-098).
  */
 export function InfoTip({
   title,
@@ -18,6 +19,7 @@ export function InfoTip({
   sourceLabel,
   sourceUrl,
   align = "left",
+  trigger,
 }: {
   title: string;
   children?: React.ReactNode;
@@ -25,6 +27,7 @@ export function InfoTip({
   sourceLabel?: string;
   sourceUrl?: string | null;
   align?: "left" | "right";
+  trigger?: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
   const id = useId();
@@ -76,9 +79,11 @@ export function InfoTip({
         onClick={() => setOpen((o) => !o)}
         onFocus={show}
         onBlur={hide}
-        className="ml-1 inline-flex items-center justify-center rounded-sm align-[-2px] text-faint hover:text-fg"
+        className={trigger
+          ? "cursor-pointer whitespace-nowrap rounded-sm underline decoration-dotted decoration-faint underline-offset-[3px] hover:text-fg hover:decoration-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          : "ml-1 inline-flex items-center justify-center rounded-sm align-[-2px] text-faint hover:text-fg"}
       >
-        <Info size={17} aria-hidden />
+        {trigger ?? <Info size={17} aria-hidden />}
       </button>
       {open && createPortal(
         <div

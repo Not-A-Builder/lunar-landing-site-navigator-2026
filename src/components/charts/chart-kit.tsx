@@ -178,4 +178,4 @@ export const sampleAt = (t: Float64Array, tt: number) => {
 };
 
 /** Shared horizontal layout for every chart drawn against mission time, so their x axes line up. */
-export const TIME_MARGIN = { l: 64, r: 16 };
+export const TIME_MARGIN = { l: 84, r: 16 };

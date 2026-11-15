@@ -138,7 +138,7 @@ function Editor({ focus, onClose, persona, values }: { focus?: BandKey; onClose:
               <div className="min-w-0">
                 {ok ? (
                   <>
-                    <BandStrip rating={rate(sample, spec)} value={sample} />
+                    <BandStrip rating={rate(sample, spec)} value={sample} wide />
                     {users[0] && <p className="mt-1 text-xs text-faint">Marker: this site&apos;s value for {users[0].name} (<span className="num">{show(users[0].value)}{d.unit}</span>)</p>}
                   </>
                 ) : (

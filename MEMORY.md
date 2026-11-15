@@ -1,13 +1,13 @@
 # MEMORY.md
 
 Living project state: what's true now, what's open, what's next. Rewrite freely (unlike `LOGS.md`,
-which is append-only history). Last updated: **2026-11-14**.
+which is append-only history). Last updated: **2026-11-15**.
 
 ## Status
 
 **Phase: computed product + owner round 2 (2026-11-14).** Educator copy is in for all 196 metrics, bands are editable, custom coordinates work everywhere, the NASA terrain bundle is shippable, and SOURCES.md is generated. The dev server runs on http://localhost:1313 (`npm run dev:1313`).
 - Site selection (D-043, D-044): left column = Date & time (iOS-style UTC pickers) + Site selection (filterable, searchable site list OR a coordinate field) + "Explore Site Details" (D-055). Polar map with lat/lon rulers, pole crosshair, km/mi scale; whole Moon as a flat chart or a 3D globe (three.js, WAC tiles) with a compass that resets the view. Theme follows the OS until the user picks one. Map pins/regions are bright green `#24e866` (D-051) with themed name tooltips.
-- Site details (D-082–D-090): header-width page; name / coordinates / metadata rows; Set mission assumptions + Customise rating bands (modals with draft, Save / Discard / Reset) and Add to comparison; date & time pickers with ±1d/±7d and a 30-day mission timeline (scrubber); then a 3 / 9 split: sticky Wikipedia-style contents + views (4 cards, horizon view with azimuth reading right-to-left, Sun / Earth from the site, libration) and metrics (battery + array power at the top of Overall). "Computed"/"Modelled" hover shows calculation steps (`MetricValue.calc`); "Your input" and rating bands open the editors at that field.
+- Site details (D-082–D-090): header-width page; name + "Select different site" (back to `/?t=` with the landing time kept, D-100) / coordinates / metadata rows; Set mission assumptions + Customise rating bands (modals with draft, Save / Discard / Reset) and Add to comparison; date & time pickers with ±1d/±7d and a 30-day mission timeline (scrubber with play/pause, D-093; pinned under the header until Array power scrolls past, D-099; every chart including the horizon view moves it on click, D-094); then a 3 / 9 split: sticky Wikipedia-style contents + views (4 cards, horizon view with azimuth reading right-to-left, Sun / Earth from the site, libration; the Earth chart has one DSN lane per complex, a Contact lane with red handover gaps and a computed DSN summary, D-095) and metrics (battery + array power at the top of Overall). "Computed"/"Modelled" hover shows calculation steps (`MetricValue.calc`); "Your input" and rating bands open the editors at that field.
 - Compare: up to 3 scenarios, strips, key numbers, "why it differs", 1–10 scores.
 - Data & methods: provenance, references, assumptions and validation.
 - Design (D-040): light default + dark toggle, warm tokens, IBM Plex Sans/Mono, Phosphor icons, radii ≤ 2px, text ≥ 14px, hairline sections instead of boxes.

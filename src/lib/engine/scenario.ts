@@ -19,8 +19,14 @@ export type Windows = {
   dark: Interval[];
   dte: Interval[];
   noDte: Interval[];
+  /** at least one DSN complex has the Moon >= dsnMinElevDeg */
   dsn: Interval[];
+  /** the same per complex, in `DSN_COMPLEXES` order */
+  dsnBy: [Interval[], Interval[], Interval[]];
+  /** Earth in view AND a DSN complex can see the Moon = direct-to-Earth contact possible */
   dteDsn: Interval[];
+  /** Earth in view but no DSN complex can see the Moon (handover gaps) */
+  dteNoDsn: Interval[];
   joint: Interval[];
   jointGap: Interval[];
   eclipse: Interval[];
@@ -40,12 +46,14 @@ export function windowsFor(s: Series, a: Assumptions, from: number, to: number):
   const sunlit = intervalsFromMargin(s.t, (i) => s.sunFrac[i] - a.sunDiskThreshold + 1e-9);
   const dte = intervalsFromMargin(s.t, (i) => s.earthFrac[i] - a.earthDiskThreshold + 1e-9);
   const dsn = intervalsFromMargin(s.t, (i) => s.dsnCount[i] - 0.5);
+  const dsnBy = [0, 1, 2].map((k) => intervalsFromMargin(s.t, (i) => s.dsnEl[k][i] - a.dsnMinElevDeg)) as Windows["dsnBy"];
   const dteDsn = intersect(dte, dsn);
+  const dteNoDsn = intersect(dte, complement(dsn, from, to));
   const joint = intersect(sunlit, dte);
   const eclipse = intervalsFromMargin(s.t, (i) => s.eclipse[i] - 1e-6);
   return {
     sunlit, dark: complement(sunlit, from, to), dte, noDte: complement(dte, from, to),
-    dsn, dteDsn, joint, jointGap: complement(joint, from, to), eclipse,
+    dsn, dsnBy, dteDsn, dteNoDsn, joint, jointGap: complement(joint, from, to), eclipse,
   };
 }
 

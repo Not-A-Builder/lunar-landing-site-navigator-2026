@@ -1,21 +1,63 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { Pause, Play } from "@phosphor-icons/react";
+import { useEffect, useRef, useState } from "react";
 import type { Interval } from "@/lib/engine/windows";
 import { dayTicks, fmtDay, fmtWhen, scale, TIME_MARGIN, useWidth } from "./chart-kit";
 
 const HOUR = 3_600_000;
 const DAY = 24 * HOUR;
+const STEP = 10 * 60_000;
+/** Playback speed (D-093): one mission day per second of wall time. */
+const PLAY_RATE = DAY / 1000;
+
+/**
+ * Plays the timeline forward from where it is, wrapping from the mission end back to landing, until
+ * `playing` turns false. Only the time changes; the caller decides when to stop.
+ */
+function usePlayback(playing: boolean, start: number, end: number, value: number, onTick: (t: number) => void) {
+  const valueRef = useRef(value);
+  const tickRef = useRef(onTick);
+  useEffect(() => {
+    valueRef.current = value;
+    tickRef.current = onTick;
+  });
+  useEffect(() => {
+    if (!playing || end <= start) return;
+    const span = end - start;
+    const from = Math.max(start, Math.min(end, valueRef.current)) - start;
+    // starting at the very end jumps straight back to landing
+    const origin = from >= span - STEP ? 0 : from;
+    let t0: number | null = null;
+    let last = NaN;
+    let raf = requestAnimationFrame(function frame(now) {
+      if (t0 === null) t0 = now;
+      const off = (origin + (now - t0) * PLAY_RATE) % span;
+      const t = start + Math.round(off / STEP) * STEP;
+      if (t !== last) {
+        last = t;
+        tickRef.current(Math.min(end, t));
+      }
+      raf = requestAnimationFrame(frame);
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [playing, start, end]);
+}
 
 /**
  * The page timeline (D-085): mission time from landing to the end of the mission, with the sunlit and
  * Earth-in-view windows as lanes. Drag the playhead, click anywhere, or use the arrow keys
  * (←/→ 1 h, Shift 1 day, Home/End). Everything on the page shows the selected time.
+ *
+ * The play button (D-093) runs the timeline forward in a loop. `onChange` is a user pick (click,
+ * drag, keys), which the caller treats as "stop here"; `onTick` is a playback step.
  */
-export function MissionTimeline({ start, end, value, onChange, sunlit, dte, sunLabel, earthLabel }: {
-  start: number; end: number; value: number; onChange: (t: number) => void;
+export function MissionTimeline({ start, end, value, onChange, onTick, playing, onPlayingChange, sunlit, dte, sunLabel, earthLabel }: {
+  start: number; end: number; value: number; onChange: (t: number) => void; onTick: (t: number) => void;
+  playing: boolean; onPlayingChange: (playing: boolean) => void;
   sunlit: Interval[]; dte: Interval[]; sunLabel: string; earthLabel: string;
 }) {
+  usePlayback(playing, start, end, value, onTick);
   const { setRef, w } = useWidth();
   const [drag, setDrag] = useState(false);
   const [hoverT, setHoverT] = useState<number | null>(null);
@@ -26,7 +68,7 @@ export function MissionTimeline({ start, end, value, onChange, sunlit, dte, sunL
   const h = m.t + 2 * laneH + gap + 34;
   const x = scale(start, end, m.l, w - m.r);
   const ticks = dayTicks(start, end, w - m.l - m.r);
-  const clampT = (t: number) => Math.max(start, Math.min(end, Math.round(t / (10 * 60_000)) * (10 * 60_000)));
+  const clampT = (t: number) => Math.max(start, Math.min(end, Math.round(t / STEP) * STEP));
   const tAt = (clientX: number) => {
     const r = svgRef.current!.getBoundingClientRect();
     return clampT(x.invert(Math.max(m.l, Math.min(w - m.r, clientX - r.left))));
@@ -42,12 +84,24 @@ export function MissionTimeline({ start, end, value, onChange, sunlit, dte, sunL
     else if (k === "ArrowLeft" || k === "ArrowDown") onChange(clampT(value - stepMs));
     else if (k === "Home") onChange(start);
     else if (k === "End") onChange(end);
+    else if (k === " " || k === "k") onPlayingChange(!playing);
     else return;
     e.preventDefault();
   };
 
   return (
-    <div ref={setRef} className="relative select-none">
+    <div className="flex items-start gap-3">
+    <button
+      type="button"
+      onClick={() => onPlayingChange(!playing)}
+      aria-pressed={playing}
+      aria-label={playing ? "Pause the timeline" : "Play the timeline"}
+      title={playing ? "Pause (Space)" : "Play the mission forward, one day per second (Space)"}
+      className="mt-[29px] inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-sm border border-line bg-panel-2 text-fg transition-colors hover:border-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+    >
+      {playing ? <Pause size={18} weight="fill" aria-hidden /> : <Play size={18} weight="fill" aria-hidden />}
+    </button>
+    <div ref={setRef} className="relative min-w-0 flex-1 select-none">
       {/* readout bubble that follows the playhead */}
       <div className="pointer-events-none absolute top-0 flex justify-center" style={{ left: labelX, width: labelW }}>
         <span className="num whitespace-nowrap rounded-sm bg-fg px-2 py-0.5 text-xs font-medium text-bg">{fmtWhen(value).replace(/^\w+, /, "")}</span>
@@ -113,6 +167,7 @@ export function MissionTimeline({ start, end, value, onChange, sunlit, dte, sunL
         <span>Landing · <span className="num">{fmtWhen(start)}</span></span>
         <span>Mission end · <span className="num">{fmtWhen(end)}</span></span>
       </div>
+    </div>
     </div>
   );
 }

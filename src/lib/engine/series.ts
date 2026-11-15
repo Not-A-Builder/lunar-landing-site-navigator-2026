@@ -31,6 +31,8 @@ export type Series = {
   libLat: Float32Array;
   /** number of DSN complexes with the Moon above `dsnMinEl` */
   dsnCount: Uint8Array;
+  /** Moon elevation above the local horizon at each DSN complex (deg), in `DSN_COMPLEXES` order */
+  dsnEl: [Float32Array, Float32Array, Float32Array];
 };
 
 export type SeriesOptions = { dsnMinEl: number };
@@ -53,6 +55,7 @@ export function computeSeries(
     earthAz: new Float32Array(n), earthEl: new Float32Array(n), earthHz: new Float32Array(n),
     earthFrac: new Float32Array(n), earthKm: new Float32Array(n),
     libLon: new Float32Array(n), libLat: new Float32Array(n), dsnCount: new Uint8Array(n),
+    dsnEl: [new Float32Array(n), new Float32Array(n), new Float32Array(n)],
   };
   const R = CONST.moonRadiusKm;
   for (let i = 0; i < n; i++) {
@@ -75,6 +78,7 @@ export function computeSeries(
     s.earthKm[i] = earth.distKm;
     s.libLon[i] = e.earth.lon > 180 ? e.earth.lon - 360 : e.earth.lon;
     s.libLat[i] = e.earth.lat;
+    s.dsnEl[0][i] = e.dsn[0]; s.dsnEl[1][i] = e.dsn[1]; s.dsnEl[2][i] = e.dsn[2];
     s.dsnCount[i] = (e.dsn[0] >= opts.dsnMinEl ? 1 : 0) + (e.dsn[1] >= opts.dsnMinEl ? 1 : 0) + (e.dsn[2] >= opts.dsnMinEl ? 1 : 0);
   }
   return s;

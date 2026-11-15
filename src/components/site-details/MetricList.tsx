@@ -1,12 +1,12 @@
 "use client";
 
-import { CaretRight, PencilSimple, SlidersHorizontal } from "@phosphor-icons/react";
-import type { ReactNode } from "react";
-import { CategoryIcon } from "@/components/CategoryIcon";
+import { CaretRight, DownloadSimple, PencilSimple, SlidersHorizontal } from "@phosphor-icons/react";
+import { memo, type ReactNode } from "react";
 import { HoverCard } from "@/components/HoverCard";
 import { InfoTip } from "@/components/InfoTip";
 import { NumText } from "@/components/Num";
 import { BandStrip, RAG_META, RagBadge, RagIcon } from "@/components/RagBadge";
+import { downloadCsv, toCsv } from "@/lib/csv";
 import { catalog, getMetric, metricsInCategory, type MetricDef } from "@/lib/metrics";
 import type { MetricValue, ValueStatus } from "@/lib/metrics/types";
 import { rollUp } from "@/lib/metrics/types";
@@ -40,7 +40,7 @@ export function shownMetrics(values: Record<string, MetricValue> | undefined) {
  * the mechanism, how to read it, and the colour bands. Mission planner: values with status, the
  * calculation behind each one, bands and the data rows (D-089).
  */
-export function MetricList({ values, persona, computing, extras }: { values: Record<string, MetricValue> | undefined; persona: Persona; computing: boolean; extras?: Record<string, ReactNode> }) {
+export function MetricList({ values, persona, computing, extras, exportMeta }: { values: Record<string, MetricValue> | undefined; persona: Persona; computing: boolean; extras?: Record<string, ReactNode>; exportMeta?: CsvMeta }) {
   const groups = shownMetrics(values);
   return (
     <div>
@@ -54,10 +54,17 @@ export function MetricList({ values, persona, computing, extras }: { values: Rec
         return (
           <section key={cat.id} id={categoryAnchor(cat.id)} aria-labelledby={`${categoryAnchor(cat.id)}-h`} className="mt-10 scroll-mt-24">
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-line pb-3">
-              <CategoryIcon id={cat.id} />
-              <h3 id={`${categoryAnchor(cat.id)}-h`} className="text-lg font-semibold">{cat.label}</h3>
+              <h3 id={`${categoryAnchor(cat.id)}-h`} className="text-[26px] font-semibold">{cat.label}</h3>
               {roll && <RollUpBadge rag={roll.rag} n={roll.n} />}
-              <span className="ml-auto text-xs text-faint"><span className="num">{items.length}</span> metric{items.length === 1 ? "" : "s"}</span>
+              <div className="ml-auto flex items-center gap-4">
+                <span className="text-xs text-faint"><span className="num">{items.length}</span> metric{items.length === 1 ? "" : "s"}</span>
+                {exportMeta && (
+                  <button type="button" onClick={() => downloadCategoryCsv(cat, items, exportMeta)} title={`Download the ${cat.label} metrics for this site and date as a CSV file`} aria-label={`Download ${cat.label} metrics (CSV)`}
+                    className="inline-flex items-center gap-1 text-sm text-muted underline decoration-faint underline-offset-4 hover:text-fg">
+                    <DownloadSimple size={15} aria-hidden /> Download CSV
+                  </button>
+                )}
+              </div>
             </div>
             {extras?.[cat.id]}
             <ul className="divide-y divide-line">
@@ -68,6 +75,26 @@ export function MetricList({ values, persona, computing, extras }: { values: Rec
       })}
     </div>
   );
+}
+
+/** Site and landing time written into each per-category CSV (D-103). */
+export type CsvMeta = { siteId: string; site: string; lat: number | null; lon: number | null; landingMs: number };
+
+/** One category's shown metrics (the same rows as on screen) as a CSV download (D-103). */
+function downloadCategoryCsv(cat: { id: string; label: string }, items: { m: MetricDef; v: MetricValue }[], meta: CsvMeta) {
+  const landing = new Date(meta.landingMs).toISOString();
+  const rows = [["site", "latitude_deg", "longitude_deg", "landing_utc", "category", "metric_id", "metric", "question", "value", "display_value", "status", "rating", "sources", "source_urls", "note"]];
+  for (const { m, v } of items) {
+    const src = [...new Set(v.sources)];
+    rows.push([
+      meta.site, meta.lat ?? "", meta.lon ?? "", landing, cat.label, m.id, m.name, m.question,
+      typeof v.value === "number" && Number.isFinite(v.value) ? String(+v.value.toFixed(6)) : "", v.display,
+      STATUS_META[v.status].label, v.rating ? RAG_META[v.rating.rag].label : "",
+      src.map((s) => SOURCES[s]?.name ?? s).join("; "), src.map((s) => SOURCES[s]?.url ?? "").filter(Boolean).join(" "), v.note ?? "",
+    ].map(String));
+  }
+  const stamp = landing.slice(0, 16).replace(/:/g, "") + "Z";
+  downloadCsv(`${meta.siteId}-${stamp}-${cat.id}-metrics.csv`, toCsv(rows));
 }
 
 function RollUpBadge({ rag, n }: { rag: "green" | "amber" | "red"; n: number }) {
@@ -81,7 +108,8 @@ function RollUpBadge({ rag, n }: { rag: "green" | "amber" | "red"; n: number }) 
   );
 }
 
-function MetricRow({ m, v, persona }: { m: MetricDef; v: MetricValue; persona: Persona }) {
+/** Memoised: rows don't depend on the selected time, so timeline playback (D-093) skips them. */
+const MetricRow = memo(function MetricRow({ m, v, persona }: { m: MetricDef; v: MetricValue; persona: Persona }) {
   const planner = persona === "planner", educator = persona === "educator", enthusiast = persona === "enthusiast";
   return (
     <li id={metricAnchor(m.id)} className="grid scroll-mt-24 gap-x-10 gap-y-3 py-5 md:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
@@ -112,7 +140,7 @@ function MetricRow({ m, v, persona }: { m: MetricDef; v: MetricValue; persona: P
         )}
         {!enthusiast && v.rating && typeof v.value === "number" && (
           <BandsTrigger k={v.rating.key} className="mt-3 block w-full text-left">
-            <BandStrip rating={v.rating} value={v.value} />
+            <BandStrip rating={v.rating} value={v.value} wide />
           </BandsTrigger>
         )}
         {planner && v.note && <p className="mt-2.5 text-sm leading-relaxed text-muted"><NumText>{v.note}</NumText></p>}
@@ -121,7 +149,7 @@ function MetricRow({ m, v, persona }: { m: MetricDef; v: MetricValue; persona: P
       </div>
     </li>
   );
-}
+});
 
 /** The value, split into readable lines when it lists several parts ("a · b · c" or "a; b"). */
 function Value({ v, large }: { v: MetricValue; large: boolean }) {

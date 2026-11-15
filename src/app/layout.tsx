@@ -18,7 +18,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" data-theme="dark" suppressHydrationWarning className={`${plexSans.variable} ${plexMono.variable} h-full antialiased`}>
       {/* Every load starts in the dark theme, rendered on the server so there is no flash (D-072). */}
-      <body className="flex min-h-full flex-col">
+      {/* Browser extensions (e.g. ColorZilla's cz-shortcut-listen) add attributes to <body> before hydration (D-101). */}
+      <body className="flex min-h-full flex-col" suppressHydrationWarning>
         <PersonaHydrator />
         <AppHeader />
         <main className="flex-1">{children}</main>

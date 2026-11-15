@@ -1,20 +1,20 @@
 "use client";
 
-import { ArrowCounterClockwise, ArrowSquareOut, DownloadSimple, PencilSimple, Plus, SlidersHorizontal, TrafficSignal, Warning } from "@phosphor-icons/react";
+import { ArrowCounterClockwise, ArrowSquareOut, DownloadSimple, PencilSimple, Plus, SlidersHorizontal, Steps, Warning } from "@phosphor-icons/react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { BodyTimeline } from "@/components/charts/BodyTimeline";
 import { HorizonPanorama } from "@/components/charts/HorizonPanorama";
 import { LibrationChart } from "@/components/charts/LibrationChart";
 import { MissionTimeline } from "@/components/charts/MissionTimeline";
 import { PowerCharts } from "@/components/charts/PowerCharts";
-import { CustomCoordForm } from "@/components/CustomCoordForm";
 import { InfoTip } from "@/components/InfoTip";
 import { NumText } from "@/components/Num";
 import { RagBadge } from "@/components/RagBadge";
 import { DateField, TimeField } from "@/components/site-selection/DateTimePickers";
 import { useAssumptions } from "@/lib/assumptions-store";
+import { downloadCsv } from "@/lib/csv";
 import { powerModel } from "@/lib/engine/analysis";
 import { DAY_MS, HOUR_MS } from "@/lib/engine/scenario";
 import { containing, nextAfter } from "@/lib/engine/windows";
@@ -43,6 +43,7 @@ export function SiteDetails({ site }: { site: Site | null }) {
   const params = useSearchParams();
   const router = useRouter();
   const persona = usePersona((s) => s.persona);
+  const cardH = CARD_H[persona];
   const a = useAssumptions((s) => s.a);
   const bandOverrides = useAssumptions((s) => s.bands);
   const openEditor = useEditor((s) => s.open);
@@ -55,6 +56,12 @@ export function SiteDetails({ site }: { site: Site | null }) {
   const [cursorState, setCursorState] = useState<{ base: number | null; t: number } | null>(null);
   const cursor = cursorState && cursorState.base === landingMs ? cursorState.t : landingMs;
   const setCursor = (t: number) => setCursorState({ base: landingMs, t });
+  // Timeline playback (D-093). Any time the user picks a time (timeline, charts, "Back to landing"), playback stops there.
+  const [playing, setPlaying] = useState(false);
+  const pickTime = (t: number) => {
+    setPlaying(false);
+    setCursor(t);
+  };
 
   const lat = site?.lat ?? numOrNull(params.get("lat"));
   const lon = site?.lon ?? numOrNull(params.get("lon"));
@@ -104,18 +111,27 @@ export function SiteDetails({ site }: { site: Site | null }) {
     },
   ], [m]);
 
+  const { pageRef, trackRef, barRef, pinned: tlPinned } = useStickyTimeline(!!sc);
+
   if (!key) return <div className="mx-auto max-w-[1600px] px-4 py-6 text-sm text-muted">Coordinates missing. Go back and pick a site.</div>;
 
   const compareHref = `/compare?s=${encodeURIComponent(id === "custom" ? `custom:${lat},${lon}` : id)}@${encodeURIComponent(landingMs ? new Date(landingMs).toISOString() : "")}`;
+  const selectHref = tParam && landingMs !== null ? `/?t=${encodeURIComponent(new Date(landingMs).toISOString())}` : "/";
   const sep = <span aria-hidden className="mx-3 text-faint">•</span>;
   const feature = !site ? an.terrain?.features[0] : undefined;
 
   return (
-    <div className="mx-auto max-w-[1600px] px-4 pb-24 pt-7">
+    <div ref={pageRef} className="mx-auto max-w-[1600px] px-4 pb-24 pt-7">
       {/* ── Header: name, coordinates, metadata · editors and compare ── */}
       <header className="flex flex-wrap items-end justify-between gap-x-10 gap-y-5">
         <div className="min-w-0 space-y-2">
-          <h1 className="text-3xl font-semibold tracking-tight">{name}</h1>
+          <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
+            <h1 className="text-3xl font-semibold tracking-tight">{name}</h1>
+            {/* Back to site selection, keeping the landing date & time (D-100). */}
+            <Link href={selectHref} className="inline-flex items-center gap-1 text-sm text-muted underline decoration-faint underline-offset-4 hover:text-fg">
+              <PencilSimple size={15} aria-hidden /> Select different site
+            </Link>
+          </div>
           <div className="flex flex-wrap items-center text-sm text-muted">
             {lat !== null && lon !== null && (
               <span className="inline-flex items-center">
@@ -160,7 +176,7 @@ export function SiteDetails({ site }: { site: Site | null }) {
             <SlidersHorizontal size={18} aria-hidden /> Set mission assumptions
           </button>
           <button type="button" onClick={() => openEditor({ kind: "bands" })} className={btnSecondary}>
-            <TrafficSignal size={18} aria-hidden /> Customise rating bands
+            <Steps size={18} aria-hidden /> Customise rating bands
           </button>
           <span className="mx-2 h-8 w-px bg-line" role="separator" aria-orientation="vertical" />
           <Link href={compareHref} className={btnPrimary}>
@@ -168,22 +184,6 @@ export function SiteDetails({ site }: { site: Site | null }) {
           </Link>
         </div>
       </header>
-
-      {!site && (
-        <div className="mt-5 max-w-xl">
-          <CustomCoordForm
-            key={`${lat},${lon}`}
-            initial={lat !== null && lon !== null ? { lat, lon } : null}
-            submitLabel="Update"
-            onSubmit={(la, lo) => {
-              const q = new URLSearchParams(params.toString());
-              q.set("lat", String(la));
-              q.set("lon", String(lo));
-              router.replace(`?${q.toString()}`, { scroll: false });
-            }}
-          />
-        </div>
-      )}
 
       {!polar && lat !== null && (
         <Note tone="warn">
@@ -225,30 +225,36 @@ export function SiteDetails({ site }: { site: Site | null }) {
             </InfoTip>
           </div>
         </div>
+      </section>
 
-        {sc && (
-          <div className="mt-6">
+      {/* ── The timeline, pinned under the app header until the Array power chart has scrolled past (D-099) ── */}
+      {sc && (
+        <div ref={trackRef} className="pointer-events-none mt-3">
+          <div ref={barRef} data-sticky-bar role="region" aria-label="Mission timeline"
+            className="pointer-events-auto sticky top-16 z-20 -mx-4 bg-bg px-4 pt-3">
             <div className="mb-2 flex flex-wrap items-center gap-x-4 gap-y-1">
               <div className="flex items-center text-sm font-medium">
                 Timeline
                 <InfoTip title="Timeline" sources={["jpl-horizons", "lola-pds"]}>
-                  The whole mission from landing to the end. The orange lane shows when the site is sunlit, the blue lane when Earth is in view. Drag the marker, click anywhere on it, or use the arrow keys (Shift for whole days). The cards, the horizon view and every chart below show the selected time.
+                  The whole mission from landing to the end. The orange lane shows when the site is sunlit, the blue lane when Earth is in view. Press play to run the mission forward, one day per second, in a loop; press again to pause. Drag the marker, click anywhere on it, or use the arrow keys (Shift for whole days) to stop at a time. Space plays or pauses when the timeline has focus. The cards, the horizon view and every chart below show the selected time. The timeline stays pinned at the top while you scroll through those charts, down to Array power; the metrics after that are for the landing time, so it lets go there.
                 </InfoTip>
               </div>
               <span className="text-sm text-muted"><span className="num text-fg">{fmtUTC(cur)}</span>{sep}<span className="num">Day {Math.floor((cur - sc.start) / DAY_MS) + 1}</span> of <span className="num">{a.missionDays}</span></span>
               {cur !== landingMs && (
-                <button type="button" onClick={() => setCursor(sc.start)} className="inline-flex items-center gap-1 text-sm text-muted underline decoration-faint underline-offset-4 hover:text-fg">
+                <button type="button" onClick={() => pickTime(sc.start)} className="inline-flex items-center gap-1 text-sm text-muted underline decoration-faint underline-offset-4 hover:text-fg">
                   <ArrowCounterClockwise size={15} aria-hidden /> Back to landing
                 </button>
               )}
             </div>
-            <MissionTimeline start={sc.start} end={sc.end} value={cur} onChange={setCursor} sunlit={sc.windows.sunlit} dte={sc.windows.dte}
+            <MissionTimeline start={sc.start} end={sc.end} value={cur} onChange={pickTime} onTick={setCursor} playing={playing} onPlayingChange={setPlaying} sunlit={sc.windows.sunlit} dte={sc.windows.dte}
               sunLabel={P("Sun up", "Sunlit", "Sunlit")} earthLabel={P("Earth up", "Earth", "DTE")} />
+            {/* The page divider under the timeline doubles as the pinned bar's bottom edge (same width as the content). */}
+            <hr className="mt-6 border-line" />
           </div>
-        )}
-      </section>
+        </div>
+      )}
 
-      <hr className="mt-6 border-line" />
+      {!sc && <hr className="mt-6 border-line" />}
 
       {an.stage === "error" && <Note tone="critical">Could not compute this site: {an.error}</Note>}
       {an.stage === "loading" && <p className="mt-6 text-sm text-muted">{site ? "Loading NASA ephemeris and LOLA terrain…" : "Computing the terrain horizon for this point from LOLA elevation data (a few seconds the first time)…"}</p>}
@@ -256,7 +262,9 @@ export function SiteDetails({ site }: { site: Site | null }) {
       {sc && status && m && power && (
         <div className="mt-8 grid grid-cols-12 gap-x-10">
           <aside className="col-span-3 hidden lg:block">
-            <div data-toc-scroll className="no-scrollbar sticky top-[88px] max-h-[calc(100vh-112px)] overflow-y-auto pb-8 pr-2">
+            {/* Sits below the pinned timeline while it is there, and glides back up when it leaves (D-099). */}
+            <div data-toc-scroll className="no-scrollbar sticky overflow-y-auto pb-8 pr-2 transition-[top,max-height] duration-300 ease-out motion-reduce:transition-none"
+              style={{ top: tlPinned ? "calc(88px + var(--tl-h, 0px))" : "88px", maxHeight: tlPinned ? "calc(100vh - 112px - var(--tl-h, 0px))" : "calc(100vh - 112px)" }}>
               <PageToc items={toc} />
             </div>
           </aside>
@@ -271,8 +279,10 @@ export function SiteDetails({ site }: { site: Site | null }) {
                 "Terrain horizon (LOLA), Sun and Earth topocentric tracks (JPL Horizons) and visibility windows, at the timeline's selected time.",
               )}</p>
 
+              {/* Fixed per-breakpoint card height (D-097), sized to the longest copy measured for each persona,
+                  so changing the time or site never makes the content below jump. */}
               <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                <Card color="var(--sun)" label={P("Is the Sun up?", "Sun at the selected time", "Sun at selected time")}
+                <Card h={cardH} color="var(--sun)" label={P("Is the Sun up?", "Sun at the selected time", "Sun at selected time")}
                   value={status.lit ? (status.lit.end >= sc.end - sc.series.stepMs ? P("Up for the rest of the mission", "Sunlit to the end of the mission", "Lit · rest of mission") : P(`Up · sets in ${fmtHours((status.lit.end - cur) / HOUR_MS)}`, `Sunlit · sets in ${fmtHours((status.lit.end - cur) / HOUR_MS)}`, `Lit · sets in ${fmtHours((status.lit.end - cur) / HOUR_MS)}`)) : status.nextLit ? P(`Hidden · back in ${fmtHours((status.nextLit.start - cur) / HOUR_MS)}`, `Dark · rises in ${fmtHours((status.nextLit.start - cur) / HOUR_MS)}`, `Dark · rises in ${fmtHours((status.nextLit.start - cur) / HOUR_MS)}`) : P("Hidden all mission", "Dark all mission", "Dark · all mission")}
                   sub={P(
                     `Toward the ${compass(sc.series.sunAz[status.i])}, ${upDown(sc.series.sunEl[status.i], 1, "flat ground")}`,
@@ -280,7 +290,7 @@ export function SiteDetails({ site }: { site: Site | null }) {
                     `el ${fmtDeg(sc.series.sunEl[status.i], 2)} · az ${fmtDeg(sc.series.sunAz[status.i], 1)} ${compass(sc.series.sunAz[status.i])} · ${fmtPct(sc.series.sunFrac[status.i], 1)} disk`,
                   )}
                   tip={`Whether at least ${Math.round(a.sunDiskThreshold * 100)}% of the Sun's disk clears the LOLA terrain horizon at the selected time, and how long until that changes.`} sources={["jpl-horizons", "lola-pds"]} />
-                <Card color="var(--earth)" label={P("Can we call Earth?", "Earth at the selected time", "Earth at selected time")}
+                <Card h={cardH} color="var(--earth)" label={P("Can we call Earth?", "Earth at the selected time", "Earth at selected time")}
                   value={status.dte ? (status.dte.end >= sc.end - sc.series.stepMs ? P("Yes, for the rest of the mission", "In view to the end of the mission", "In view · rest of mission") : P(`Yes · for ${fmtHours((status.dte.end - cur) / HOUR_MS)}`, `In view · sets in ${fmtHours((status.dte.end - cur) / HOUR_MS)}`, `In view · sets in ${fmtHours((status.dte.end - cur) / HOUR_MS)}`)) : status.nextDte ? P(`Not now · back in ${fmtHours((status.nextDte.start - cur) / HOUR_MS)}`, `Hidden · rises in ${fmtHours((status.nextDte.start - cur) / HOUR_MS)}`, `Hidden · rises in ${fmtHours((status.nextDte.start - cur) / HOUR_MS)}`) : P("Not during this mission", "Hidden all mission", "Hidden · all mission")}
                   sub={P(
                     `Toward the ${compass(sc.series.earthAz[status.i])}, ${upDown(sc.series.earthEl[status.i], 1, "flat ground")}`,
@@ -288,10 +298,10 @@ export function SiteDetails({ site }: { site: Site | null }) {
                     `el ${fmtDeg(sc.series.earthEl[status.i], 2)} · az ${fmtDeg(sc.series.earthAz[status.i], 1)} ${compass(sc.series.earthAz[status.i])} · ${sc.series.dsnCount[status.i]}/3 DSN`,
                   )}
                   tip={`Direct-to-Earth contact needs at least ${Math.round(a.earthDiskThreshold * 100)}% of Earth's disk above the terrain horizon, and a Deep Space Network antenna that can see the Moon (≥ ${a.dsnMinElevDeg}° up).`} sources={["jpl-horizons", "lola-pds", "dsn-810-005"]} />
-                <Card label={P("Sunlight over the mission", "Sunlit, whole mission", "Sunlit % of mission")} value={m["sun.solar-availability-fraction"]?.display ?? "—"} rag={m["sun.solar-availability-fraction"]?.rating?.rag}
+                <Card h={cardH} label={P("Sunlight over the mission", "Sunlit, whole mission", "Sunlit % of mission")} value={m["sun.solar-availability-fraction"]?.display ?? "—"} rag={m["sun.solar-availability-fraction"]?.rating?.rag}
                   sub={`${P("Longest dark stretch", "Longest dark stretch", "Longest dark")} ${m["sun.longest-continuous-darkness"]?.display ?? "—"}`}
                   tip={`Share of the ${a.missionDays}-day mission with at least ${Math.round(a.sunDiskThreshold * 100)}% of the Sun's disk above the terrain horizon.`} sources={["jpl-horizons", "lola-pds"]} />
-                <Card label={P("Power and a call home at once", "Sun and Earth together", "Sun + Earth together")} value={m["overall.joint-sunlit-dte-window"]?.display.split(" (")[0] ?? "—"} rag={m["overall.joint-sunlit-dte-window"]?.rating?.rag}
+                <Card h={cardH} label={P("Power and a call home at once", "Sun and Earth together", "Sun + Earth together")} value={m["overall.joint-sunlit-dte-window"]?.display.split(" (")[0] ?? "—"} rag={m["overall.joint-sunlit-dte-window"]?.rating?.rag}
                   sub={`${P("That's ", "That is ", "")}${fmtPct((m["overall.joint-sunlit-dte-window"]?.value ?? 0) / 100)} ${P("of the mission", "of the mission", "of mission")} · Earth in view ${m["earth.total-dte-visibility-fraction"]?.display ?? "—"}`}
                   tip="Hours with both sunlight (power) and Earth in view (direct communication) at the same time." sources={["jpl-horizons", "lola-pds"]} />
               </div>
@@ -303,21 +313,21 @@ export function SiteDetails({ site }: { site: Site | null }) {
                   undefined,
                 )}
                 tip={<InfoTip title="Horizon view" sources={["lola-pds", "jpl-horizons"]}>
-                  The grey skyline is the real terrain around the site, traced out to {an.terrain?.maxRangeKm} km in LOLA elevation data, including the curve of the Moon, seen from {a.mastHeightM} m above the ground. There is no air, so no refraction: the Sun or Earth is visible only when it clears this line. Coloured lines are their paths during the mission; the discs show where they are at the selected time. The compass runs right to left so the terrain appears in the same order as in the time charts below.
+                  The grey skyline is the real terrain around the site, traced out to {an.terrain?.maxRangeKm} km in LOLA elevation data, including the curve of the Moon, seen from {a.mastHeightM} m above the ground. There is no air, so no refraction: the Sun or Earth is visible only when it clears this line. Coloured lines are their paths during the mission; the discs show where they are at the selected time. The compass runs right to left so the terrain appears in the same order as in the time charts below. Click a path to move the timeline to when the Sun or Earth was there.
                 </InfoTip>}>
-                <HorizonPanorama sc={sc} cursor={cur} persona={persona} distKm={an.terrain?.maskDistKm} distStepDeg={an.terrain?.stepDeg} />
+                <HorizonPanorama sc={sc} cursor={cur} persona={persona} onCursor={pickTime} distKm={an.terrain?.maskDistKm} distStepDeg={an.terrain?.stepDeg} />
               </Block>
 
               <Block id="sun-view" title={P("When the Sun is up", "Sun from the site", "Sun from the site: elevation vs terrain horizon")}
                 lead={P("The orange line is how high the Sun is; the grey is the hills in front of it. Solid orange means the site is in sunlight.", "The Sun's height over time against the height of the terrain in the Sun's direction. Where the orange line clears the grey, the site is sunlit.", undefined)}
                 tip={<InfoTip title="Sun from the site" sources={["jpl-horizons", "lola-pds", "bryant-2009"]}>Sun elevation (orange) against the terrain horizon in the Sun&apos;s direction at each moment (grey). Solid where at least {Math.round(a.sunDiskThreshold * 100)}% of the disk is visible, dashed where it is hidden; the lane underneath shows the sunlit windows. Click to move the timeline.</InfoTip>}>
-                <BodyTimeline sc={sc} body="sun" cursor={cur} onCursor={setCursor} persona={persona} />
+                <BodyTimeline sc={sc} body="sun" cursor={cur} onCursor={pickTime} persona={persona} />
               </Block>
 
               <Block id="earth-view" title={P("When you can see Earth", "Earth from the site", "Earth from the site: elevation vs terrain, DSN coverage")}
-                lead={P("Earth barely moves in the Moon's sky, but at the pole it sits so low that a small wobble hides it behind hills.", "Earth's height over time against the terrain in Earth's direction. A radio link also needs a Deep Space Network antenna on Earth that can see the Moon (the grey lane).", undefined)}
-                tip={<InfoTip title="Earth from the site" sources={["jpl-horizons", "lola-pds", "dsn-810-005"]}>Earth elevation (blue) against the terrain horizon in Earth&apos;s direction. Solid where at least {Math.round(a.earthDiskThreshold * 100)}% of Earth&apos;s disk is visible. Lanes: Earth in view, and at least one DSN complex (Goldstone, Canberra, Madrid) with the Moon ≥ {a.dsnMinElevDeg}° above its horizon. Click to move the timeline.</InfoTip>}>
-                <BodyTimeline sc={sc} body="earth" cursor={cur} onCursor={setCursor} persona={persona} />
+                lead={P("Earth barely moves in the Moon's sky, but at the pole it sits so low that a small wobble hides it behind hills.", "Earth's height over time against the terrain in Earth's direction. A radio link also needs a Deep Space Network antenna on Earth that can see the Moon (one grey lane per complex); the bottom lane is when both line up.", undefined)}
+                tip={<InfoTip title="Earth from the site" sources={["jpl-horizons", "lola-pds", "dsn-810-005"]}>Earth elevation (blue) against the terrain horizon in Earth&apos;s direction. Solid where at least {Math.round(a.earthDiskThreshold * 100)}% of Earth&apos;s disk is visible. Lanes: Earth in view; one per DSN complex (Canberra, Madrid, Goldstone, in the order the Moon reaches them as Earth turns) showing when the Moon is ≥ {a.dsnMinElevDeg}° above that complex&apos;s horizon; Contact = both at once. Red marks are handover gaps: Earth is in view but no complex can see the Moon. Click to move the timeline.</InfoTip>}>
+                <BodyTimeline sc={sc} body="earth" cursor={cur} onCursor={pickTime} persona={persona} />
               </Block>
 
               <Block id="libration" title={P("Why Earth wobbles in the sky", "Libration: why Earth wobbles", "Libration: Earth az/el track")}
@@ -349,7 +359,7 @@ export function SiteDetails({ site }: { site: Site | null }) {
                       </dl>
                     )}
                   </div>
-                  <LibrationChart sc={sc} cursor={cur} persona={persona} onCursor={setCursor} />
+                  <LibrationChart sc={sc} cursor={cur} persona={persona} onCursor={pickTime} />
                 </div>
               </Block>
             </section>
@@ -360,7 +370,7 @@ export function SiteDetails({ site }: { site: Site | null }) {
                 <h2 id="metrics-h" className="text-2xl font-semibold tracking-tight">Metrics</h2>
                 {persona === "planner" && <CsvButton sc={sc} name={id} />}
               </div>
-              <MetricList values={m} persona={persona} computing={an.stage !== "full"} extras={{
+              <MetricList values={m} persona={persona} computing={an.stage !== "full"} exportMeta={landingMs !== null ? { siteId: id, site: name, lat, lon, landingMs } : undefined} extras={{
                 overall: (
                   <div className="divide-y divide-line">
                     <Block id="battery" sub title={P("Battery over the mission", "Battery charge", "Battery charge")}
@@ -368,14 +378,14 @@ export function SiteDetails({ site }: { site: Site | null }) {
                       tip={<InfoTip title="Battery charge" sources={["jpl-horizons", "lola-pds", "nssdc-moon", "mission-assumption"]}>
                         Simulated every {sc.series.stepMs / 60000} min from landing, starting full at {a.batteryWh.toLocaleString("en-US")} Wh. Each step adds the array output and subtracts the load: {a.loadW} W while any sunlight reaches the array, {a.survivalLoadW} W survival (heaters) otherwise. Charge stays between 0 and full. Lowest: {fmtPct(power.minSoc, 1)} at {fmtUTC(power.minSocAt)}{power.depletedAt ? `; first empty at ${fmtUTC(power.depletedAt)}` : ""}. Lander values are example assumptions you can change.
                       </InfoTip>}>
-                      <PowerCharts sc={sc} power={power} cursor={cur} onCursor={setCursor} persona={persona} only="battery" />
+                      <PowerCharts sc={sc} power={power} cursor={cur} onCursor={pickTime} persona={persona} only="battery" />
                     </Block>
                     <Block id="array-power" sub title={P("Solar power", "Array power", "Array power")}
                       lead={P("How much power the solar panels make, against what the lander needs (dashed line).", "Output depends on how much of the Sun clears the terrain and how squarely sunlight hits the panels.", undefined)}
                       tip={<InfoTip title="Array power" sources={["jpl-horizons", "lola-pds", "nssdc-moon", "mission-assumption"]}>
                         Output = 1,361 W/m² (sunlight at 1 AU, NSSDCA) ÷ (Sun distance in AU)² × visible share of the Sun&apos;s disk × cos(angle between sunlight and the panel) × {a.panelAreaM2} m² × {a.panelEfficiency} efficiency. Mounting: {a.panelTracking === "vertical-tracking" ? "vertical, turned to face the Sun" : a.panelTracking === "vertical-fixed" ? `vertical, fixed facing ${a.panelFixedAzDeg}°` : "horizontal"}. Mean {Math.round(power.avgW)} W, peak {Math.round(power.peakW)} W. The dashed line is the load.
                       </InfoTip>}>
-                      <PowerCharts sc={sc} power={power} cursor={cur} onCursor={setCursor} persona={persona} only="array" />
+                      <PowerCharts sc={sc} power={power} cursor={cur} onCursor={pickTime} persona={persona} only="array" />
                     </Block>
                   </div>
                 ),
@@ -391,6 +401,68 @@ export function SiteDetails({ site }: { site: Site | null }) {
   );
 }
 
+/** Height of the sticky app header (`h-16` in AppHeader). */
+const APP_HEADER_PX = 64;
+/** The pinned timeline lets go when the bottom of this block (the last chart that follows the timeline) passes under it. */
+const STICKY_END_ID = "array-power";
+
+/**
+ * Sticky mission timeline (D-099). The bar is CSS `position: sticky` inside a "track" that runs from the
+ * bar's place in the page to the bottom of the Array power chart, so pinning, the push-out at the end and
+ * re-pinning on the way back up are all done by the browser's scroller: nothing moves from JavaScript
+ * while scrolling. The track is as tall as that span but gives the space back with a negative bottom
+ * margin, so the layout below is unchanged. JS only re-measures the span when the layout changes, and
+ * flips one flag on scroll: `pinned` (the bar is covering the top of the viewport, so the contents column
+ * sits below it). The bar's bottom edge is the page divider that sits under the timeline anyway.
+ */
+function useStickyTimeline(enabled: boolean) {
+  const pageRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const barRef = useRef<HTMLDivElement>(null);
+  const [flags, setFlags] = useState({ stuck: false, pinned: false });
+
+  useEffect(() => {
+    const page = pageRef.current, track = trackRef.current, bar = barRef.current;
+    if (!enabled || !page || !track || !bar) return;
+    let raf = 0;
+    const read = () => {
+      raf = 0;
+      const t = track.getBoundingClientRect(), b = bar.getBoundingClientRect();
+      const stuck = t.top < APP_HEADER_PX - 0.5;
+      const pinned = stuck && b.bottom > APP_HEADER_PX + 8;
+      setFlags((f) => (f.stuck === stuck && f.pinned === pinned ? f : { stuck, pinned }));
+    };
+    const measure = () => {
+      const end = document.getElementById(STICKY_END_ID);
+      const barH = bar.offsetHeight;
+      const span = end ? end.getBoundingClientRect().bottom - track.getBoundingClientRect().top : 0;
+      const h = Math.max(barH, span);
+      page.style.setProperty("--tl-h", `${barH}px`);
+      track.style.height = `${h}px`;
+      track.style.marginBottom = `${barH - h}px`;
+      read();
+    };
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(read); };
+    // Content above the end block changes height as data, persona and fonts arrive: the page box grows or shrinks with it.
+    const ro = new ResizeObserver(measure);
+    ro.observe(page);
+    ro.observe(bar);
+    measure();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", measure);
+      if (raf) cancelAnimationFrame(raf);
+      track.style.height = "";
+      track.style.marginBottom = "";
+    };
+  }, [enabled]);
+
+  return { pageRef, trackRef, barRef, ...flags };
+}
+
 /** A titled block inside a section: anchor, heading with its info tip, optional lead line. */
 function Block({ id, title, tip, lead, sub, children }: { id: string; title: string; tip?: ReactNode; lead?: string; sub?: boolean; children: ReactNode }) {
   return (
@@ -402,9 +474,16 @@ function Block({ id, title, tip, lead, sub, children }: { id: string; title: str
   );
 }
 
-function Card({ label, value, sub, color, rag, tip, sources }: { label: string; value: string; sub?: string; color?: string; rag?: "green" | "amber" | "red"; tip: string; sources: SourceId[] }) {
+/** Status-card min-heights per persona (D-097): the longest copy measured across sites, dates and widths, plus ~1.5 lines of headroom. */
+const CARD_H: Record<Persona, string> = {
+  enthusiast: "min-h-[9rem] xl:min-h-[12rem]",
+  educator: "min-h-[11rem] xl:min-h-[18rem] 2xl:min-h-[12rem]",
+  planner: "min-h-[9rem] xl:min-h-[12rem]",
+};
+
+function Card({ label, value, sub, color, rag, tip, sources, h }: { label: string; value: string; sub?: string; color?: string; rag?: "green" | "amber" | "red"; tip: string; sources: SourceId[]; h?: string }) {
   return (
-    <div className="relative overflow-hidden rounded-sm border border-line bg-panel px-4 pb-4 pt-3.5">
+    <div className={`relative overflow-hidden rounded-sm border border-line bg-panel px-4 pb-4 pt-3.5 ${h ?? ""}`}>
       <span aria-hidden className="absolute inset-x-0 top-0 h-0.5" style={{ background: color ?? "var(--line)" }} />
       <div className="flex items-center text-sm text-muted">
         {label}
@@ -446,13 +525,7 @@ function CsvButton({ sc, name }: { sc: NonNullable<ReturnType<typeof useAnalysis
     for (let i = 0; i < s.n; i++) {
       rows.push([new Date(s.t[i]).toISOString(), s.sunAz[i].toFixed(4), s.sunEl[i].toFixed(4), s.sunHz[i].toFixed(4), s.sunFrac[i].toFixed(4), s.earthAz[i].toFixed(4), s.earthEl[i].toFixed(4), s.earthHz[i].toFixed(4), s.earthFrac[i].toFixed(4), s.earthKm[i].toFixed(1), s.libLon[i].toFixed(4), s.libLat[i].toFixed(4), s.dsnCount[i]].join(","));
     }
-    const blob = new Blob([rows.join("\n")], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const el = document.createElement("a");
-    el.href = url;
-    el.download = `${name}-${new Date(sc.start).toISOString().slice(0, 10)}-ephemeris.csv`;
-    el.click();
-    URL.revokeObjectURL(url);
+    downloadCsv(`${name}-${new Date(sc.start).toISOString().slice(0, 10)}-ephemeris.csv`, rows.join("\n"));
   };
   return <button type="button" onClick={download} className={btnSecondary}><DownloadSimple size={17} aria-hidden /> Download time series (CSV)</button>;
 }

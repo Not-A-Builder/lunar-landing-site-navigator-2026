@@ -28,11 +28,12 @@ export function RagBadge({ rag, compact }: { rag: Rag; compact?: boolean }) {
  * The colour bands for a metric with a marker at this site's value. Shows that there is no single
  * right answer: where the value sits, and how far it is from the next band.
  */
-export function BandStrip({ rating, value, unit }: { rating: Rating; value: number; unit?: string }) {
+/** `wide`: fill the parent's full width (metric rows and the Rating bands modal, D-104); otherwise capped at 18rem. */
+export function BandStrip({ rating, value, unit, wide }: { rating: Rating; value: number; unit?: string; wide?: boolean }) {
   const lo = rating.bands[0].from, hi = rating.bands[rating.bands.length - 1].to;
   const pos = (v: number) => `${(100 * (Math.max(lo, Math.min(hi, v)) - lo)) / (hi - lo || 1)}%`;
   return (
-    <div className="w-full max-w-72" title={rating.basis}>
+    <div className={`w-full ${wide ? "" : "max-w-72"}`} title={rating.basis}>
       <div className="relative h-1.5">
         <div className="absolute inset-0 flex gap-px">
           {rating.bands.map((b) => (

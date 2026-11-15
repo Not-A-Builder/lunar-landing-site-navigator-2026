@@ -4,7 +4,11 @@ import { describe, expect, it } from "vitest";
 import { CONST } from "./constants";
 import { decodeYear, EphemerisSet } from "./ephemeris";
 import { diskAboveHorizon, diskOverlapFraction, topocentric } from "./geometry";
-import { complement, intersect, intervalsFromMargin } from "./windows";
+import { DEFAULT_ASSUMPTIONS } from "@/lib/assumptions";
+import { windowsFor } from "./scenario";
+import { computeSeries } from "./series";
+import { asMask } from "./terrain-file";
+import { complement, intersect, intervalsFromMargin, totalMs } from "./windows";
 
 const root = join(__dirname, "../../..");
 const idx = JSON.parse(readFileSync(join(root, "public/data/ephemeris/index.json"), "utf8"));
@@ -62,5 +66,24 @@ describe("windows", () => {
     expect(iv[0].end).toBeCloseTo(25);
     expect(complement(iv, 0, 40)).toEqual([{ start: 0, end: iv[0].start }, { start: iv[0].end, end: 40 }]);
     expect(intersect(iv, [{ start: 10, end: 50 }])).toEqual([{ start: 10, end: iv[0].end }]);
+  });
+});
+
+describe("DSN windows", () => {
+  const a = DEFAULT_ASSUMPTIONS;
+  const from = Date.UTC(2026, 10, 15), to = from + 30 * 86_400_000;
+  // 0° horizon all round, so Earth is "in view" whenever it is above the smooth sphere
+  const s = computeSeries(eph, { lat: -89.45, lon: -129.78, hKm: 1.9 }, asMask(new Array(360).fill(0), 1), from, to, 600_000, { dsnMinEl: a.dsnMinElevDeg });
+  const w = windowsFor(s, a, from, to);
+  it("per-complex windows add up to the any-complex window", () => {
+    let union = w.dsnBy[0];
+    for (const iv of w.dsnBy.slice(1)) union = complement(intersect(complement(union, from, to), complement(iv, from, to)), from, to);
+    expect(Math.abs(totalMs(union) - totalMs(w.dsn))).toBeLessThan(60_000 * w.dsn.length);
+    // each complex sees the Moon for part of every day, never all of it
+    for (const iv of w.dsnBy) expect(iv.length).toBeGreaterThanOrEqual(28);
+  });
+  it("contact + handover gaps = Earth in view", () => {
+    expect(Math.abs(totalMs(w.dteDsn) + totalMs(w.dteNoDsn) - totalMs(w.dte))).toBeLessThan(1000);
+    expect(w.dteNoDsn.every((g) => g.end - g.start < 3 * 3_600_000)).toBe(true);
   });
 });

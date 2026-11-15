@@ -17,8 +17,12 @@ import { AXIS, ChartTip, fmtWhen, Legend, niceTicks, scale, TipHead, TipRows, us
  *
  * Bodies and paths are drawn under a slightly translucent terrain, so a body behind a hill is
  * occluded exactly as it would be, and a partly hidden Sun shows only the part above the skyline.
+ *
+ * Clicking moves the timeline (D-094): the chart is in azimuth, not time, so the click picks the
+ * moment the Sun or Earth path crosses the hovered azimuth, choosing the pass drawn nearest the
+ * pointer. The tooltip names that moment and a ring marks it on the path.
  */
-export function HorizonPanorama({ sc, cursor, persona, distKm, distStepDeg }: { sc: Scenario; cursor: number; persona: Persona; distKm?: number[]; distStepDeg?: number }) {
+export function HorizonPanorama({ sc, cursor, persona, distKm, distStepDeg, onCursor }: { sc: Scenario; cursor: number; persona: Persona; distKm?: number[]; distStepDeg?: number; onCursor?: (t: number) => void }) {
   const { setRef, w } = useWidth();
   const uid = useId().replace(/:/g, "");
   const enthusiast = persona === "enthusiast", planner = persona === "planner";
@@ -88,22 +92,41 @@ export function HorizonPanorama({ sc, cursor, persona, distKm, distStepDeg }: { 
   };
 
   const step = 0.5;
-  const { key, last, bind } = usePlotHover<number>((px) => (px < m.l - 8 || px > w - m.r + 8 ? null : Math.round(Math.max(0, Math.min(360, x.invert(Math.max(m.l, Math.min(w - m.r, px))))) / step) * step));
-  const hAz = key ?? last;
+  /** Hover key "az|body|sample": the snapped azimuth plus the Sun or Earth pass a click would select. */
+  const { key, last, bind } = usePlotHover<string>((px, py) => {
+    if (px < m.l - 8 || px > w - m.r + 8) return null;
+    const az = Math.round(Math.max(0, Math.min(360, x.invert(Math.max(m.l, Math.min(w - m.r, px))))) / step) * step;
+    if (!onCursor) return `${az}|-|-1`;
+    let best: [string, number] = ["-", -1], bd = Infinity;
+    for (const [body, el, idx] of [["sun", s.sunEl, passes(s.sunAz, az)], ["earth", s.earthEl, passes(s.earthAz, az)]] as const) {
+      for (const i of idx) {
+        const d = Math.abs(y(el[i]) - py);
+        if (d < bd) { bd = d; best = [body, i]; }
+      }
+    }
+    return `${az}|${best[0]}|${best[1]}`;
+  });
+  const hKey = key ?? last;
   const show = key !== null;
   const hover = useMemo(() => {
-    if (hAz === null) return null;
+    if (hKey === null) return null;
+    const [azS, body, iS] = hKey.split("|");
+    const hAz = Number(azS), ti = Number(iS);
     const hzEl = horizonAt(sc.mask, hAz);
     const k = distKm && distStepDeg ? Math.round(hAz / distStepDeg) % distKm.length : -1;
-    return { az: hAz, hz: hzEl, dist: k >= 0 ? distKm![k] : null, sun: passes(s.sunAz, hAz).slice(0, 3), earth: passes(s.earthAz, hAz).slice(0, 3) };
-  }, [hAz, sc, s, distKm, distStepDeg]); // eslint-disable-line react-hooks/exhaustive-deps
+    const target = ti >= 0 && (body === "sun" || body === "earth") ? { body, i: ti } as const : null;
+    return { az: hAz, hz: hzEl, dist: k >= 0 ? distKm![k] : null, sun: passes(s.sunAz, hAz).slice(0, 3), earth: passes(s.earthAz, hAz).slice(0, 3), target };
+  }, [hKey, sc, s, distKm, distStepDeg]); // eslint-disable-line react-hooks/exhaustive-deps
+  const target = hover?.target ?? null;
+  const targetAt = target && { x: x(target.body === "sun" ? s.sunAz[target.i] : s.earthAz[target.i]), y: y(target.body === "sun" ? s.sunEl[target.i] : s.earthEl[target.i]) };
 
   const compassTicks = [360, 315, 270, 225, 180, 135, 90, 45, 0];
   const NAMES: Record<number, string> = { 0: "N", 45: "NE", 90: "E", 135: "SE", 180: "S", 225: "SW", 270: "W", 315: "NW", 360: "N" };
 
   return (
     <div ref={setRef} className="relative select-none">
-      <svg width={w} height={h} role="img" aria-label="Horizon panorama: terrain skyline with the Sun and Earth paths" {...bind}>
+      <svg width={w} height={h} role="img" aria-label="Horizon panorama: terrain skyline with the Sun and Earth paths" {...bind}
+        onClick={() => show && target && onCursor?.(s.t[target.i])} style={{ cursor: onCursor && show && target ? "pointer" : undefined }}>
         <defs>
           <linearGradient id={`sky-${uid}`} x1="0" x2="0" y1="0" y2="1">
             <stop offset="0" stopColor="var(--panel-2)" stopOpacity="0" />
@@ -151,6 +174,7 @@ export function HorizonPanorama({ sc, cursor, persona, distKm, distStepDeg }: { 
           <g pointerEvents="none" opacity={show ? 1 : 0} className="motion-safe:transition-opacity">
             <line x1={x(hover.az)} x2={x(hover.az)} y1={m.t} y2={bottom} stroke="var(--muted)" strokeDasharray="3 3" />
             <circle cx={x(hover.az)} cy={y(hover.hz)} r={4} fill="var(--terrain)" stroke="var(--fg)" strokeWidth={1.25} />
+            {targetAt && <circle cx={targetAt.x} cy={targetAt.y} r={7} fill="none" stroke={target!.body === "sun" ? "var(--sun)" : "var(--earth)"} strokeWidth={2} />}
           </g>
         )}
       </svg>
@@ -171,6 +195,13 @@ export function HorizonPanorama({ sc, cursor, persona, distKm, distStepDeg }: { 
               <PassList label="Sun passes" color="var(--sun)" idx={hover.sun} el={s.sunEl} frac={s.sunFrac} t={s.t} digits={planner ? 3 : 2} />
               <PassList label="Earth passes" color="var(--earth)" idx={hover.earth} el={s.earthEl} frac={s.earthFrac} t={s.t} digits={planner ? 3 : 2} />
             </>
+          )}
+          {onCursor && (
+            <div className="mt-2 border-t border-line pt-1.5 text-faint">
+              {target
+                ? <>Click to move the timeline here: {target.body === "sun" ? "Sun" : "Earth"} on <span className="num">{fmtWhen(s.t[target.i]).replace(/^\w+, /, "")}</span></>
+                : "Neither the Sun nor Earth passes this way during the mission"}
+            </div>
           )}
         </ChartTip>
       )}
