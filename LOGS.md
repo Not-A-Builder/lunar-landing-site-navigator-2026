@@ -556,3 +556,61 @@ Decision: on the site selection page, hovering a pin on the map no longer scroll
 ## D-080 · 2026-11-14 · No info button on the 2D maps; imagery credit shown as a label
 Status: confirmed (owner request, 2026-11-14)
 Decision: the OpenLayers "i" (attribution) button in the bottom-right corner of the polar and whole-Moon maps is removed (`controls: []`). So the NASA Moon Trek imagery is still credited, its credit ("LRO LOLA hillshade · NASA Moon Trek" / "LRO WAC global mosaic · NASA Moon Trek", from `moon.ts`) now sits as a small plain label to the left of the scale bar, the same as on the 3D globe. The scale bar moves into the corner the button used to occupy.
+
+## D-081 · 2026-11-14 · Site elevation worded as above/below, with its own tooltip
+Status: confirmed (owner request, 2026-11-14)
+Decision: ground height relative to the 1,737.4 km LOLA reference sphere is formatted by `fmtElevation` (`metrics/format.ts`), which says "1,922 m below" for negative heights instead of "-1922 m above", and adds thousands separators. Used in the site details header and the `spatial.site-elevation-above-datum` metric value. The header value now has its own `<InfoTip>` (source `lola-pds`) explaining the reference sphere and why lower ground tends to see a higher skyline; it sits after the location tip so each tip follows the value it explains.
+
+## D-082 · 2026-11-14 · Site details: header-width page, contents column, 3 / 9 split
+Status: confirmed (owner request, 2026-11-14)
+Decision:
+- The page uses the header's content width (`max-w-[1600px] px-4`), like site selection.
+- Header, top to bottom: the site name; a coordinates row (latitude • longitude ⓘ • ground height ⓘ); a metadata row (group • mission • status • date). Separators are "•" with 12 px either side.
+- Buttons on the right: two secondary buttons, "Set mission assumptions" and "Customise rating bands", a vertical rule, then the primary "Add to comparison". The "Open QuickMap" link is removed.
+- Below the header: landing date & time and the timeline (D-085), then a horizontal rule and a 12-column grid: 3 columns of contents on the left, 9 of content on the right (contents hidden under `lg`).
+- Contents (Wikipedia-style, sticky, own scroll): "Horizon, Sun & Earth views" (Horizon view, Sun from the site, Earth from the site, Libration), then "Metrics" with each category (Overall decision metrics first, which also lists Battery charge and Array power), each opening to its metrics. The section in view is highlighted; a click jumps there instantly.
+- Right column order: the four cards (Sun at selected time, Earth at selected time, Sunlit % of mission, Sun + Earth together), horizon view, Sun from the site, Earth from the site, libration, then Metrics. Battery charge and Array power sit at the top of Overall decision metrics.
+- All three personas get the same layout and sections; titles, leads, card wording, tooltips and metric rows go from plain (enthusiast) to explained (educator) to technical (planner).
+
+## D-083 · 2026-11-14 · Mission assumptions and rating bands open as modals
+Status: confirmed (owner request, 2026-11-14; replaces the inline planner panels on site details)
+Decision: both editors open as dialogs at most 80% of the content width and 80% of the viewport height, with a body that scrolls on its own, a sticky header (title, description, close) and a sticky footer: "Reset to defaults" (left), "Discard edits" and "Save changes" (primary). Edits are a draft until Save; Reset fills the draft with defaults (still needs Save). Escape or a backdrop click closes only when nothing is unsaved. Each assumption shows its reason and default; each band set shows its basis, defaults, which metrics it rates, and a preview with this site's value. Opening from a value (D-090) scrolls to and highlights that field. The Compare page keeps its inline band table. `AssumptionsPanel` is removed.
+
+## D-084 · 2026-11-14 · Default mission length is 30 Earth days
+Status: confirmed (owner request, 2026-11-14; was 14 days)
+Decision: `DEFAULT_ASSUMPTIONS.missionDays` = 30, about one full lunar day (29.5 Earth days), so every site shows a whole light/dark cycle. The persisted assumptions store moves to version 1: a saved mission length still at the old default (14) becomes 30; any other saved value is kept.
+
+## D-085 · 2026-11-14 · "Timeline" replaces the time cursor; ±Nd and compact durations
+Status: confirmed (owner request, 2026-11-14)
+Decision:
+- Site details reuses the site-selection date and time pickers (the value comes from the URL `t` set on site selection) next to −7d / −1d / +1d / +7d and the mission length (click to edit it in the assumptions modal).
+- The range slider called "time cursor" becomes a timeline: day ticks with dated labels, a Sun lane (sunlit windows) and an Earth lane (in-view windows), a playhead with a floating date/time label, drag or click to move, arrow keys (Shift = 1 day, Home/End), and "Back to landing". The readout shows the time and "Day N of 30".
+- No space between a number and d (or h) anywhere: "+7d", "6d 14h", "12h" (`fmtHours`).
+
+## D-086 · 2026-11-14 · Horizon view reads right to left in azimuth; solid Sun
+Status: confirmed (owner request, 2026-11-14)
+Decision: the horizon panorama's azimuth axis runs N 360° → W → S → E → N 0° from left to right. At the south pole the Sun's azimuth decreases with time, so the skyline now appears in the same left-to-right order as the terrain line in the Sun/Earth timelines (checked on Haworth, Dec 2026). The libration chart uses the same direction and unwraps azimuths near north. Visuals: sky and terrain gradients, a ridge line, compass ticks every 45°, the Sun as a solid orange disc (soft glow when lit, never a ring) and Earth as a solid blue disc, both drawn under the slightly translucent terrain so hidden or partly hidden bodies are occluded as they would be, with labels ("Sun · hidden"). Sun/Earth timelines fill the terrain the same way and draw the body solid while visible, dashed while hidden.
+
+## D-087 · 2026-11-14 · Chart hover without flicker
+Status: confirmed (owner report: tooltips "keep showing and hiding with every movement")
+Decision: cause: the hover line and dot were drawn on top of the transparent hit rectangle, so the pointer kept "leaving" it. Now pointer handlers sit on the whole `<svg>`, guides never take pointer events, the pointer snaps to a sample (or 0.5° of azimuth) and state changes only when that changes, leaving waits 90 ms, and the tooltip glides (150 ms transform) and fades instead of mounting and unmounting. Tooltips use label/value rows at fixed precision (planner 3 decimals for angles), with UTC time, mission day, and "Click to move the timeline here".
+
+## D-088 · 2026-11-14 · Battery and array power: exact per-sample tooltips, shown to every persona
+Status: confirmed (owner request, 2026-11-14)
+Decision: `powerModel` also returns per-sample sunlight at the Sun's distance (1,361 W/m² ÷ AU²), the panel cosine factor and the load drawn. Array power tooltip: output, load (operating or survival), surplus/deficit, and for planners the full product (sunlight × visible disk × cos angle × area × efficiency = output). Battery tooltip: charge in % and Wh of capacity, array output, load, and net flow (charging, draining, full with surplus not stored, empty and short by). The power chart draws the load as a dashed step line; both charts shade dark periods and mark the lowest charge. The model itself is unchanged (starts full; operating load whenever any sunlight reaches the array, survival load otherwise; 10 min steps). Both charts now sit in Overall decision metrics for all personas.
+
+## D-089 · 2026-11-14 · Easier-to-read metric rows
+Status: confirmed (owner request, 2026-11-14)
+Decision: each category is an anchored section with its roll-up status explained by an info tip. Rows: name (enthusiast: the question) with an info tip, then for planners a short definition. The "role · depends on · literature" subtext line is removed; role and dependencies moved into the info tip. Values use the sans font with mono numerals, and multi-part values ("a · b · c", "a; b") are split onto separate lines. Under the value: rating (Good / Trade-off / Challenging), status, band strip; planner notes in plain text; data rows (timestamps, windows) behind "Show N data rows" instead of a code box.
+
+## D-090 · 2026-11-14 · "Computed" shows its calculation; "Your input" and bands open the editors
+Status: confirmed (owner request, 2026-11-14)
+Decision: `MetricValue` gains `calc` (numbered steps with this site's numbers, built in `computeAllMetrics` from the same variables as the value), `inputs` (assumption keys) and `Rating.key` (band set). Hovering or focusing "Computed" or "Modelled" (pointer cursor, dotted underline) opens a card with the steps, the result and the data sources. 132 of 139 computed/modelled metrics have their own steps; the other 7 (text records such as mission history, the reference frame, evidence maturity) show the data method and note. "Reference" opens the citation. Clicking a "Your input" value or label opens the assumptions modal at that field; clicking a rating or band strip opens the bands modal at that band set. A test checks every rating names a band set, every input names an assumption, and the steps agree with the value.
+
+## D-091 · 2026-11-15 · One height for buttons, one for fields, across the platform
+Status: confirmed (owner request, 2026-11-15)
+Decision: the home page sets the standard. Buttons with a text label are 44px (`h-11`) and fields (text, number, search, date/time pickers, selects, dropdown triggers) are 40px (`h-10`) on every page and in both planner modals. Changed: site details header buttons and "Download time series (CSV)" (40/36 → 44), modal footer buttons (42 → 44), modal number fields and select (36 → 40), compare scenario select and time input, compare rating-band inputs, custom-coordinate field (→ 40) and its submit button (→ 44), persona dropdown (34 → 40). Out of scope: icon-only buttons (filter, sort, theme, zoom, close), map overlay switches, small inline text actions (±day chips, "Duplicate", "show on Whole Moon").
+
+## D-092 · 2026-11-15 · Shared primary and secondary button styles
+Status: confirmed (owner request, 2026-11-15)
+Decision: every text button uses `btnPrimary` or `btnSecondary` from `src/lib/ui.ts`: 44px, 1px border on both variants (the primary's border is its fill colour), 16px medium label, `px-4`, the same disabled state (40% opacity, not-allowed cursor). Secondary buttons get a `panel-2` fill. Why: primary and secondary were both 44px, but a border-only secondary in the low-contrast `line` colour read as shorter than a solid primary, especially inside the modals, which sit on `panel`. `panel-2` is a step lighter than both `bg` and `panel` in both themes, so the whole secondary box shows. Applies to the home CTAs, site details header, "Download time series (CSV)", custom-coordinate submit, and the modal footers. Field height lives in the same file (`FIELD_H`).

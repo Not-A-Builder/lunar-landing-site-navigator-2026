@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { InfoTip } from "@/components/InfoTip";
 import { parseCoordString } from "@/lib/coords";
+import { btnPrimary } from "@/lib/ui";
 import { fmtLat, fmtLon } from "@/lib/metrics/format";
 
 /**
@@ -45,7 +46,7 @@ export function CustomCoordForm({
           </InfoTip>
         </label>
       )}
-      <div className="flex gap-2">
+      <div className="flex items-center gap-2">
         <input
           id="custom-coord"
           value={text}
@@ -55,9 +56,9 @@ export function CustomCoordForm({
           }}
           placeholder="e.g. 85.2S 30.1E"
           aria-invalid={!!error}
-          className={`num min-w-0 flex-1 rounded-sm border bg-panel px-2.5 py-1.5 text-sm placeholder:font-sans placeholder:text-faint ${error ? "border-critical" : "border-line"}`}
+          className={`num h-10 min-w-0 flex-1 rounded-sm border bg-panel px-2.5 text-sm placeholder:font-sans placeholder:text-faint ${error ? "border-critical" : "border-line"}`}
         />
-        <button type="submit" className="shrink-0 rounded-sm bg-primary px-3 py-1.5 text-sm font-medium text-primary-ink">{submitLabel}</button>
+        <button type="submit" className={btnPrimary}>{submitLabel}</button>
       </div>
       {error ? (
         <p className="text-xs text-critical">{error}</p>

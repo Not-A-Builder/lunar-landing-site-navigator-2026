@@ -22,6 +22,8 @@ export type Rating = {
   bands: Band[];
   /** why these thresholds (shown in the band tooltip) */
   basis: string;
+  /** which editable band set produced this rating (a BandKey in src/lib/bands.ts) */
+  key?: string;
 };
 
 export type MetricValue = {
@@ -38,6 +40,10 @@ export type MetricValue = {
   rating?: Rating;
   /** for "unavailable": what would be needed */
   reason?: string;
+  /** step-by-step calculation with this site's numbers (computed / modelled values) */
+  calc?: string[];
+  /** for "assumption": the mission assumption keys this value shows (opens the editor there) */
+  inputs?: string[];
 };
 
 export type RatingSpec = {

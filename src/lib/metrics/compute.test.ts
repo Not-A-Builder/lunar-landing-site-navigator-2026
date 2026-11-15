@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { DEFAULT_ASSUMPTIONS } from "@/lib/assumptions";
+import { BAND_KEYS } from "@/lib/bands";
 import { decodeYear, EphemerisSet } from "@/lib/engine/ephemeris";
 import { buildScenario } from "@/lib/engine/scenario";
 import type { TerrainFile } from "@/lib/engine/terrain-file";
@@ -53,6 +54,24 @@ describe("computeAllMetrics", () => {
 
   it("every non-unavailable value cites at least one source", () => {
     for (const v of Object.values(vals)) if (v.status !== "unavailable") expect(v.sources.length, v.id).toBeGreaterThan(0);
+  });
+
+  it("every rating names its editable band set, every input names its assumption", () => {
+    for (const v of Object.values(vals)) {
+      if (v.rating) expect(BAND_KEYS, v.id).toContain(v.rating.key);
+      if (v.status === "assumption") for (const k of v.inputs ?? ["missing"]) expect(Object.keys(DEFAULT_ASSUMPTIONS), v.id).toContain(k);
+    }
+  });
+
+  it("calculation steps agree with the displayed value", () => {
+    const lit = vals["sun.solar-availability-fraction"];
+    expect(lit.calc?.at(-1), "last step shows the result").toContain(`${lit.value!.toFixed(1)}%`);
+    const pole = vals["spatial.distance-to-pole"];
+    expect(pole.calc?.at(-1)).toContain(`${pole.value!.toFixed(1)} km`);
+    // most computed / modelled values carry their own steps
+    const withCalc = Object.values(vals).filter((v) => (v.status === "computed" || v.status === "modelled") && v.calc?.length).length;
+    const all = Object.values(vals).filter((v) => v.status === "computed" || v.status === "modelled").length;
+    expect(withCalc / all).toBeGreaterThan(0.75);
   });
 
   it("flat horizon at 86.7°S gives physically sensible sunlight", () => {

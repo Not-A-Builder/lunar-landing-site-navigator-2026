@@ -41,7 +41,7 @@ export function PersonaToggle() {
         aria-controls={menuId}
         title="Changes how much technical detail every page shows"
         onClick={() => setOpen(!open)}
-        className={`inline-flex items-center gap-1.5 rounded-sm border bg-panel px-2.5 py-1 font-medium transition-colors ${open ? "border-fg" : "border-line hover:border-muted"}`}
+        className={`inline-flex h-10 items-center gap-1.5 rounded-sm border bg-panel px-2.5 font-medium transition-colors ${open ? "border-fg" : "border-line hover:border-muted"}`}
       >
         {current.phrase}
         <CaretDown size={14} className={`text-muted transition-transform ${open ? "rotate-180" : ""}`} aria-hidden />

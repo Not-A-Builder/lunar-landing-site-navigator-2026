@@ -7,7 +7,7 @@ which is append-only history). Last updated: **2026-11-14**.
 
 **Phase: computed product + owner round 2 (2026-11-14).** Educator copy is in for all 196 metrics, bands are editable, custom coordinates work everywhere, the NASA terrain bundle is shippable, and SOURCES.md is generated. The dev server runs on http://localhost:1313 (`npm run dev:1313`).
 - Site selection (D-043, D-044): left column = Date & time (iOS-style UTC pickers) + Site selection (filterable, searchable site list OR a coordinate field) + "Explore Site Details" (D-055). Polar map with lat/lon rulers, pole crosshair, km/mi scale; whole Moon as a flat chart or a 3D globe (three.js, WAC tiles) with a compass that resets the view. Theme follows the OS until the user picks one. Map pins/regions are bright green `#24e866` (D-051) with themed name tooltips.
-- Site details: horizon panorama, Sun and Earth timelines, libration, battery and power, and all 196 metrics with honest statuses.
+- Site details (D-082–D-090): header-width page; name / coordinates / metadata rows; Set mission assumptions + Customise rating bands (modals with draft, Save / Discard / Reset) and Add to comparison; date & time pickers with ±1d/±7d and a 30-day mission timeline (scrubber); then a 3 / 9 split: sticky Wikipedia-style contents + views (4 cards, horizon view with azimuth reading right-to-left, Sun / Earth from the site, libration) and metrics (battery + array power at the top of Overall). "Computed"/"Modelled" hover shows calculation steps (`MetricValue.calc`); "Your input" and rating bands open the editors at that field.
 - Compare: up to 3 scenarios, strips, key numbers, "why it differs", 1–10 scores.
 - Data & methods: provenance, references, assumptions and validation.
 - Design (D-040): light default + dark toggle, warm tokens, IBM Plex Sans/Mono, Phosphor icons, radii ≤ 2px, text ≥ 14px, hairline sections instead of boxes.
@@ -37,6 +37,8 @@ which is append-only history). Last updated: **2026-11-14**.
 
 ## Open questions for the owner
 
+0. **Power model load rule (D-088):** the battery model switches to the full operating load whenever *any* sunlight reaches the array (even a sliver of the disk), else survival load. Should "operating" instead require the sunlit threshold (e.g. ≥ 50% of the disk), matching the Sunlit windows? Unchanged until the owner decides.
+
 1. **Slater Plain coordinate:** OK to add the USGS Artemis III region-grid release (doi:10.5066/P13FD9ZD) as a source? ScienceBase blocks scripted downloads, so the owner would download the zip in a browser into `data/source/` (D-038). Until then Slater Plain is not listed.
 2. **Unavailable metrics (now hidden, D-041):** which candidate sources to ingest (see the 2026-11-14 answer: USGS geologic map, LEND/LP neutron, LP/Kaguya magnetics, Mini-RF, crater/boulder catalogues). 18 of the 38 need mission inputs rather than data; a few need in-situ measurements and can't be answered from orbit.
 
@@ -44,7 +46,7 @@ Resolved 2026-11-14: ship the terrain data (D-032), editable bands with defaults
 
 ## Next steps
 
-1. Owner review on :1313 (all three personas, the band editor, custom points).
+1. Owner review on :1313 of the rebuilt site details page (all three personas, both modals, chart hover, calculation cards).
 2. Repo is on GitHub (D-039). A web host (e.g. Vercel) is deferred.
 3. Optional ingests: USGS Unified Geologic Map, LEND neutron maps, a metre-scale crater catalogue.
 4. Write the Space Apps submission (story, demo video, data list from Data & methods).

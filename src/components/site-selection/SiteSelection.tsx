@@ -17,6 +17,7 @@ import { GROUP_LABELS, getSite, hasCoordinates, isPolar, onPolarMap, sites, type
 import { DateField, TimeField } from "./DateTimePickers";
 import { FilterMenu } from "./FilterMenu";
 import { ScenarioBar } from "./ScenarioBar";
+import { btnPrimary, btnSecondary } from "@/lib/ui";
 import { DEFAULT_SORT, SortMenu, sortSites, type SortId } from "./SortMenu";
 
 const MoonGlobe = dynamic(() => import("@/components/map/MoonGlobe"), {
@@ -477,7 +478,7 @@ export function SiteSelection() {
           onClick={comparing ? startComparison : explore}
           disabled={!canStart}
           title={comparing && !canStart ? "Pick a site for at least two scenarios to compare them" : undefined}
-          className={`inline-flex h-11 w-full shrink-0 items-center justify-center gap-2 rounded-sm bg-primary cursor-pointer font-medium text-primary-ink transition-opacity disabled:cursor-not-allowed disabled:opacity-35 ${canStart ? "cta-shimmer" : ""}`}
+          className={`${btnPrimary} w-full ${canStart ? "cta-shimmer" : ""}`}
         >
           {comparing ? "Start comparison now" : "Explore Site Details"} <ArrowRight size={18} aria-hidden />
         </button>
@@ -487,7 +488,7 @@ export function SiteSelection() {
           type="button"
           onClick={addAnother}
           disabled={!valid}
-          className="mt-2 inline-flex h-11 w-full shrink-0 cursor-pointer items-center justify-center gap-2 rounded-sm border border-line bg-panel font-medium text-fg transition-colors hover:border-muted disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:border-line"
+          className={`${btnSecondary} mt-2 w-full`}
         >
           <Plus size={18} aria-hidden /> Select another scenario to compare
         </button>

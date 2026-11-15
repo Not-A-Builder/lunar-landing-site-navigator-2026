@@ -324,6 +324,10 @@ export function powerModel(sc: Scenario) {
   const dtH = s.stepMs / HOUR_MS;
   const power = new Float32Array(s.n);
   const soc = new Float32Array(s.n);
+  /** per sample: sunlight at the Sun's distance (W/m², before disk and angle), cos(angle to panel), load drawn (W) */
+  const tsi = new Float32Array(s.n);
+  const incidence = new Float32Array(s.n);
+  const loadW = new Float32Array(s.n);
   let e = a.batteryWh, minE = e, minAt = s.t[0], deficitWh = 0, depletedAt: number | null = null;
   let sumP = 0, peakP = 0, flux = 0;
   for (let i = 0; i < s.n; i++) {
@@ -335,10 +339,13 @@ export function powerModel(sc: Scenario) {
     else inc = Math.sin(el);
     const p = irr * inc * a.panelAreaM2 * a.panelEfficiency;
     power[i] = p;
+    tsi[i] = CONST.solarConstant / (s.sunAU[i] * s.sunAU[i]);
+    incidence[i] = inc;
     sumP += p;
     peakP = Math.max(peakP, p);
     flux += irr * Math.sin(el);
     const load = p > 0 ? a.loadW : a.survivalLoadW;
+    loadW[i] = load;
     e += (p - load) * dtH;
     if (e > a.batteryWh) e = a.batteryWh;
     if (e < 0) {
@@ -353,7 +360,7 @@ export function powerModel(sc: Scenario) {
     }
   }
   return {
-    power, soc,
+    power, soc, tsi, incidence, loadW,
     avgW: sumP / s.n, peakW: peakP,
     minSoc: minE / a.batteryWh, minSocAt: minAt, depletedAt, deficitWh,
     survivableDarkH: a.batteryWh / a.survivalLoadW,

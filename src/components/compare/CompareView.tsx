@@ -103,7 +103,7 @@ export function CompareView() {
                   if (e.target.value) next[sc ? i : scenarios.length] = { siteId: e.target.value, t: sc?.t ?? scenarios[0]?.t ?? defaultT };
                   update(next);
                 }}
-                className="mb-2 w-full rounded-sm border border-line bg-bg px-2 py-1.5 disabled:opacity-40"
+                className="mb-2 h-10 w-full rounded-sm border border-line bg-bg px-2 disabled:opacity-40"
               >
                 <option value="">{i > scenarios.length ? "Fill the previous slot first" : "Add a site…"}</option>
                 <option value="__custom">Custom coordinates…</option>
@@ -135,7 +135,7 @@ export function CompareView() {
                       next[i] = { ...sc, t: e.target.value ? new Date(e.target.value + "Z").toISOString() : "" };
                       update(next);
                     }}
-                    className="num w-full rounded-sm border border-line bg-bg px-2 py-1.5"
+                    className="num h-10 w-full rounded-sm border border-line bg-bg px-2"
                   />
                   <div className="mt-2 flex gap-2">
                     <div className="flex divide-x divide-line rounded-sm border border-line" role="group" aria-label={`Shift landing time for scenario ${LETTERS[i]}`}>

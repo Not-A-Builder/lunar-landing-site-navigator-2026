@@ -35,7 +35,7 @@ export type Assumptions = {
 export type AssumptionMeta = { label: string; unit: string; why: string; min?: number; max?: number; step?: number };
 
 export const DEFAULT_ASSUMPTIONS: Assumptions = {
-  missionDays: 14,
+  missionDays: 30,
   mastHeightM: 2,
   sunDiskThreshold: 0.5,
   earthDiskThreshold: 0.5,
@@ -64,7 +64,7 @@ export const DEFAULT_ASSUMPTIONS: Assumptions = {
 };
 
 export const ASSUMPTION_META: Record<keyof Assumptions, AssumptionMeta> = {
-  missionDays: { label: "Mission length", unit: "days", min: 1, max: 60, step: 0.5, why: "Analysis window starts at the landing time. Artemis III plans a 6.5-day surface stay; one lunar day is ~29.5 days." },
+  missionDays: { label: "Mission length", unit: "days", min: 1, max: 60, step: 0.5, why: "Analysis window starts at the landing time. Default 30 days covers one full lunar day (about 29.5 Earth days), so every site shows a whole cycle of light and dark. For scale, Artemis III planned a 6.5-day surface stay." },
   mastHeightM: { label: "Array / antenna height", unit: "m", min: 0, max: 50, step: 0.5, why: "Height of the solar array and antenna above the ground. Higher sees over nearby terrain (Bryant 2009)." },
   sunDiskThreshold: { label: "Sunlit if this much of the Sun's disk is visible", unit: "0–1", min: 0.01, max: 1, step: 0.05, why: "Liu et al. (2023) and Bryant (2009) use 0, 50% and 100% disk levels. 50% is the midpoint." },
   earthDiskThreshold: { label: "Earth in view if this much of Earth's disk is visible", unit: "0–1", min: 0.01, max: 1, step: 0.05, why: "Bryant (2009) reports DTE for 0, 50% and 100% of Earth's disk." },

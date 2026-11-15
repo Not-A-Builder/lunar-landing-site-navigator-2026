@@ -78,7 +78,7 @@ function BandRow({ k, edited, spec, defaults, onSet, onReset }: {
               step="any"
               onChange={(e) => update(f, e.target.value)}
               onBlur={() => setDraft(null)}
-              className={`w-20 rounded-sm border bg-panel px-1.5 py-1 font-mono ${valid ? "border-line" : "border-critical"}`}
+              className={`h-10 w-20 rounded-sm border bg-panel px-1.5 font-mono ${valid ? "border-line" : "border-critical"}`}
             />
             <span className="text-xs text-faint">{d.unit.trim()}</span>
           </label>

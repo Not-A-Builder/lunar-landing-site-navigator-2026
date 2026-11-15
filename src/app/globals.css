@@ -265,3 +265,11 @@ details[open] > summary .caret {
 .ol-zoom {
   border-radius: 2px !important;
 }
+
+/* Editor modals (D-083): backdrop fades, panel rises slightly. Skipped with reduced motion (motion-safe). */
+@keyframes fade-in {
+  from { opacity: 0; }
+}
+@keyframes modal-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.99); }
+}
