@@ -5,7 +5,7 @@ which is append-only history). Last updated: **2026-11-15**.
 
 ## Status
 
-**Phase: owner polish round on the full product (2026-11-15), then the submission.** Educator copy is in for all 196 metrics, bands are editable, custom coordinates work everywhere, the NASA terrain bundle is shippable, and SOURCES.md is generated. The dev server runs on http://localhost:1313 (`npm run dev`).
+**Phase: owner polish round on the full product (2026-11-15), then the submission.** Educator copy is in for all 196 metrics, bands are editable, custom coordinates work everywhere, the NASA terrain bundle is shippable, and SOURCES.md is generated. The dev server runs on http://localhost:1313 (`npm run dev`). Production: https://lunar-landing-site-navigator-2026.vercel.app/ (D-150).
 - Site selection (D-043, D-044): left column = Date & time (iOS-style UTC pickers) + Site selection (filterable, searchable site list OR a coordinate field) + "Explore Site Details" (D-055). Polar map with lat/lon rulers, pole crosshair, km/mi scale; whole Moon as a flat chart or a 3D globe (three.js, WAC tiles) with a compass that resets the view. Theme follows the OS until the user picks one. Map pins/regions are bright green `#24e866` (D-051) with themed name tooltips.
 - Educator metrics (D-118): curated 89 with educator-level names and tooltips; contents list categories only.
 - Enthusiast metrics (D-109, D-110): curated main metrics only; takeaways listed first with rating accents; subtext only where it adds something; the contents sidebar uses the same names as the body for every persona.
@@ -52,12 +52,12 @@ which is append-only history). Last updated: **2026-11-15**.
 
 Resolved 2026-11-15: the Enthusiast view always uses the default assumptions and bands (D-117).
 
-Resolved 2026-11-14: ship the terrain data (D-032), editable bands with defaults (D-033), the accurate Artemis label (D-036), richer educator copy (D-034), custom coordinates (D-037), and SOURCES.md (D-035). Every site needs a cited coordinate (D-038). Hosting = public GitHub repo under Not-A-Builder (D-039).
+Resolved 2026-11-14: ship the terrain data (D-032), editable bands with defaults (D-033), the accurate Artemis label (D-036), richer educator copy (D-034), custom coordinates (D-037), and SOURCES.md (D-035). Every site needs a cited coordinate (D-038). Hosting = public GitHub repo under Not-A-Builder (D-039). Web host = Vercel (D-150, 2026-11-15).
 
 ## Next steps
 
 1. Owner review on :1313 of the rebuilt site details page and the new comparison (D-130): all three personas, best-cell markers, removal animation, exit dialog. Also the History page (D-131), the redesigned Data & methods page (D-139b), the splash (D-145b), the name footers (D-146, D-147) and the filled timeline play buttons (D-148).
-2. Repo is on GitHub (D-039). A web host (e.g. Vercel) is deferred.
+2. Live on Vercel: https://lunar-landing-site-navigator-2026.vercel.app/ (D-150); repo on GitHub (D-039).
 3. Optional ingests: USGS Unified Geologic Map, LEND neutron maps, a metre-scale crater catalogue.
 4. Write the Space Apps submission (story, demo video, data list from Data & methods).
 
