@@ -8,6 +8,7 @@ import { InfoTip } from "@/components/InfoTip";
 import { ScrollThumb } from "@/components/ScrollThumb";
 import { MoonMap, type MapMode } from "@/components/map/MoonMap";
 import { parseCoordString } from "@/lib/coords";
+import { exitCompareFlow, flowEntryId, validBack } from "@/lib/compare-flow";
 import { fmtLat, fmtLon } from "@/lib/metrics/format";
 import { MAX_COMPARE } from "@/lib/config";
 import { usePersona } from "@/lib/persona";
@@ -45,6 +46,17 @@ function formFromScenario(sc: Scenario): { siteId: string | null; coords: string
   return { siteId: null, coords: coordText(la, lo), picked };
 }
 
+/**
+ * Where the form starts for this URL: a link with every slot filled has no free slot, so it opens the
+ * last scenario for editing; otherwise a new slot, empty, at the landing time in `?t=` if any.
+ */
+function entryState(params: URLSearchParams) {
+  const q = parseScenarios(params.get("s"), { allowPartial: true });
+  if (q.length >= MAX_COMPARE) return { editing: q.length - 1 as number | null, form: formFromScenario(q[q.length - 1]) };
+  const t = params.get("t") ? Date.parse(params.get("t")!) : NaN;
+  return { editing: null as number | null, form: { siteId: null as string | null, coords: "", picked: Number.isFinite(t) ? t : null } };
+}
+
 /** How long the cursor must rest on a map pin before the site list scrolls to its card (D-079). */
 const MAP_HOVER_SCROLL_MS = 600;
 
@@ -57,6 +69,10 @@ const inputCls = "h-10 w-full rounded-sm border bg-panel text-sm outline-none tr
  *
  * "Select another scenario to compare" parks the current site + time in `?s=` and resets the form for
  * the next one; a sticky bar above the page shows the scenarios (D-066).
+ *
+ * With `?back=` the page is the "Select scenarios to compare" step opened from another page (D-128): the bar
+ * is always shown, × on the card being filled with nothing else to compare returns to `back`, and so
+ * does the × in the header.
  */
 export function SiteSelection() {
   const router = useRouter();
@@ -66,14 +82,12 @@ export function SiteSelection() {
   // until the form is committed back).
   // Slots may be partial (a time but no site yet); they stay until removed with × (D-074).
   const queue = useMemo(() => parseScenarios(params.get("s"), { allowPartial: true }), [params]);
-  // A link with every slot filled has no free slot, so it opens the last scenario for editing.
-  const [initial] = useState(() => {
-    const q = parseScenarios(params.get("s"), { allowPartial: true });
-    return q.length >= MAX_COMPARE ? { index: q.length - 1, form: formFromScenario(q[q.length - 1]) } : null;
-  });
-  const [editing, setEditing] = useState<number | null>(initial?.index ?? null);
+  const [initial] = useState(() => entryState(params));
+  const [editing, setEditing] = useState<number | null>(initial.editing);
   const activeIndex = editing ?? queue.length;
-  const comparing = queue.length + (editing === null ? 1 : 0) > 1;
+  // Opened as the compare step (D-128): the page to return to.
+  const back = validBack(params.get("back"));
+  const comparing = !!back || queue.length + (editing === null ? 1 : 0) > 1;
   const asideRef = useRef<HTMLElement>(null);
   // Bar animation (D-076): `barIntro` while it slides in after the first "Select another scenario";
   // `barExit` holds a snapshot of the bar while it animates out after all but one scenario are removed.
@@ -86,19 +100,34 @@ export function SiteSelection() {
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<SortId>(DEFAULT_SORT);
   const [groups, setGroups] = useState<Set<SiteGroup>>(() => new Set(ALL_GROUPS)) // every list on by default (D-052);
-  const [siteId, setSiteId] = useState<string | null>(initial?.form.siteId ?? null);
-  const [coords, setCoords] = useState(initial?.form.coords ?? "");
+  const [siteId, setSiteId] = useState<string | null>(initial.form.siteId);
+  const [coords, setCoords] = useState(initial.form.coords);
   const [coordsTouched, setCoordsTouched] = useState(false);
   const nowMinute = useNowMinute();
   // `?t=` carries the landing time back from "Select different site" on the details page (D-100).
   // The page's state can survive navigation (cacheComponents keeps routes alive), so a new `?t=` is also applied after mount.
   const tParam = params.get("t");
   const tMs = tParam ? Date.parse(tParam) : NaN;
-  const [picked, setPicked] = useState<number | null>(() => initial?.form.picked ?? (Number.isFinite(tMs) ? tMs : null));
+  const [picked, setPicked] = useState<number | null>(initial.form.picked);
   const [seenT, setSeenT] = useState(tParam);
   if (tParam !== seenT) {
     setSeenT(tParam);
     if (Number.isFinite(tMs)) setPicked(tMs);
+  }
+  // Entering or leaving the compare step (D-128) starts from a fresh form, never from what this
+  // preserved page last held. Browser back/forward keeps the form (no new entry).
+  const flowKey = `${back ?? ""}#${back ? flowEntryId() : 0}`;
+  const [seenFlow, setSeenFlow] = useState(flowKey);
+  if (flowKey !== seenFlow) {
+    setSeenFlow(flowKey);
+    const e = entryState(params);
+    setEditing(e.editing);
+    setSiteId(e.form.siteId);
+    setCoords(e.form.coords);
+    setCoordsTouched(false);
+    setPicked(e.form.picked);
+    setQuery("");
+    setBarExit(null);
   }
   const when = picked ?? nowMinute;
   const [hovered, setHovered] = useState<string | null>(null);
@@ -211,7 +240,10 @@ export function SiteSelection() {
   // Compare needs at least two complete scenarios; partial ones (including the form's) are left out.
   const completeCount = slots.filter(isComplete).length;
   const canStart = comparing ? completeCount >= 2 : valid;
-  const setQueue = (next: Scenario[]) => router.replace(next.length ? `/?s=${serialiseScenarios(next)}` : "/", { scroll: false });
+  const setQueue = (next: Scenario[]) => {
+    const q = [next.length ? `s=${serialiseScenarios(next)}` : "", back ? `back=${encodeURIComponent(back)}` : ""].filter(Boolean).join("&");
+    router.replace(q ? `/?${q}` : "/", { scroll: false });
+  };
   /** Applies a new slot list + edit target. With a single scenario left the bar goes away: it lives in the form. */
   const apply = (next: Scenario[], nextEditing: number | null) => {
     if (nextEditing !== null && next.length <= 1) {
@@ -288,6 +320,9 @@ export function SiteSelection() {
   };
   const removeCurrent = () => {
     const next = editing === null ? queue : queue.filter((_, k) => k !== editing);
+    // In the compare step, dropping the scenario being picked when at most one other is left leaves
+    // nothing to compare: return to the page the step was opened from (D-128).
+    if (back && next.length <= 1) return exitCompareFlow(router, back);
     const last = next.at(-1);
     if (!last) return;
     loadIntoForm(last);

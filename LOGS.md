@@ -768,3 +768,17 @@ Decision: in both editors, the "Custom" label beside a value that differs from i
 ## D-127 · 2026-11-15 · Custom and edited fields highlighted in the assumptions contents
 Status: confirmed (owner request, 2026-11-15)
 Decision: in the Mission assumptions editor's contents column (D-123), a field entry is shown in the accent colour used for its "Custom" / "Edited" label (D-126) whenever its value differs from the saved value or from the default. It updates as you type, so the list shows at a glance which assumptions aren't defaults. The selected entry keeps its highlight background. Group headings are unchanged.
+
+## D-128 · 2026-11-15 · "Add to comparison" opens a "Select Scenarios to Compare" step
+Status: confirmed (owner request, 2026-11-15; changes D-066 entry and the Compare slot layout)
+Decision:
+- **Entry:** "Add to comparison" on the site details page no longer jumps to Compare. It opens the site selection page as a focused step: `/?s=<this site@time>&t=<time>&back=<this details URL>`. Scenario A is this site and landing time. Scenario B is active ("selecting now") and starts at the same landing time. Scenario C is an empty slot.
+- **Header:** while `back` is in the URL on `/`, the header drops the page links (Select sites, Compare, Data & methods). The app title stays as plain text, not a link. The persona and theme toggles stay, because the persona toggle is on every page. Then, at the top right, come the heading "Select Scenarios to Compare" and a close (×). Closing returns to `back`.
+- **Leaving:** × in the header, or × on the card being filled when at most one other scenario is left, returns to `back`. When the step was opened from inside the app, this is a history step back, so there is no duplicate entry. After a reload or from a shared link, it replaces the URL instead. In this step the scenario bar is always shown and the button always reads "Start comparison now" (never "Explore Site Details").
+- **Fresh form:** opening or leaving the step resets the selection form (`flowKey` in `SiteSelection`), because Next keeps hidden pages' state (Activity), and B must never show an earlier pick. Browser back/forward still restores the form. New slots after B start at "now" as before (D-066).
+- **Compare columns:** Compare shows one column per scenario, so 2 or 3 columns, instead of always 3 slots with empty "Add a site…" pickers. So that a third scenario can still be added, Compare gets "Add a scenario" (while fewer than 3), which opens the same step with `back` = this comparison. With no scenarios, Compare shows "Select scenarios", which opens the step.
+- Helpers: `src/lib/compare-flow.ts` (entry URL, `back` validation, exit); header row in `src/components/HeaderBar.tsx`.
+
+## D-129 · 2026-11-15 · Compare-step header: × at the left, title only
+Status: confirmed (owner request, 2026-11-15; refines D-128)
+Decision: in the "Select Scenarios to Compare" step, the header holds only the close (×) at the far left, followed by the heading "Select Scenarios to Compare". The app name, the persona toggle and the theme toggle are removed from the header in this state only. Every other page keeps the regular header. This is a deliberate exception to "persona toggle on every page" for this step; the persona chosen before entering still applies.

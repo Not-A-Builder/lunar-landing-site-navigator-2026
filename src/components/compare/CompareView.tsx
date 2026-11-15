@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Copy, Warning, X } from "@phosphor-icons/react";
+import { ArrowRight, Copy, Plus, Warning, X } from "@phosphor-icons/react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -11,6 +11,7 @@ import { InfoTip } from "@/components/InfoTip";
 import { NumText } from "@/components/Num";
 import { RAG_META, RagBadge } from "@/components/RagBadge";
 import { useEffectiveAssumptions } from "@/lib/assumptions-store";
+import { compareFlowHref, markFlowEntry } from "@/lib/compare-flow";
 import { MAX_COMPARE } from "@/lib/config";
 import { CONST } from "@/lib/engine/constants";
 import { greatCircleKm } from "@/lib/engine/geometry";
@@ -24,6 +25,7 @@ import { parseScenarios, resolveScenarioSite, SCENARIO_LETTERS, serialiseScenari
 import { hasCoordinates, isPolar, sites } from "@/lib/sites";
 import { useAnalysis, type Analysis } from "@/lib/use-analysis";
 import { useNowHour } from "@/lib/use-now";
+import { btnPrimary, btnSecondary } from "@/lib/ui";
 
 const LETTERS = SCENARIO_LETTERS;
 const serialise = serialiseScenarios;
@@ -70,45 +72,55 @@ export function CompareView() {
   const resolved = scenarios.map((s) => resolveSite(s.siteId));
   const ready = scenarios.map((_, i) => results[i]?.stage === "full" || results[i]?.stage === "base");
   const kind = compareKind(scenarios, defaultT);
+  // More scenarios are picked on the selection page, as the compare step (D-128); closing it comes back here.
+  const here = scenarios.length ? `/compare?s=${serialise(scenarios)}` : "/compare";
+  const addHref = compareFlowHref(scenarios, here, scenarios.at(-1)?.t || undefined);
+  const canAdd = scenarios.length < MAX_COMPARE;
 
   return (
     <div className="mx-auto max-w-7xl space-y-8 px-4 py-6">
       {scenarios.map((sc, i) => <Runner key={runnerKeys[i]} id={ids[i]} sc={sc} nowHour={nowHour} onResult={onResult} />)}
-      <header className="space-y-1">
-        <h1 className="text-3xl font-semibold tracking-tight">Compare scenarios</h1>
-        <p className="max-w-3xl text-sm text-muted">
-          Up to <span className="num">{MAX_COMPARE}</span> site + landing-time combinations. Try one site on two dates, or two nearby sites on the same date, and see how small changes move the power and communication windows.
-        </p>
-        {kind && <p className="text-sm font-medium text-accent">{kind}</p>}
+      <header className="flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
+        <div className="space-y-1">
+          <h1 className="text-3xl font-semibold tracking-tight">Compare scenarios</h1>
+          <p className="max-w-3xl text-sm text-muted">
+            Up to <span className="num">{MAX_COMPARE}</span> site + landing-time combinations. Try one site on two dates, or two nearby sites on the same date, and see how small changes move the power and communication windows.
+          </p>
+          {kind && <p className="text-sm font-medium text-accent">{kind}</p>}
+        </div>
+        {canAdd && scenarios.length > 0 && (
+          <Link href={addHref} onClick={() => markFlowEntry(here)} className={btnSecondary}>
+            <Plus size={18} aria-hidden /> Add a scenario
+          </Link>
+        )}
       </header>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        {Array.from({ length: MAX_COMPARE }, (_, i) => {
-          const sc = scenarios[i];
+      {/* One column per scenario: 2 or 3 (D-128). */}
+      {scenarios.length > 0 && (
+      <div className={`grid gap-4 ${scenarios.length >= 3 ? "md:grid-cols-3" : scenarios.length === 2 ? "md:grid-cols-2" : ""}`}>
+        {scenarios.map((sc, i) => {
           const r = resolved[i];
           const res = results[i];
           return (
             <div key={i} className="rounded-sm border border-line bg-panel p-4 text-sm">
               <div className="mb-3 flex items-center justify-between">
                 <span className="text-xs font-semibold uppercase tracking-wider text-faint">Scenario {LETTERS[i]}</span>
-                {sc && <button aria-label={`Remove scenario ${LETTERS[i]}`} title="Remove" className="-m-1 rounded-sm p-1 text-muted hover:bg-panel-2 hover:text-fg" onClick={() => update(scenarios.filter((_, k) => k !== i))}><X size={18} /></button>}
+                <button aria-label={`Remove scenario ${LETTERS[i]}`} title="Remove" className="-m-1 rounded-sm p-1 text-muted hover:bg-panel-2 hover:text-fg" onClick={() => update(scenarios.filter((_, k) => k !== i))}><X size={18} /></button>
               </div>
               <select
                 aria-label={`Site for scenario ${LETTERS[i]}`}
-                value={sc?.siteId ?? ""}
-                disabled={!sc && i > scenarios.length}
+                value={sc.siteId}
                 onChange={(e) => {
                   if (e.target.value === "__custom") return setCustomSlot(i);
                   setCustomSlot(null);
                   const next = [...scenarios];
-                  if (e.target.value) next[sc ? i : scenarios.length] = { siteId: e.target.value, t: sc?.t ?? scenarios[0]?.t ?? defaultT };
+                  if (e.target.value) next[i] = { siteId: e.target.value, t: sc.t || defaultT };
                   update(next);
                 }}
-                className="mb-2 h-10 w-full rounded-sm border border-line bg-bg px-2 disabled:opacity-40"
+                className="mb-2 h-10 w-full rounded-sm border border-line bg-bg px-2"
               >
-                <option value="">{i > scenarios.length ? "Fill the previous slot first" : "Add a site…"}</option>
                 <option value="__custom">Custom coordinates…</option>
-                {sc?.siteId.startsWith("custom:") && <option value={sc.siteId}>{r?.name}</option>}
+                {sc.siteId.startsWith("custom:") && <option value={sc.siteId}>{r?.name}</option>}
                 {PICKABLE.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
               </select>
               {customSlot === i && (
@@ -118,7 +130,7 @@ export function CompareView() {
                     submitLabel="Use"
                     onSubmit={(la, lo) => {
                       const next = [...scenarios];
-                      next[sc ? i : scenarios.length] = { siteId: customSiteId(la, lo), t: sc?.t ?? scenarios[0]?.t ?? defaultT };
+                      next[i] = { siteId: customSiteId(la, lo), t: sc.t || defaultT };
                       setCustomSlot(null);
                       update(next);
                     }}
@@ -167,6 +179,7 @@ export function CompareView() {
           );
         })}
       </div>
+      )}
 
       {scenarios.length > 0 && ready.some(Boolean) && (
         <>
@@ -178,8 +191,11 @@ export function CompareView() {
         </>
       )}
       {scenarios.length === 0 && (
-        <div className="rounded-sm border border-dashed border-line p-8 text-center text-sm text-muted">
-          Pick a site in Scenario A to begin, or open any site and press “Add to comparison”.
+        <div className="flex flex-col items-center gap-4 rounded-sm border border-dashed border-line p-8 text-center text-sm text-muted">
+          <p>No scenarios yet. Pick two or three site and landing-time combinations, or open any site and press “Add to comparison”.</p>
+          <Link href={addHref} onClick={() => markFlowEntry(here)} className={btnPrimary}>
+            <Plus size={18} weight="bold" aria-hidden /> Select scenarios
+          </Link>
         </div>
       )}
     </div>

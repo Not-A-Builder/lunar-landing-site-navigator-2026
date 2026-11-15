@@ -2,7 +2,7 @@
 
 import { ArrowCounterClockwise, ArrowSquareOut, DownloadSimple, PencilSimple, Plus, SlidersHorizontal, Steps, Warning } from "@phosphor-icons/react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { BodyTimeline } from "@/components/charts/BodyTimeline";
 import { HorizonPanorama } from "@/components/charts/HorizonPanorama";
@@ -14,6 +14,7 @@ import { NumText } from "@/components/Num";
 import { RagBadge } from "@/components/RagBadge";
 import { DateField, TimeField } from "@/components/site-selection/DateTimePickers";
 import { useEffectiveAssumptions } from "@/lib/assumptions-store";
+import { compareFlowHref, markFlowEntry } from "@/lib/compare-flow";
 import { downloadCsv } from "@/lib/csv";
 import { enthusiastPick } from "@/lib/enthusiast-metrics";
 import { powerModel } from "@/lib/engine/analysis";
@@ -53,6 +54,7 @@ const blockTitles = (p: Persona) => ({
 export function SiteDetails({ site }: { site: Site | null }) {
   const params = useSearchParams();
   const router = useRouter();
+  const pathname = usePathname();
   const persona = usePersona((s) => s.persona);
   const cardH = CARD_H[persona];
   // Enthusiasts always see results for the default assumptions and bands (D-117).
@@ -144,7 +146,11 @@ export function SiteDetails({ site }: { site: Site | null }) {
 
   if (!key) return <div className="mx-auto max-w-[1600px] px-4 py-6 text-sm text-muted">Coordinates missing. Go back and pick a site.</div>;
 
-  const compareHref = `/compare?s=${encodeURIComponent(id === "custom" ? `custom:${lat},${lon}` : id)}@${encodeURIComponent(landingMs ? new Date(landingMs).toISOString() : "")}`;
+  // "Add to comparison" opens site selection as the "Select scenarios to compare" step: this site + time
+  // is scenario A, scenario B starts at the same landing time, and closing comes back here (D-128).
+  const landingIso = landingMs ? new Date(landingMs).toISOString() : "";
+  const backHref = `${pathname}${params.size ? `?${params.toString()}` : ""}`;
+  const compareHref = compareFlowHref([{ siteId: id === "custom" ? `custom:${lat},${lon}` : id, t: landingIso }], backHref, landingIso);
   const selectHref = tParam && landingMs !== null ? `/?t=${encodeURIComponent(new Date(landingMs).toISOString())}` : "/";
   const sep = <span aria-hidden className="mx-3 text-faint">•</span>;
   const feature = !site ? an.terrain?.features[0] : undefined;
@@ -210,7 +216,7 @@ export function SiteDetails({ site }: { site: Site | null }) {
             </button>
             <span className="mx-2 h-8 w-px bg-line" role="separator" aria-orientation="vertical" />
           </>}
-          <Link href={compareHref} className={btnPrimary}>
+          <Link href={compareHref} onClick={() => markFlowEntry(backHref)} className={btnPrimary}>
             <Plus size={18} weight="bold" aria-hidden /> Add to comparison
           </Link>
         </div>
