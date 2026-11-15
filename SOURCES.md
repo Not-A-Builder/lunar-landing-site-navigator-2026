@@ -1,6 +1,6 @@
 # Sources
 
-Every data source used by the Lunar Landing Site Navigator, its link, and what it is used for.
+Every data source used by Lunar VISTA, its link, and what it is used for.
 **Generated, do not edit by hand:** run `npm run sources:doc` after adding or removing a source
 (the test suite fails if this file is out of date). In the app, the same information appears in every
 tooltip and on the Data & methods page.

@@ -1,7 +1,7 @@
-# Lunar Landing Site Navigator
+# Lunar VISTA
 
-NASA Space Apps Challenge 2026 entry for
-[Lunar Landing Site Navigator](https://www.spaceappschallenge.org/2026/challenges/lunar-landing-site-navigator/).
+**Visibility & Illumination Site Trade-off Analyzer.** NASA Space Apps Challenge 2026 entry for the
+challenge [Lunar Landing Site Navigator](https://www.spaceappschallenge.org/2026/challenges/lunar-landing-site-navigator/).
 
 Compare lunar landing sites and dates at a glance. See where the Sun and Earth sit against the real
 terrain horizon, how long until sunset or Earthset, and what that means for solar power and

@@ -335,3 +335,181 @@ details[open] > summary .caret {
     block-size: auto;
   }
 }
+
+/*
+ * Splash (D-144): first load in each browser tab, always dark whatever the theme. Its colours are the dark
+ * theme's tokens, fixed here so the splash never follows the light theme. Timeline: the counter and bar run
+ * 1 → 100% over 4 s (same easing for both), hold briefly at 100%, then the overlay fades into the page.
+ * Everything is CSS so it starts at first paint; with reduced motion only the counter, bar and fade remain.
+ * html[data-splash="seen"] is set before paint by an inline script when the tab has already seen it.
+ */
+@property --splash-n {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 1;
+}
+.splash {
+  --splash-bg: #0b0a09;
+  --splash-surface: #1b1917;
+  --splash-line: #2a2723;
+  --splash-fg: #ece8e1;
+  --splash-muted: #a8a197;
+  --splash-faint: #857f75;
+  --splash-ease: cubic-bezier(0.45, 0.05, 0.25, 1);
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: radial-gradient(120% 80% at 50% 38%, #12110f 0%, var(--splash-bg) 60%);
+  color: var(--splash-fg);
+  animation: splash-out 750ms cubic-bezier(0.4, 0, 0.2, 1) 4200ms forwards;
+}
+html[data-splash="seen"] .splash {
+  display: none;
+}
+.splash-moon {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.splash-rim {
+  stroke-dasharray: 1;
+}
+.splash-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 24px 14vh;
+  text-align: center;
+}
+.splash-logo {
+  display: block;
+  width: min(560px, 78vw);
+  height: auto;
+}
+.splash-name {
+  margin-top: 28px;
+  max-width: 36rem;
+  font-size: 0.875rem;
+  line-height: 1.7;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  text-wrap: balance;
+  color: var(--splash-faint);
+}
+.splash-initial {
+  font-weight: 500;
+  color: var(--splash-fg);
+}
+.splash-progress {
+  margin-top: 64px;
+  width: min(260px, 64vw);
+}
+.splash-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--splash-faint);
+}
+.splash-count {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  color: var(--splash-fg);
+  counter-reset: splash var(--splash-n);
+  animation: splash-count 4000ms var(--splash-ease) both;
+}
+.splash-count::after {
+  content: counter(splash) "%";
+}
+.splash-track {
+  position: relative;
+  margin-top: 10px;
+  height: 1px;
+  background: var(--splash-line);
+  overflow: visible;
+}
+.splash-fill {
+  position: absolute;
+  inset: 0;
+  transform-origin: left center;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--splash-fg) 30%, transparent), var(--splash-fg));
+  box-shadow: 0 0 10px color-mix(in srgb, var(--splash-fg) 45%, transparent);
+  animation: splash-fill 4000ms var(--splash-ease) both;
+}
+.splash-foot {
+  position: absolute;
+  bottom: 28px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 0.875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--splash-faint);
+  opacity: 0.8;
+}
+@keyframes splash-count {
+  from { --splash-n: 1; }
+  to { --splash-n: 100; }
+}
+@keyframes splash-fill {
+  from { transform: scaleX(0.01); }
+  to { transform: scaleX(1); }
+}
+@keyframes splash-out {
+  to { opacity: 0; visibility: hidden; }
+}
+@keyframes splash-logo-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.985); filter: blur(10px); }
+}
+@keyframes splash-soft-in {
+  from { opacity: 0; transform: translateY(6px); }
+}
+@keyframes splash-content-out {
+  to { transform: scale(1.025); filter: blur(4px); }
+}
+@keyframes splash-rise {
+  from { transform: translateY(70px); }
+}
+@keyframes splash-glow {
+  from { opacity: 0; }
+  60% { opacity: 1; }
+  to { opacity: 0.75; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .splash-content {
+    animation: splash-content-out 750ms cubic-bezier(0.4, 0, 0.2, 1) 4200ms forwards;
+  }
+  .splash-logo {
+    animation: splash-logo-in 1400ms cubic-bezier(0.2, 0.7, 0.2, 1) 150ms both;
+  }
+  .splash-name {
+    animation: splash-soft-in 1000ms cubic-bezier(0.2, 0.7, 0.2, 1) 650ms both;
+  }
+  .splash-progress {
+    animation: splash-soft-in 800ms cubic-bezier(0.2, 0.7, 0.2, 1) 300ms both;
+  }
+  .splash-foot {
+    animation: splash-soft-in 1000ms ease-out 1000ms both;
+  }
+  .splash-rise {
+    animation: splash-rise 4600ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  .splash-glow {
+    animation: splash-glow 4200ms ease-out both;
+  }
+  .splash-rim {
+    animation: draw-line 2600ms cubic-bezier(0.65, 0, 0.35, 1) 200ms both;
+  }
+}

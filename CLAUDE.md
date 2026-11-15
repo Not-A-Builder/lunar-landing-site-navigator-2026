@@ -7,7 +7,9 @@ current state and open questions.
 
 ## Project
 
-**Lunar Landing Site Navigator**: NASA Space Apps Challenge 2026 entry ([brief](docs/challenge-brief.md)).
+**Lunar VISTA** (Visibility & Illumination Site Trade-off Analyzer): NASA Space Apps Challenge 2026 entry for the
+"Lunar Landing Site Navigator" challenge ([brief](docs/challenge-brief.md)). Name, logos and favicon: D-143
+(`SITE_TITLE` / `SITE_FULL_NAME` / `LOGO` in `src/lib/config.ts`, wordmarks in `public/brand/`, `src/app/icon.svg`).
 Built by a single-person team (the project owner). A website that turns complex ephemeris and topographic data into clear, comparable
 visualisations, so users can quickly compare lunar south-pole landing **sites** and **dates**:
 Sun vs horizon (power) and Earth vs horizon (direct-to-Earth comms).

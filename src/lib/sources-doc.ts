@@ -22,7 +22,7 @@ export function generateSourcesMd(input: {
   const esc = (s: string) => s.replace(/\|/g, "\\|");
   L.push("# Sources");
   L.push("");
-  L.push("Every data source used by the Lunar Landing Site Navigator, its link, and what it is used for.");
+  L.push("Every data source used by Lunar VISTA, its link, and what it is used for.");
   L.push("**Generated, do not edit by hand:** run `npm run sources:doc` after adding or removing a source");
   L.push("(the test suite fails if this file is out of date). In the app, the same information appears in every");
   L.push("tooltip and on the Data & methods page.");
